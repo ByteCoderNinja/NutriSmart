@@ -25,6 +25,11 @@ class NutritionController(private val nutritionService: NutritionService) {
         }
     }
 
+    @GetMapping
+    fun getAllPlans(): ResponseEntity<List<MealPlan>> {
+        return ResponseEntity.ok(nutritionService.getMealPlans())
+    }
+
     @PostMapping("/plan")
     fun saveDailyPlan(@RequestBody mealPlan: MealPlan): ResponseEntity<MealPlan> {
         val savedPlan = nutritionService.savePlan(mealPlan)

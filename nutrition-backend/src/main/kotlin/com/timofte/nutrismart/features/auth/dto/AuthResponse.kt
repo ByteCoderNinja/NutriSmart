@@ -1,4 +1,6 @@
 package com.timofte.nutrismart.features.auth.dto
 
-class AuthResponse {
-}
+data class AuthResponse(
+    val token: String,
+    val userId: Long
+)

@@ -22,4 +22,9 @@ class MealController(private val mealService: MealService) {
     fun getAlternatives(@RequestParam type: MealType): List<Meal> {
         return mealService.getAlternativeMeals(type)
     }
+
+    @GetMapping
+    fun getMeals(@RequestParam(required = false) type: MealType): List<Meal> {
+        return mealService.getMealsByType(type)
+    }
 }

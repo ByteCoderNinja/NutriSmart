@@ -18,4 +18,8 @@ class MealService(private val mealRepository: MealRepository) {
     fun getMealById(id: Long) : Meal {
         return mealRepository.findById(id).orElseThrow { RuntimeException("Meal Not Found") }
     }
+
+    fun getMealsByType(type: MealType) : List<Meal> {
+        return mealRepository.findByType(type)
+    }
 }

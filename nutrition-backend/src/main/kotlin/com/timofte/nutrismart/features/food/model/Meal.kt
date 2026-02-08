@@ -10,17 +10,20 @@ data class Meal(
     val id: Long = 0,
 
     @Column(nullable = false)
-    val name: String,
+    val name: String = "",
 
     @Column(nullable = false)
-    val calories: Int,
+    val calories: Int = 0,
 
-    val proteins: Double,
-    val fats: Double,
-    val carbs: Double,
+    val protein: Double = 0.0,
+    val fat: Double = 0.0,
+    val carbs: Double = 0.0,
+
+    @Column(length = 1000)
+    val quantityDetails: String = "Standard portion",
 
     @Enumerated(EnumType.STRING)
-    val type: MealType
+    val type: MealType = MealType.BREAKFAST
 )
 
 enum class MealType {
