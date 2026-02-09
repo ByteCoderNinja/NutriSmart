@@ -40,6 +40,25 @@ class UserService(private val userRepository: UserRepository) {
     }
 
     fun saveUser(user: UserEntity): UserEntity {
-        return userRepository.save(user)
+        return calculateAndSaveUserNeeds(user)
+    }
+
+    fun updateUser(id: Long, updatedData: UserEntity): UserEntity {
+        val existingUser = getUser(id)
+
+        existingUser.weight = updatedData.weight
+        existingUser.height = updatedData.height
+        existingUser.activityLevel = updatedData.activityLevel
+        existingUser.targetWeight = updatedData.targetWeight
+
+        return calculateAndSaveUserNeeds(existingUser)
+    }
+
+    fun deleteUser(id: Long) {
+        if (userRepository.existsById(id)) {
+            return userRepository.deleteById(id)
+        } else {
+            throw RuntimeException("User not found")
+        }
     }
 }

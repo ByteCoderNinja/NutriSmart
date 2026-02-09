@@ -34,9 +34,9 @@ data class MealPlan(
     val snack: Meal? = null,
 
     val totalCalories: Int = 0,
-    val totalProteins: Double = 0.0,
+    val totalProtein: Double = 0.0,
     val totalCarbs: Double = 0.0,
-    val totalFats: Double = 0.0,
+    val totalFat: Double = 0.0,
 
     val isCompleted: Boolean = false
 )

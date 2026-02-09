@@ -35,4 +35,32 @@ class NutritionController(private val nutritionService: NutritionService) {
         val savedPlan = nutritionService.savePlan(mealPlan)
         return ResponseEntity.ok(savedPlan)
     }
+
+    @PostMapping("/generate/{userId}")
+    fun generateWeeklyPlan(@PathVariable userId: Long): ResponseEntity<List<MealPlan>> {
+        try {
+            val plans = nutritionService.generateAndSaveWeeklyPlan(userId)
+            return ResponseEntity.ok(plans)
+        } catch (e: Exception) {
+            return ResponseEntity.internalServerError().build()
+        }
+    }
+
+    @GetMapping("/today/{userId}")
+    fun getTodayPlan(@PathVariable userId: Long): ResponseEntity<MealPlan> {
+        val today = LocalDate.now()
+        val plan = nutritionService.getMealPlan(userId, today)
+
+        return if (plan != null) {
+            ResponseEntity.ok(plan)
+        } else {
+            ResponseEntity.notFound().build()
+        }
+    }
+
+    @GetMapping("/weekly/{userId}")
+    fun getWeeklyPlan(@PathVariable userId: Long): ResponseEntity<List<MealPlan>> {
+        val allPlans = nutritionService.getMealPlans().filter { it.userId == userId }
+        return ResponseEntity.ok(allPlans)
+    }
 }
