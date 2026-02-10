@@ -1,6 +1,7 @@
 package com.timofte.nutrismart.features.nutrition.controller
 
 import com.timofte.nutrismart.features.nutrition.model.MealPlan
+import com.timofte.nutrismart.features.nutrition.model.ShoppingList
 import com.timofte.nutrismart.features.nutrition.service.NutritionService
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.ResponseEntity
@@ -10,57 +11,53 @@ import java.time.LocalDate
 @RestController
 @RequestMapping("/api/nutrition")
 class NutritionController(private val nutritionService: NutritionService) {
+
+    @PostMapping("/generate/{userId}")
+    fun generatePlan(@PathVariable userId: Long): ResponseEntity<List<MealPlan>> {
+        return try {
+            val plans = nutritionService.generateAndSaveWeeklyPlan(userId)
+            ResponseEntity.ok(plans)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ResponseEntity.internalServerError().build()
+        }
+    }
+
     @GetMapping("/plan")
     fun getDailyPlan(
         @RequestParam userId: Long,
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) date: LocalDate,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) date: LocalDate,
     ): ResponseEntity<MealPlan> {
-
         val plan = nutritionService.getMealPlan(userId, date)
-
-        return if (plan != null) {
-            ResponseEntity.ok(plan)
-        } else {
-            ResponseEntity.notFound().build()
-        }
-    }
-
-    @GetMapping
-    fun getAllPlans(): ResponseEntity<List<MealPlan>> {
-        return ResponseEntity.ok(nutritionService.getMealPlans())
+        return if (plan != null) ResponseEntity.ok(plan) else ResponseEntity.notFound().build()
     }
 
     @PostMapping("/plan")
-    fun saveDailyPlan(@RequestBody mealPlan: MealPlan): ResponseEntity<MealPlan> {
-        val savedPlan = nutritionService.savePlan(mealPlan)
+    fun updateDailyPlan(@RequestBody mealPlan: MealPlan): ResponseEntity<MealPlan> {
+        val savedPlan = nutritionService.updatePlan(mealPlan)
         return ResponseEntity.ok(savedPlan)
     }
 
-    @PostMapping("/generate/{userId}")
-    fun generateWeeklyPlan(@PathVariable userId: Long): ResponseEntity<List<MealPlan>> {
-        try {
-            val plans = nutritionService.generateAndSaveWeeklyPlan(userId)
-            return ResponseEntity.ok(plans)
-        } catch (e: Exception) {
-            return ResponseEntity.internalServerError().build()
-        }
+    @GetMapping("/all/{userId}")
+    fun getAllPlans(@PathVariable userId: Long): ResponseEntity<List<MealPlan>> {
+        val userPlans = nutritionService.getMealPlansForUser(userId)
+
+        if (userPlans.isEmpty()) return ResponseEntity.noContent().build()
+
+        return ResponseEntity.ok(userPlans)
     }
 
     @GetMapping("/today/{userId}")
     fun getTodayPlan(@PathVariable userId: Long): ResponseEntity<MealPlan> {
         val today = LocalDate.now()
         val plan = nutritionService.getMealPlan(userId, today)
-
-        return if (plan != null) {
-            ResponseEntity.ok(plan)
-        } else {
-            ResponseEntity.notFound().build()
-        }
+        return if (plan != null) ResponseEntity.ok(plan) else ResponseEntity.notFound().build()
     }
 
-    @GetMapping("/weekly/{userId}")
-    fun getWeeklyPlan(@PathVariable userId: Long): ResponseEntity<List<MealPlan>> {
-        val allPlans = nutritionService.getMealPlans().filter { it.userId == userId }
-        return ResponseEntity.ok(allPlans)
+    @GetMapping("/shopping-list/{userId}")
+    fun getShoppingList(@PathVariable userId: Long): ResponseEntity<ShoppingList> {
+        val list = nutritionService.getShoppingList(userId)
+
+        return if (list != null) ResponseEntity.ok(list) else ResponseEntity.notFound().build()
     }
 }

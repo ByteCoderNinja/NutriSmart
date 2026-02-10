@@ -9,4 +9,5 @@ import java.time.LocalDate
 interface MealPlanRepository : JpaRepository<MealPlan, Long> {
     fun findByUserIdAndDate(userId: Long, date: LocalDate): MealPlan?
     fun findByUserId(userId: Long): List<MealPlan>
+    fun deleteByUserId(userId: Long)
 }

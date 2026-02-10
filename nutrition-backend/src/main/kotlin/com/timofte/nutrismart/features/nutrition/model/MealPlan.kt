@@ -17,19 +17,19 @@ data class MealPlan(
     @Column(nullable = false)
     val date: LocalDate,
 
-    @ManyToOne
+    @ManyToOne(cascade = [(CascadeType.ALL)])
     @JoinColumn(name = "breakfast_id")
     val breakfast: Meal? = null,
 
-    @ManyToOne
+    @ManyToOne(cascade = [(CascadeType.ALL)])
     @JoinColumn(name = "lunch_id")
     val lunch: Meal? = null,
 
-    @ManyToOne
+    @ManyToOne(cascade = [(CascadeType.ALL)])
     @JoinColumn(name = "dinner_id")
     val dinner: Meal? = null,
 
-    @ManyToOne
+    @ManyToOne(cascade = [(CascadeType.ALL)])
     @JoinColumn(name = "snack_id")
     val snack: Meal? = null,
 

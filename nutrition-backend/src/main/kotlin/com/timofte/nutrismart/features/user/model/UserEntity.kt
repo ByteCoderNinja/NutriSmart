@@ -45,5 +45,11 @@ data class UserEntity(
     @Enumerated(EnumType.STRING)
     var medicalConditions: Set<MedicalCondition> = setOf(MedicalCondition.NONE),
 
-    var targetCalories: Int = 0
+    var targetCalories: Int = 0,
+
+    @Column(nullable = false)
+    var isImperial: Boolean = false,
+
+    @Enumerated(EnumType.STRING)
+    var currency: Currency = Currency.RON
 )

@@ -30,3 +30,10 @@ enum class MedicalCondition {
     HIGH_CHOLESTEROL,
     GASTRITIS
 }
+
+enum class Currency(val symbol: String) {
+    RON("RON"),
+    EUR("€"),
+    USD("$"),
+    GBP("£")
+}

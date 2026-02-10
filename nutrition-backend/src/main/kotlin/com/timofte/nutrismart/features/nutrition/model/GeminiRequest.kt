@@ -23,6 +23,15 @@ data class Candidate(
     val finishReason: String?
 )
 
+data class ShoppingListResponse(
+    val categories: List<ShoppingCategory> = emptyList()
+)
+
+data class ShoppingCategory(
+    val name: String,
+    val items: List<String>
+)
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class WeeklyPlanDTO(
     val days: List<DailyPlanDTO>
