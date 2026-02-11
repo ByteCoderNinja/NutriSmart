@@ -19,24 +19,24 @@ data class MealPlan(
 
     @ManyToOne(cascade = [(CascadeType.ALL)])
     @JoinColumn(name = "breakfast_id")
-    val breakfast: Meal? = null,
+    var breakfast: Meal? = null,
 
     @ManyToOne(cascade = [(CascadeType.ALL)])
     @JoinColumn(name = "lunch_id")
-    val lunch: Meal? = null,
+    var lunch: Meal? = null,
 
     @ManyToOne(cascade = [(CascadeType.ALL)])
     @JoinColumn(name = "dinner_id")
-    val dinner: Meal? = null,
+    var dinner: Meal? = null,
 
     @ManyToOne(cascade = [(CascadeType.ALL)])
     @JoinColumn(name = "snack_id")
-    val snack: Meal? = null,
+    var snack: Meal? = null,
 
-    val totalCalories: Int = 0,
-    val totalProtein: Double = 0.0,
-    val totalCarbs: Double = 0.0,
-    val totalFat: Double = 0.0,
+    var totalCalories: Int = 0,
+    var totalProtein: Double = 0.0,
+    var totalCarbs: Double = 0.0,
+    var totalFat: Double = 0.0,
 
-    val isCompleted: Boolean = false
+    var isCompleted: Boolean = false
 )

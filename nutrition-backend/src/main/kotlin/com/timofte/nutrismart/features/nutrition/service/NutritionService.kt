@@ -2,6 +2,7 @@ package com.timofte.nutrismart.features.nutrition.service
 
 import com.timofte.nutrismart.features.food.model.Meal
 import com.timofte.nutrismart.features.food.model.MealType
+import com.timofte.nutrismart.features.food.service.MealService
 import com.timofte.nutrismart.features.nutrition.model.MealDTO
 import com.timofte.nutrismart.features.nutrition.model.MealPlan
 import com.timofte.nutrismart.features.nutrition.model.ShoppingList
@@ -21,7 +22,8 @@ class NutritionService(
     private val mealPlanRepository: MealPlanRepository,
     private val shoppingListRepository: ShoppingListRepository,
     private val userRepository: UserRepository,
-    private val geminiService: GeminiService
+    private val geminiService: GeminiService,
+    private val mealService: MealService
 ) {
 
     @Transactional
@@ -149,6 +151,50 @@ class NutritionService(
             date = date,
             isCompleted = false
         )
+    }
+
+    @Transactional
+    fun swapMeal(planId: Long, mealType: MealType, newMealId: Long): MealPlan {
+        val plan = mealPlanRepository.findById(planId)
+            .orElseThrow { RuntimeException("Plan not found") }
+
+        val newMealCopy = mealService.cloneMealForSwap(newMealId, mealType)
+
+        when (mealType) {
+            MealType.BREAKFAST -> plan.breakfast = newMealCopy
+            MealType.LUNCH -> plan.lunch = newMealCopy
+            MealType.DINNER -> plan.dinner = newMealCopy
+            MealType.SNACK -> plan.snack = newMealCopy
+        }
+
+        recalculateTotals(plan)
+        return mealPlanRepository.save(plan)
+    }
+
+    @Transactional
+    fun markMealAsConsumed(mealId: Long, isConsumed: Boolean): Meal {
+        return mealService.toggleConsumed(mealId, isConsumed)
+    }
+
+    private fun recalculateTotals(plan: MealPlan) {
+        val meals = listOfNotNull(plan.breakfast, plan.lunch, plan.dinner, plan.snack)
+
+        plan.totalCalories = meals.sumOf { it.calories }
+        plan.totalProtein = meals.sumOf { it.protein }
+        plan.totalCarbs = meals.sumOf { it.carbs }
+        plan.totalFat = meals.sumOf { it.fat }
+
+        plan.isCompleted = meals.all { it.isConsumed }
+    }
+
+    fun getUniqueMealsFromHistory(userId: Long): List<Meal> {
+        val userPlans = mealPlanRepository.findByUserId(userId)
+
+        val allMeals = userPlans.flatMap { plan ->
+            listOfNotNull(plan.breakfast, plan.lunch, plan.dinner, plan.snack)
+        }
+
+        return allMeals.distinctBy { it.name }
     }
 
     fun getMealPlansForUser(userId: Long): List<MealPlan> {

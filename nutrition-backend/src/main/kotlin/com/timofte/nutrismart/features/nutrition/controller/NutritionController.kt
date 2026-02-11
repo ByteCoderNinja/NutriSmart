@@ -1,5 +1,7 @@
 package com.timofte.nutrismart.features.nutrition.controller
 
+import com.timofte.nutrismart.features.food.model.Meal
+import com.timofte.nutrismart.features.food.model.MealType
 import com.timofte.nutrismart.features.nutrition.model.MealPlan
 import com.timofte.nutrismart.features.nutrition.model.ShoppingList
 import com.timofte.nutrismart.features.nutrition.service.NutritionService
@@ -59,5 +61,24 @@ class NutritionController(private val nutritionService: NutritionService) {
         val list = nutritionService.getShoppingList(userId)
 
         return if (list != null) ResponseEntity.ok(list) else ResponseEntity.notFound().build()
+    }
+
+    @PostMapping("/swap")
+    fun swapMeal(
+        @RequestParam planId: Long,
+        @RequestParam type: MealType,
+        @RequestParam newMealId: Long
+    ): ResponseEntity<MealPlan> {
+        val updatedPlan = nutritionService.swapMeal(planId, type, newMealId)
+        return ResponseEntity.ok(updatedPlan)
+    }
+
+    @PatchMapping("/meal/{mealId}/consume")
+    fun toggleMealConsumed(
+        @PathVariable mealId: Long,
+        @RequestParam consumed: Boolean
+    ): ResponseEntity<Meal> {
+        val updatedMeal = nutritionService.markMealAsConsumed(mealId, consumed)
+        return ResponseEntity.ok(updatedMeal)
     }
 }

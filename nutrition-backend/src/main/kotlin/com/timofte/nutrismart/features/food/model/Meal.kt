@@ -23,7 +23,9 @@ data class Meal(
     val quantityDetails: String = "Standard portion",
 
     @Enumerated(EnumType.STRING)
-    val type: MealType = MealType.BREAKFAST
+    val type: MealType = MealType.BREAKFAST,
+
+    var isConsumed: Boolean = false
 )
 
 enum class MealType {
