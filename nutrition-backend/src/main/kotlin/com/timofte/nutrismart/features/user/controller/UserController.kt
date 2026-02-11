@@ -1,7 +1,10 @@
 package com.timofte.nutrismart.features.user.controller
 
+import com.timofte.nutrismart.features.user.dto.OnboardingRequest
 import com.timofte.nutrismart.features.user.model.UserEntity
 import com.timofte.nutrismart.features.user.service.UserService
+import org.springframework.security.core.Authentication
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -43,5 +46,16 @@ class UserController(private val userService: UserService) {
         } catch (e: Exception) {
             ResponseEntity.notFound().build()
         }
+    }
+
+    @PostMapping("/onboarding")
+    fun completeProfile(
+        @RequestBody request: OnboardingRequest,
+        authentication: Authentication
+    ): ResponseEntity<UserEntity> {
+        val email = authentication?.name
+            ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+        val updatedUser = userService.completeUserProfile(email, request)
+        return ResponseEntity.ok(updatedUser)
     }
 }

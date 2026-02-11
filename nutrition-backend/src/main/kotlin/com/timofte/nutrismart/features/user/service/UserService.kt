@@ -1,5 +1,7 @@
 package com.timofte.nutrismart.features.user.service
 
+import com.timofte.nutrismart.features.nutrition.service.NutritionService
+import com.timofte.nutrismart.features.user.dto.OnboardingRequest
 import com.timofte.nutrismart.features.user.model.*
 import com.timofte.nutrismart.features.user.repository.UserRepository
 import org.springframework.stereotype.Service
@@ -7,32 +9,79 @@ import java.time.LocalDate
 import java.time.Period
 
 @Service
-class UserService(private val userRepository: UserRepository) {
+class UserService(
+    private val userRepository: UserRepository,
+    private val nutritionService: NutritionService
+) {
 
-    fun calculateAndSaveUserNeeds(user: UserEntity): UserEntity {
-        val age = Period.between(user.dateOfBirth, LocalDate.now()).years
+    fun completeUserProfile(email: String, request: OnboardingRequest): UserEntity {
+        val user = userRepository.findByEmail(email)
+            ?: throw RuntimeException("User not found for email: $email")
 
-        // BMR (Basal Metabolic Rate) - numarul de calorii arse de corp fara sa faci nimic
-        var bmr = (10 * user.weight) + (6.25 * user.height) - (5 * age)
+        user.apply {
+            dateOfBirth = request.dateOfBirth
+            gender = request.gender
+            height = request.height
+            weight = request.weight
+            targetWeight = request.targetWeight
+            activityLevel = request.activityLevel
+            maxDailyBudget = request.maxDailyBudget
+            dietaryPreferences = request.dietaryPreferences
+            medicalConditions = request.medicalConditions
+            isImperial = request.isImperial
+            currency = request.currency
 
-        // ajustare in functie de sex - la barbati aduni 5, iar la femei scazi 161
-        bmr += if (user.gender == Gender.MALE) 5.0 else -161.0
-
-        // TDEE (Total Daily Energy Expenditure)
-        val tdee = bmr * user.activityLevel.multiplier
-
-        // Decidem obiectivul
-        val diff = user.targetWeight - user.weight
-
-        val calories = when {
-            diff < -1.0 -> tdee - 500 // slabire
-            diff > 1.0 -> tdee + 300  // masa musculara
-            else -> tdee              // mentinere
+            isProfileComplete = true
         }
 
-        user.targetCalories = calories.toInt()
+        val savedUser = calculateAndSaveUserNeeds(user)
+
+        try {
+            nutritionService.generateAndSaveWeeklyPlan(savedUser.id)
+        } catch (e: Exception) {
+            println("Error while generating AI plan: ${e.message}")
+        }
+
+        return savedUser
+    }
+
+    fun calculateAndSaveUserNeeds(user: UserEntity): UserEntity {
+        if (user.dateOfBirth == null || user.weight == null || user.height == null || user.gender == null) {
+            return userRepository.save(user)
+        }
+
+        val dob = user.dateOfBirth!!
+        val weight = user.weight!!
+        val height = user.height!!
+        val gender = user.gender!!
+        val activity = user.activityLevel ?: ActivityLevel.SEDENTARY
+
+        val age = Period.between(dob, LocalDate.now()).years
+
+        var bmr = (10 * weight) + (6.25 * height) - (5 * age)
+
+        bmr += if (gender == Gender.MALE) 5.0 else -161.0
+
+        val tdee = bmr * activity.multiplier
+
+        val targetWeight = user.targetWeight ?: weight
+        val diff = targetWeight - weight
+
+        val finalCalories = when {
+            diff < -1.0 -> tdee - 500 // slabire
+            diff > 1.0 -> tdee + 300 // masa musculara
+            else -> tdee // mentinere
+        }
+
+        user.targetCalories = finalCalories.toInt()
 
         return userRepository.save(user)
+    }
+
+
+    fun getUserByEmail(email: String): UserEntity {
+        return userRepository.findByEmail(email)
+            ?: throw RuntimeException("User not found")
     }
 
     fun getUser(id: Long): UserEntity {
@@ -46,17 +95,45 @@ class UserService(private val userRepository: UserRepository) {
     fun updateUser(id: Long, updatedData: UserEntity): UserEntity {
         val existingUser = getUser(id)
 
-        existingUser.weight = updatedData.weight
-        existingUser.height = updatedData.height
-        existingUser.activityLevel = updatedData.activityLevel
-        existingUser.targetWeight = updatedData.targetWeight
+        val needsRegeneration = existingUser.weight != updatedData.weight ||
+                existingUser.targetWeight != updatedData.targetWeight ||
+                existingUser.dietaryPreferences != updatedData.dietaryPreferences ||
+                existingUser.medicalConditions != updatedData.medicalConditions ||
+                existingUser.activityLevel != updatedData.activityLevel ||
+                existingUser.maxDailyBudget != updatedData.maxDailyBudget ||
+                existingUser.isImperial != updatedData.isImperial ||
+                existingUser.currency != updatedData.currency ||
+                existingUser.height != updatedData.height
 
-        return calculateAndSaveUserNeeds(existingUser)
+        existingUser.apply {
+            weight = updatedData.weight
+            height = updatedData.height
+            targetWeight = updatedData.targetWeight
+            activityLevel = updatedData.activityLevel
+            dateOfBirth = updatedData.dateOfBirth
+            dietaryPreferences = updatedData.dietaryPreferences
+            medicalConditions = updatedData.medicalConditions
+            maxDailyBudget = updatedData.maxDailyBudget
+            isImperial = updatedData.isImperial
+            currency = updatedData.currency
+        }
+
+        val savedUser = calculateAndSaveUserNeeds(existingUser)
+
+        if (needsRegeneration) {
+            try {
+                nutritionService.generateAndSaveWeeklyPlan(savedUser.id)
+            } catch (e: Exception) {
+                println("Error while generating AI plan: ${e.message}")
+            }
+        }
+
+        return savedUser
     }
 
     fun deleteUser(id: Long) {
         if (userRepository.existsById(id)) {
-            return userRepository.deleteById(id)
+            userRepository.deleteById(id)
         } else {
             throw RuntimeException("User not found")
         }

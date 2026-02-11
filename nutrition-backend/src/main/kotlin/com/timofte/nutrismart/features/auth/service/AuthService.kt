@@ -6,51 +6,61 @@ import com.timofte.nutrismart.features.auth.dto.RegisterRequest
 import com.timofte.nutrismart.features.user.model.UserEntity
 import com.timofte.nutrismart.features.user.repository.UserRepository
 import com.timofte.nutrismart.features.user.service.UserService
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
 class AuthService(
     private val userRepository: UserRepository,
     private val userService: UserService,
-    private val jwtUtils: JwtUtils
+    private val jwtUtils: JwtUtils,
+    private val passwordEncoder: PasswordEncoder,
+    private val authenticationManager: AuthenticationManager
 ) {
 
     fun register(request: RegisterRequest): AuthResponse {
         if (userRepository.findByEmail(request.email) != null) {
-            throw RuntimeException("Email already exists")
+            throw RuntimeException("Email already exists: ${request.email}")
         }
 
         val newUser = UserEntity(
             email = request.email,
             username = request.username,
-            passwordHash = request.password,
-            dateOfBirth = request.dateOfBirth,
-            height = request.height,
-            weight = request.weight,
-            targetWeight = request.targetWeight,
-            gender = request.gender,
-            activityLevel = request.activityLevel,
-            maxDailyBudget = request.maxDailyBudget,
-            dietaryPreferences = request.dietaryPreferences,
-            medicalConditions = request.medicalConditions
+            passwordHash = passwordEncoder.encode(request.password),
+            isProfileComplete = false
         )
 
-        val savedUser = userService.calculateAndSaveUserNeeds(newUser)
+        val savedUser = userRepository.save(newUser)
 
-        val token = jwtUtils.generateToken(savedUser.email)
+        val userDetails = org.springframework.security.core.userdetails.User
+            .withUsername(savedUser.email)
+            .password(savedUser.passwordHash)
+            .roles("USER")
+            .build()
+
+        val token = jwtUtils.generateToken(userDetails)
 
         return AuthResponse(token, savedUser.id)
     }
 
     fun login(request: LoginRequest): AuthResponse {
+        authenticationManager.authenticate(
+            UsernamePasswordAuthenticationToken(request.email, request.password),
+        )
+
         val user = userRepository.findByEmail(request.email)
             ?: throw RuntimeException("User not found")
 
-        if (user.passwordHash != request.password) {
-            throw RuntimeException("Invalid password")
-        }
+        val userDetails = org.springframework.security.core.userdetails.User
+            .withUsername(user.email)
+            .password(user.passwordHash)
+            .roles("USER")
+            .build()
 
-        val token = jwtUtils.generateToken(user.email)
+        val token = jwtUtils.generateToken(userDetails)
+
         return AuthResponse(token, user.id)
     }
 }

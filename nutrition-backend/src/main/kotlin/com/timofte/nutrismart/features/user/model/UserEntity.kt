@@ -16,36 +16,38 @@ data class UserEntity(
     @Column(nullable = false)
     val username: String,
 
-    val passwordHash: String,
+    val passwordHash: String?,
 
     @Column(nullable = false)
-    val dateOfBirth: LocalDate,
+    var isProfileComplete: Boolean = false,
 
-    var height: Double = 0.0,
-    var weight: Double = 0.0,
+    var dateOfBirth: LocalDate? = null,
 
-    @Column(nullable = false)
-    var targetWeight: Double = 0.0,
+    var height: Double? = null,
+
+    var weight: Double? = null,
+
+    var targetWeight: Double? = null,
 
     @Enumerated(EnumType.STRING)
-    var gender: Gender = Gender.MALE,
+    var gender: Gender? = null,
 
     @Enumerated(EnumType.STRING)
-    var activityLevel: ActivityLevel = ActivityLevel.SEDENTARY,
+    var activityLevel: ActivityLevel? = null,
 
-    var maxDailyBudget: Double = 0.0,
+    var maxDailyBudget: Double? = null,
 
     @ElementCollection(targetClass = DietaryPreference::class)
     @CollectionTable(name = "user_dietary_preferences", joinColumns = [JoinColumn(name = "user_id")])
     @Enumerated(EnumType.STRING)
-    var dietaryPreferences: Set<DietaryPreference> = setOf(DietaryPreference.STANDARD),
+    var dietaryPreferences: Set<DietaryPreference> = emptySet(),
 
     @ElementCollection(targetClass = MedicalCondition::class)
     @CollectionTable(name = "user_medical_conditions", joinColumns = [JoinColumn(name = "user_id")])
     @Enumerated(EnumType.STRING)
-    var medicalConditions: Set<MedicalCondition> = setOf(MedicalCondition.NONE),
+    var medicalConditions: Set<MedicalCondition> = emptySet(),
 
-    var targetCalories: Int = 0,
+    var targetCalories: Int? = null,
 
     @Column(nullable = false)
     var isImperial: Boolean = false,
