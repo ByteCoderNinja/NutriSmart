@@ -37,3 +37,7 @@ enum class Currency(val symbol: String) {
     USD("$"),
     GBP("£")
 }
+
+enum class AuthProvider {
+    LOCAL, GOOGLE
+}

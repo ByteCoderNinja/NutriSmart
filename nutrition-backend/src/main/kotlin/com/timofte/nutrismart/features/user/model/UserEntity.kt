@@ -2,6 +2,7 @@ package com.timofte.nutrismart.features.user.model
 
 import jakarta.persistence.*
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Entity
 @Table(name = "users")
@@ -17,6 +18,16 @@ data class UserEntity(
     val username: String,
 
     val passwordHash: String?,
+
+    @Enumerated(EnumType.STRING)
+    var provider: AuthProvider = AuthProvider.LOCAL,
+
+    @Column(nullable = false)
+    var isVerified: Boolean = false,
+
+    var verificationCode: String? = null,
+
+    var verificationCodeExpiresAt: LocalDateTime? = null,
 
     @Column(nullable = false)
     var isProfileComplete: Boolean = false,
