@@ -45,7 +45,7 @@ class GeminiService(
         val age = Period.between(user.dateOfBirth, LocalDate.now()).years
 
         val weightUnit = if (user.isImperial) "lbs" else "kg"
-        val heightUnit = if (user.isImperial) "ft" else "m"
+        val heightUnit = if (user.isImperial) "ft" else "cm"
         val currencySymbol = user.currency.symbol
 
         val unitInstructions = if (user.isImperial) {

@@ -11,6 +11,12 @@ import kotlinx.coroutines.launch
 
 object SessionManager {
     var token: String? = null
+    var userId: Long? = null
+
+    fun clearSession() {
+        token = null
+        userId = null
+    }
 }
 
 class VerifyViewModel : ViewModel() {
@@ -29,7 +35,9 @@ class VerifyViewModel : ViewModel() {
 
                 if (response.isSuccessful && response.body() != null) {
                     val token = response.body()!!.token
+                    val authResponse = response.body()!!
                     SessionManager.token = "Bearer $token"
+                    SessionManager.userId = authResponse.userId
                     verificationSuccess = true
                 } else {
                     errorMessage = "Invalid code"

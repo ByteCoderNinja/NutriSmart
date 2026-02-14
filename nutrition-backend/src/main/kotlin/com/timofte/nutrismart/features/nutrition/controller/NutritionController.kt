@@ -15,14 +15,20 @@ import java.time.LocalDate
 class NutritionController(private val nutritionService: NutritionService) {
 
     @PostMapping("/generate/{userId}")
-    fun generatePlan(@PathVariable userId: Long): ResponseEntity<List<MealPlan>> {
+    fun generatePlanAsync(@PathVariable userId: Long): ResponseEntity<Map<String, String>> {
         return try {
-            val plans = nutritionService.generateAndSaveWeeklyPlan(userId)
-            ResponseEntity.ok(plans)
+            nutritionService.generateAndSaveWeeklyPlanAsync(userId)
+            ResponseEntity.accepted().body(mapOf("message" to "Generation started"))
         } catch (e: Exception) {
             e.printStackTrace()
             ResponseEntity.internalServerError().build()
         }
+    }
+
+    @GetMapping("/status/{userId}")
+    fun checkGenerationStatus(@PathVariable userId: Long): ResponseEntity<Map<String, String>> {
+        val status = nutritionService.getGenerationStatus(userId)
+        return ResponseEntity.ok(mapOf("status" to status))
     }
 
     @GetMapping("/plan")

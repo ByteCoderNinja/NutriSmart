@@ -13,9 +13,11 @@ import com.timofte.nutrismart.features.nutrition.repository.ShoppingListReposito
 import com.timofte.nutrismart.features.user.model.UserEntity
 import com.timofte.nutrismart.features.user.repository.UserRepository
 import jakarta.transaction.Transactional
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
+import java.util.concurrent.ConcurrentHashMap
 
 @Service
 class NutritionService(
@@ -25,54 +27,69 @@ class NutritionService(
     private val geminiService: GeminiService,
     private val mealService: MealService
 ) {
+    private val generationStatus = ConcurrentHashMap<Long, String>()
 
+    @Async
     @Transactional
-    fun generateAndSaveWeeklyPlan(userId: Long): List<MealPlan> {
-        val user = userRepository.findById(userId)
-            .orElseThrow { RuntimeException("User not found") }
+    fun generateAndSaveWeeklyPlanAsync(userId: Long) {
+        try {
+            generationStatus[userId] = "IN_PROGRESS"
 
-        val weeklyPlanDTO: WeeklyPlanDTO = geminiService.generateWeeklyPlan(user)
+            val user = userRepository.findById(userId)
+                .orElseThrow { RuntimeException("User not found") }
 
-        mealPlanRepository.deleteByUserId(userId)
-        shoppingListRepository.deleteByUserId(userId)
+            val weeklyPlanDTO: WeeklyPlanDTO = geminiService.generateWeeklyPlan(user)
 
-        val savedPlans = mutableListOf<MealPlan>()
-        val startDate = LocalDate.now()
+            mealPlanRepository.deleteByUserId(userId)
+            shoppingListRepository.deleteByUserId(userId)
 
-        weeklyPlanDTO.days.forEach { dayDTO ->
-            val planDate = startDate.plusDays((dayDTO.dayNumber - 1).toLong())
+            mealPlanRepository.flush()
+            shoppingListRepository.flush()
 
-            val breakfastMeal = createMealFromDTO(dayDTO.breakfast, MealType.BREAKFAST)
-            val lunchMeal = createMealFromDTO(dayDTO.lunch, MealType.LUNCH)
-            val dinnerMeal = createMealFromDTO(dayDTO.dinner, MealType.DINNER)
-            val snackMeal = createMealFromDTO(dayDTO.snack, MealType.SNACK)
+            val savedPlans = mutableListOf<MealPlan>()
+            val startDate = LocalDate.now()
 
-            val totalCal = breakfastMeal.calories + lunchMeal.calories + dinnerMeal.calories + snackMeal.calories
-            val totalProt = breakfastMeal.protein + lunchMeal.protein + dinnerMeal.protein + snackMeal.protein
-            val totalCarb = breakfastMeal.carbs + lunchMeal.carbs + dinnerMeal.carbs + snackMeal.carbs
-            val totalFt = breakfastMeal.fat + lunchMeal.fat + dinnerMeal.fat + snackMeal.fat
+            weeklyPlanDTO.days.forEach { dayDTO ->
+                val planDate = startDate.plusDays((dayDTO.dayNumber - 1).toLong())
 
-            val newPlan = MealPlan(
-                userId = userId,
-                date = planDate,
-                breakfast = breakfastMeal,
-                lunch = lunchMeal,
-                dinner = dinnerMeal,
-                snack = snackMeal,
-                totalCalories = totalCal,
-                totalProtein = totalProt,
-                totalCarbs = totalCarb,
-                totalFat = totalFt,
-                isCompleted = false
-            )
-            savedPlans.add(newPlan)
+                val breakfastMeal = createMealFromDTO(dayDTO.breakfast, MealType.BREAKFAST)
+                val lunchMeal = createMealFromDTO(dayDTO.lunch, MealType.LUNCH)
+                val dinnerMeal = createMealFromDTO(dayDTO.dinner, MealType.DINNER)
+                val snackMeal = createMealFromDTO(dayDTO.snack, MealType.SNACK)
+
+                val totalCal = breakfastMeal.calories + lunchMeal.calories + dinnerMeal.calories + snackMeal.calories
+                val totalProt = breakfastMeal.protein + lunchMeal.protein + dinnerMeal.protein + snackMeal.protein
+                val totalCarb = breakfastMeal.carbs + lunchMeal.carbs + dinnerMeal.carbs + snackMeal.carbs
+                val totalFt = breakfastMeal.fat + lunchMeal.fat + dinnerMeal.fat + snackMeal.fat
+
+                val newPlan = MealPlan(
+                    userId = userId,
+                    date = planDate,
+                    breakfast = breakfastMeal,
+                    lunch = lunchMeal,
+                    dinner = dinnerMeal,
+                    snack = snackMeal,
+                    totalCalories = totalCal,
+                    totalProtein = totalProt,
+                    totalCarbs = totalCarb,
+                    totalFat = totalFt,
+                    isCompleted = false
+                )
+                savedPlans.add(newPlan)
+            }
+
+            val finalSavedPlans = mealPlanRepository.saveAll(savedPlans)
+
+            generateAndSaveShoppingListFromPlans(user, finalSavedPlans)
+
+            generationStatus[userId] = "COMPLETED"
+            println("[ASYNC] Finished generation for user: $userId")
+
+        } catch (e: Exception) {
+            generationStatus[userId] = "FAILED"
+            println("[ASYNC] Failed generation for user: $userId - Error: ${e.message}")
+            e.printStackTrace()
         }
-
-        val finalSavedPlans = mealPlanRepository.saveAll(savedPlans)
-
-        generateAndSaveShoppingListFromPlans(user, finalSavedPlans)
-
-        return finalSavedPlans
     }
 
     private fun generateAndSaveShoppingListFromPlans(user: UserEntity, plans: List<MealPlan>) {
@@ -203,5 +220,9 @@ class NutritionService(
 
     fun getShoppingList(userId: Long): ShoppingList? {
         return shoppingListRepository.findByUserId(userId)
+    }
+
+    fun getGenerationStatus(userId: Long): String {
+        return generationStatus[userId] ?: "NOT_STARTED"
     }
 }

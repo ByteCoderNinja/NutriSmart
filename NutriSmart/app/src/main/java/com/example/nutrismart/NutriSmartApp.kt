@@ -1,5 +1,7 @@
 package com.example.nutrismart
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
@@ -12,9 +14,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.nutrismart.ui.screens.login.LoginScreen
+import com.example.nutrismart.ui.screens.onboarding.OnboardingScreen
 import com.example.nutrismart.ui.screens.register.RegisterScreen
 import com.example.nutrismart.ui.screens.verify.VerifyScreen
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NutriSmartApp() {
     val navController = rememberNavController()
@@ -45,8 +49,18 @@ fun NutriSmartApp() {
             VerifyScreen(
                 email = email,
                 onVerificationSuccess = {
+                    navController.navigate("onboarding") {
+                        popUpTo("login") { inclusive = false }
+                    }
+                }
+            )
+        }
+
+        composable("onboarding") {
+            OnboardingScreen(
+                onProfileComplete = {
                     navController.navigate("home") {
-                        popUpTo("register") { inclusive = true }
+                        popUpTo("onboarding") { inclusive = true }
                     }
                 }
             )

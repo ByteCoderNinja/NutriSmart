@@ -37,7 +37,7 @@ class UserService(
         val savedUser = calculateAndSaveUserNeeds(user)
 
         try {
-            nutritionService.generateAndSaveWeeklyPlan(savedUser.id)
+            nutritionService.generateAndSaveWeeklyPlanAsync(savedUser.id)
         } catch (e: Exception) {
             println("Error while generating AI plan: ${e.message}")
         }
@@ -122,7 +122,7 @@ class UserService(
 
         if (needsRegeneration) {
             try {
-                nutritionService.generateAndSaveWeeklyPlan(savedUser.id)
+                nutritionService.generateAndSaveWeeklyPlanAsync(savedUser.id)
             } catch (e: Exception) {
                 println("Error while generating AI plan: ${e.message}")
             }
