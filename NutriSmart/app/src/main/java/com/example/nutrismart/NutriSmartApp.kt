@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.nutrismart.ui.screens.login.LoginScreen
+import com.example.nutrismart.ui.screens.main.MainScreen
 import com.example.nutrismart.ui.screens.onboarding.OnboardingScreen
 import com.example.nutrismart.ui.screens.register.RegisterScreen
 import com.example.nutrismart.ui.screens.verify.VerifyScreen
@@ -27,7 +28,7 @@ fun NutriSmartApp() {
 
         composable("login") {
             LoginScreen(
-                onLoginSuccess = { navController.navigate("home") },
+                onLoginSuccess = { navController.navigate("main_screen") },
                 onNavigateToRegister = { navController.navigate("register") }
             )
         }
@@ -59,14 +60,16 @@ fun NutriSmartApp() {
         composable("onboarding") {
             OnboardingScreen(
                 onProfileComplete = {
-                    navController.navigate("home") {
+                    navController.navigate("main_screen") {
                         popUpTo("onboarding") { inclusive = true }
                     }
                 }
             )
         }
 
-        composable("home") { HomeScreenPlaceholder() }
+        composable("main_screen") {
+            MainScreen()
+        }
     }
 }
 

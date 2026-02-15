@@ -293,6 +293,7 @@ fun OnboardingScreen(
             }
         } else {
             Button(
+                enabled = !viewModel.isLoading,
                 onClick = { viewModel.submitProfile() },
                 modifier = Modifier
                     .fillMaxWidth()

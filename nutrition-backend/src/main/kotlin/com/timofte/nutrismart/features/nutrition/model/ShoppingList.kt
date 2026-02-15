@@ -12,6 +12,6 @@ data class ShoppingList(
     @Column(nullable = false, unique = true)
     val userId: Long,
 
-    @OneToMany(mappedBy = "shoppingList", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "shoppingList", cascade = [CascadeType.ALL], fetch = FetchType.EAGER, orphanRemoval = true)
     val items: MutableList<ShoppingListItem> = mutableListOf()
 )

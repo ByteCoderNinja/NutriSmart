@@ -32,6 +32,10 @@ class NutritionService(
     @Async
     @Transactional
     fun generateAndSaveWeeklyPlanAsync(userId: Long) {
+        if (generationStatus[userId] == "IN_PROGRESS") {
+            return
+        }
+
         try {
             generationStatus[userId] = "IN_PROGRESS"
 
@@ -41,7 +45,6 @@ class NutritionService(
             val weeklyPlanDTO: WeeklyPlanDTO = geminiService.generateWeeklyPlan(user)
 
             mealPlanRepository.deleteByUserId(userId)
-            shoppingListRepository.deleteByUserId(userId)
 
             mealPlanRepository.flush()
             shoppingListRepository.flush()
@@ -92,7 +95,8 @@ class NutritionService(
         }
     }
 
-    private fun generateAndSaveShoppingListFromPlans(user: UserEntity, plans: List<MealPlan>) {
+    @Transactional
+    fun generateAndSaveShoppingListFromPlans(user: UserEntity, plans: List<MealPlan>) {
         val allIngredients = plans.flatMap { plan ->
             listOfNotNull(
                 plan.breakfast?.quantityDetails,
@@ -106,10 +110,12 @@ class NutritionService(
 
         val shoppingListDTO = geminiService.generateShoppingList(allIngredients, user)
 
-        val newShoppingList = ShoppingList(
+        val shoppingList = shoppingListRepository.findByUserId(user.id) ?: ShoppingList(
             userId = user.id,
             items = mutableListOf()
         )
+
+        shoppingList.items.clear()
 
         val itemsEntities = shoppingListDTO.categories.flatMap { category ->
             category.items.map { itemName ->
@@ -117,14 +123,14 @@ class NutritionService(
                     category = category.name,
                     name = itemName,
                     isChecked = false,
-                    shoppingList = newShoppingList
+                    shoppingList = shoppingList
                 )
             }
         }.toMutableList()
 
-        newShoppingList.items.addAll(itemsEntities)
+        shoppingList.items.addAll(itemsEntities)
 
-        shoppingListRepository.save(newShoppingList)
+        shoppingListRepository.save(shoppingList)
     }
 
     fun updatePlan(mealPlan: MealPlan): MealPlan {
