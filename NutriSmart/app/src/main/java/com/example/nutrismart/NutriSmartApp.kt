@@ -76,6 +76,5 @@ fun NutriSmartApp() {
 @Composable
 fun HomeScreenPlaceholder() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text("Welcome to NutriSmart! (Main Screen)")
     }
 }

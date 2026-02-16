@@ -18,6 +18,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.nutrismart.ui.screens.home.HomeScreen
 
 sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
     object Home : BottomNavItem("home_tab", Icons.Default.Home, "Home")
@@ -69,7 +70,9 @@ fun MainScreen(
             startDestination = BottomNavItem.Home.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(BottomNavItem.Home.route) {}
+            composable(BottomNavItem.Home.route) {
+                HomeScreen()
+            }
             composable(BottomNavItem.Fasting.route) {}
             composable(BottomNavItem.Weather.route) {}
             composable(BottomNavItem.Profile.route) {}

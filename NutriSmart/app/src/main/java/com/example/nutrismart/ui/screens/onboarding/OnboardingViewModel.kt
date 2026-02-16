@@ -139,7 +139,7 @@ class OnboardingViewModel : ViewModel() {
             while (isActive) {
                 loadingMessage = messages[index % messages.size]
                 index++
-                delay(8000)
+                delay(13000)
             }
         }
     }
