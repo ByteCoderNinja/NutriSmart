@@ -1,12 +1,47 @@
 package com.example.nutrismart.data.remote
 
 import com.example.nutrismart.data.model.*
+import com.google.gson.annotations.SerializedName
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
+
+data class MealDto(
+    val id: Long,
+    val name: String,
+    val calories: Int,
+    val protein: Int,
+    val fat: Int,
+    val carbs: Int,
+    val quantityDetails: String?,
+    val consumed: Boolean = false
+)
+
+data class MealPlanDto(
+    val id: Long,
+    val breakfast: MealDto?,
+    val lunch: MealDto?,
+    val dinner: MealDto?,
+    val snack: MealDto?
+)
+
+data class ShoppingListDto(
+    val id: Long,
+    val userId: Long,
+    val items: List<ShoppingListItemDto>
+)
+
+data class ShoppingListItemDto(
+    val id: Long,
+    val category: String,
+    val name: String,
+    val isChecked: Boolean
+)
 
 interface NutriSmartApi {
 
@@ -36,4 +71,30 @@ interface NutriSmartApi {
         @Header("Authorization") token: String,
         @Path("userId") userId: Long
     ): Response<Map<String, String>>
+
+    @GET("nutrition/today/{userId}")
+    suspend fun getTodayPlan(
+        @Header("Authorization") token: String,
+        @Path("userId") userId: Long
+    ): Response<MealPlanDto>
+
+    @GET("nutrition/shopping-list/{userId}")
+    suspend fun getShoppingList(
+        @Header("Authorization") token: String,
+        @Path("userId") userId: Long
+    ): Response<ShoppingListDto>
+
+    @PATCH("nutrition/meal/{mealId}/consume")
+    suspend fun toggleMealConsumed(
+        @Header("Authorization") token: String,
+        @Path("mealId") mealId: Long,
+        @Query("consumed") consumed: Boolean
+    ): Response<MealDto>
+
+    @PATCH("api/nutrition/shopping-item/{itemId}/check")
+    suspend fun toggleShoppingItem(
+        @Header("Authorization") token: String,
+        @Path("itemId") itemId: Long,
+        @Query("isChecked") isChecked: Boolean
+    ): retrofit2.Response<Unit>
 }

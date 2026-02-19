@@ -87,4 +87,13 @@ class NutritionController(private val nutritionService: NutritionService) {
         val updatedMeal = nutritionService.markMealAsConsumed(mealId, consumed)
         return ResponseEntity.ok(updatedMeal)
     }
+
+    @PatchMapping("/shopping-item/{itemId}/check")
+    fun toggleShoppingItem(
+        @PathVariable itemId: Long,
+        @RequestParam isChecked: Boolean
+    ): ResponseEntity<Void> {
+        nutritionService.toggleShoppingItem(itemId, isChecked)
+        return ResponseEntity.ok().build()
+    }
 }

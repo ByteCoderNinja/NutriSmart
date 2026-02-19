@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.nutrismart.data.UserSession
 import com.example.nutrismart.data.model.AuthRequest
 import com.example.nutrismart.data.remote.RetrofitClient
 import kotlinx.coroutines.launch
@@ -32,11 +33,17 @@ class LoginViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val request = AuthRequest(email, password)
-
                 val response = RetrofitClient.api.login(request)
 
                 if (response.isSuccessful) {
-                    println("Login success! Token: ${response.body()?.token}")
+                    val authData = response.body()
+                    println("Login success! Token: ${authData?.token}")
+
+                    if (authData != null) {
+                        UserSession.currentUserId = authData.userId
+                        UserSession.token = authData.token
+                    }
+
                     loginSuccess = true
                 } else {
                     errorMessage = "Login failed: Check data."

@@ -9,6 +9,7 @@ import com.timofte.nutrismart.features.nutrition.model.ShoppingList
 import com.timofte.nutrismart.features.nutrition.model.ShoppingListItem
 import com.timofte.nutrismart.features.nutrition.model.WeeklyPlanDTO
 import com.timofte.nutrismart.features.nutrition.repository.MealPlanRepository
+import com.timofte.nutrismart.features.nutrition.repository.ShoppingListItemRepository
 import com.timofte.nutrismart.features.nutrition.repository.ShoppingListRepository
 import com.timofte.nutrismart.features.user.model.UserEntity
 import com.timofte.nutrismart.features.user.repository.UserRepository
@@ -23,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap
 class NutritionService(
     private val mealPlanRepository: MealPlanRepository,
     private val shoppingListRepository: ShoppingListRepository,
+    private val shoppingListItemRepository: ShoppingListItemRepository,
     private val userRepository: UserRepository,
     private val geminiService: GeminiService,
     private val mealService: MealService
@@ -135,6 +137,15 @@ class NutritionService(
 
     fun updatePlan(mealPlan: MealPlan): MealPlan {
         return mealPlanRepository.save(mealPlan)
+    }
+
+    @Transactional
+    fun toggleShoppingItem(itemId: Long, isChecked: Boolean) {
+        val item = shoppingListItemRepository.findById(itemId)
+            .orElseThrow { RuntimeException("Shopping item not found with id: $itemId") }
+
+        item.isChecked = isChecked
+        shoppingListItemRepository.save(item)
     }
 
 
