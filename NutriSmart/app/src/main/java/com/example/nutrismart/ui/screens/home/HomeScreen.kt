@@ -1,5 +1,8 @@
 package com.example.nutrismart.ui.screens.home
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,12 +19,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsWalk
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.LocalDrink
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -31,10 +37,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -51,12 +59,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.nutrismart.data.remote.MealDto
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
+import androidx.health.connect.client.HealthConnectClient
+import androidx.health.connect.client.PermissionController
+import androidx.health.connect.client.permission.HealthPermission
+import androidx.health.connect.client.records.StepsRecord
+import com.example.nutrismart.data.health.HealthConnectManager
+import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
     val uiState by viewModel.uiState.collectAsState()
-
+    var selectedMealForDetails by remember { mutableStateOf<Pair<String, MealDto>?>(null) }
+    var mealTypeForSwap by remember { mutableStateOf<String?>(null) }
     var showShoppingListBottomSheet by remember { mutableStateOf(false) }
 
     if (uiState.isLoading) {
@@ -64,6 +84,38 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
             CircularProgressIndicator()
         }
         return
+    }
+
+    val context = LocalContext.current
+    val healthConnectManager = remember { HealthConnectManager(context) }
+
+    val permissions = setOf(HealthPermission.getReadPermission(StepsRecord::class))
+
+    val scope = rememberCoroutineScope()
+
+    val permissionsLauncher = rememberLauncherForActivityResult(
+        contract = PermissionController.createRequestPermissionResultContract()
+    ) { grantedPermissions ->
+        if (grantedPermissions.containsAll(permissions)) {
+            scope.launch {
+                val steps = healthConnectManager.readTodaySteps()
+                viewModel.updateSteps(steps)
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        if (healthConnectManager.isAvailable) {
+            val healthConnectClient = HealthConnectClient.getOrCreate(context)
+            val granted = healthConnectClient.permissionController.getGrantedPermissions()
+
+            if (granted.containsAll(permissions)) {
+                val steps = healthConnectManager.readTodaySteps()
+                viewModel.updateSteps(steps)
+            } else {
+                permissionsLauncher.launch(permissions)
+            }
+        }
     }
 
     LazyColumn(
@@ -95,17 +147,18 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
-            uiState.breakfast?.let { meal ->
-                MealCardButton("Breakfast", meal, {}, { isConsumed -> viewModel.toggleMeal(meal.id, "Breakfast", isConsumed) })
-            }
-            uiState.lunch?.let { meal ->
-                MealCardButton("Lunch", meal, {}, { isConsumed -> viewModel.toggleMeal(meal.id, "Lunch", isConsumed) })
-            }
-            uiState.dinner?.let { meal ->
-                MealCardButton("Dinner", meal, {}, { isConsumed -> viewModel.toggleMeal(meal.id, "Dinner", isConsumed) })
-            }
-            uiState.snack?.let { meal ->
-                MealCardButton("Snack", meal, {}, { isConsumed -> viewModel.toggleMeal(meal.id, "Snack", isConsumed) })
+            val meals = listOf("Breakfast" to uiState.breakfast, "Lunch" to uiState.lunch, "Dinner" to uiState.dinner, "Snack" to uiState.snack)
+
+            meals.forEach { (type, meal) ->
+                meal?.let {
+                    MealCardButton(
+                        mealType = type,
+                        meal = it,
+                        onCardClick = { selectedMealForDetails = type to it },
+                        onToggleConsume = { consumed -> viewModel.toggleMeal(it.id, type, consumed) },
+                        onSwapClick = { mealTypeForSwap = type; viewModel.loadAlternatives(type) }
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -137,55 +190,46 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
     }
 
     if (showShoppingListBottomSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { showShoppingListBottomSheet = false }
-        ) {
-            Column(modifier = Modifier.padding(16.dp).padding(bottom = 32.dp)) {
-                Text(
-                    "Shopping List",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-
-                if (uiState.shoppingList?.items.isNullOrEmpty()) {
-                    Text("Your shopping list is empty.")
-                } else {
-                    LazyColumn {
-                        items(uiState.shoppingList!!.items.size) { index ->
-                            val item = uiState.shoppingList!!.items[index]
-                            Row(
-                                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Checkbox(
-                                    checked = item.isChecked,
-                                    onCheckedChange = { isChecked ->
-                                        viewModel.toggleShoppingListItem(item.id, isChecked)
-                                    }
-                                )
-                                Column {
-                                    Text(text = item.name, fontSize = 16.sp)
-                                    Text(text = item.category, fontSize = 12.sp, color = Color.Gray)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        ModalBottomSheet(onDismissRequest = { showShoppingListBottomSheet = false }) {
+            ShoppingListContent(uiState, viewModel)
         }
+    }
+
+    mealTypeForSwap?.let { type ->
+        MealSwapBottomSheet(
+            mealType = type,
+            alternatives = uiState.alternatives,
+            isLoading = uiState.isSwapping,
+            onDismiss = { mealTypeForSwap = null },
+            onSelected = { newMealId -> viewModel.swapMeal(type, newMealId); mealTypeForSwap = null }
+        )
+    }
+
+    selectedMealForDetails?.let { (type, meal) ->
+        MealDetailBottomSheet(mealType = type, meal = meal, onDismiss = { selectedMealForDetails = null })
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DateHeaderSection() {
+    val formatter = java.time.format.DateTimeFormatter.ofPattern("EEEE, d MMM")
+    val todayDate = java.time.LocalDate.now().format(formatter)
+
     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-        Text(
-            text = "Today",
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
-        )
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = "Today",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Text(
+                text = todayDate,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
     }
 }
 
@@ -319,51 +363,202 @@ fun MealCardButton(
     mealType: String,
     meal: MealDto,
     onCardClick: () -> Unit,
-    onToggleConsume: (Boolean) -> Unit
+    onToggleConsume: (Boolean) -> Unit,
+    onSwapClick: () -> Unit
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 6.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .clickable { onCardClick() },
+        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp).clip(RoundedCornerShape(16.dp)).clickable { onCardClick() },
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .padding(start = 16.dp, top = 16.dp, bottom = 16.dp, end = 8.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Row(modifier = Modifier.padding(16.dp).fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(mealType, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = MaterialTheme.colorScheme.primary)
-                Text(meal.name, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
-            }
-
-            if (meal.consumed) {
-                androidx.compose.material3.IconButton(
-                    onClick = { onToggleConsume(false) },
-                    modifier = Modifier.padding(end = 4.dp)
-                ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(mealType, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
+                    Spacer(modifier = Modifier.width(8.dp))
                     Icon(
-                        imageVector = Icons.Default.Check,
-                        contentDescription = "Unlog $mealType",
-                        tint = Color(0xFF4CAF50)
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = "Swap meal",
+                        modifier = Modifier.size(16.dp).clickable { onSwapClick() },
+                        tint = Color.Gray
                     )
                 }
+                Text(meal.name, fontSize = 18.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
+                Row(modifier = Modifier.padding(top = 4.dp)) {
+                    Text("${meal.calories} kcal", fontSize = 12.sp, color = Color.Gray)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("•", fontSize = 12.sp, color = Color.Gray)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("P: ${meal.protein}g C: ${meal.carbs}g F: ${meal.fat}g", fontSize = 12.sp, color = Color.Gray)
+                }
+            }
+            if (meal.consumed) {
+                IconButton(onClick = { onToggleConsume(false) }) { Icon(Icons.Default.Check, null, tint = Color(0xFF4CAF50)) }
             } else {
-                FilledTonalIconButton(
-                    onClick = { onToggleConsume(true) },
-                    modifier = Modifier.size(40.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Log $mealType"
-                    )
+                FilledTonalIconButton(onClick = { onToggleConsume(true) }, modifier = Modifier.size(40.dp)) { Icon(Icons.Default.Add, null) }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MealSwapBottomSheet(mealType: String, alternatives: List<MealDto>, isLoading: Boolean, onDismiss: () -> Unit, onSelected: (Long) -> Unit) {
+    ModalBottomSheet(onDismissRequest = onDismiss) {
+        Column(modifier = Modifier.fillMaxWidth().padding(16.dp).padding(bottom = 32.dp)) {
+            Text(
+                "Choose another $mealType",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(
+                modifier = Modifier
+                    .height(16.dp)
+            )
+            if (isLoading) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+            } else {
+                LazyColumn {
+                    items(alternatives) { meal ->
+                        OutlinedCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                                .clickable { onSelected(meal.id) }
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                    .weight(1f)
+                                ) {
+                                    Text(
+                                        meal.name,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text("${meal.calories} kcal | P:${meal.protein} C:${meal.carbs} F:${meal.fat}", fontSize = 12.sp)
+                                }
+                                Icon(Icons.Default.ChevronRight, null)
+                            }
+                        }
+                    }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun ShoppingListContent(state: HomeUiState, viewModel: HomeViewModel) {
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .padding(bottom = 32.dp)
+    ) {
+        Text(
+            "Shopping List",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+        if (state.shoppingList?.items.isNullOrEmpty()) {
+            Text("Your shopping list is empty.")
+        } else {
+            LazyColumn {
+                items(state.shoppingList!!.items) { item ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Checkbox(checked = item.isChecked,
+                            onCheckedChange = { viewModel.toggleShoppingListItem(item.id, it) }
+                        )
+                        Column {
+                            Text(item.name, fontSize = 16.sp)
+                            Text(item.category, fontSize = 12.sp, color = Color.Gray)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MealDetailBottomSheet(
+    mealType: String,
+    meal: MealDto,
+    onDismiss: () -> Unit
+) {
+    ModalBottomSheet(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 40.dp)
+        ) {
+            Text(mealType, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+            Text(meal.name, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "${meal.calories}",
+                    fontSize = 48.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("kcal", fontSize = 20.sp, color = Color.Gray)
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                MacroDetailItem("Carbs", "${meal.carbs}g", Color(0xFFFFA726))
+                MacroDetailItem("Protein", "${meal.protein}g", Color(0xFFEF5350))
+                MacroDetailItem("Fat", "${meal.fat}g", Color(0xFF66BB6A))
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+            HorizontalDivider(
+                modifier = Modifier.padding(vertical = 8.dp),
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text("Ingredients / Quantity", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Surface(
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = meal.quantityDetails ?: "No quantity details available.",
+                    modifier = Modifier.padding(16.dp),
+                    style = MaterialTheme.typography.bodyLarge,
+                    lineHeight = 24.sp
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun MacroDetailItem(label: String, value: String, color: Color) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(modifier = Modifier.size(8.dp).clip(RoundedCornerShape(4.dp)).background(color))
+        Text(value, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+        Text(label, fontSize = 12.sp, color = Color.Gray)
     }
 }

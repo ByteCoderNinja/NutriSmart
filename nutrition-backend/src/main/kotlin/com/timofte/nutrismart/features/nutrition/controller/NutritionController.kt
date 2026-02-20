@@ -69,13 +69,19 @@ class NutritionController(private val nutritionService: NutritionService) {
         return if (list != null) ResponseEntity.ok(list) else ResponseEntity.notFound().build()
     }
 
-    @PostMapping("/swap")
+    @PostMapping("/swap/{userId}")
     fun swapMeal(
-        @RequestParam planId: Long,
-        @RequestParam type: MealType,
+        @PathVariable userId: Long,
+        @RequestParam mealType: String,
         @RequestParam newMealId: Long
     ): ResponseEntity<MealPlan> {
-        val updatedPlan = nutritionService.swapMeal(planId, type, newMealId)
+        val today = LocalDate.now()
+        val plan = nutritionService.getMealPlan(userId, today)
+            ?: return ResponseEntity.notFound().build()
+        
+        val typeEnum = MealType.valueOf(mealType.uppercase())
+
+        val updatedPlan = nutritionService.swapMeal(plan.id, typeEnum, newMealId)
         return ResponseEntity.ok(updatedPlan)
     }
 
@@ -95,5 +101,15 @@ class NutritionController(private val nutritionService: NutritionService) {
     ): ResponseEntity<Void> {
         nutritionService.toggleShoppingItem(itemId, isChecked)
         return ResponseEntity.ok().build()
+    }
+
+    @GetMapping("/alternatives/{userId}")
+    fun getAlternatives(
+        @PathVariable userId: Long,
+        @RequestParam type: MealType
+    ): ResponseEntity<List<Meal>> {
+        val meals = nutritionService.getUniqueMealsFromHistory(userId)
+            .filter { it.type == type }
+        return ResponseEntity.ok(meals)
     }
 }

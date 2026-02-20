@@ -14,17 +14,17 @@ import kotlinx.coroutines.launch
 
 data class HomeUiState(
     val isLoading: Boolean = true,
-
+    val isSwapping: Boolean = false,
     val steps: Int = 4520,
     val stepsGoal: Int = 10000,
-    val waterConsumedMl: Int = 500,
+    val waterConsumedMl: Int = 0,
     val glassSizeMl: Int = 250,
-
     val breakfast: MealDto? = null,
     val lunch: MealDto? = null,
     val dinner: MealDto? = null,
     val snack: MealDto? = null,
-    val shoppingList: ShoppingListDto? = null
+    val shoppingList: ShoppingListDto? = null,
+    val alternatives: List<MealDto> = emptyList()
 ) {
     val totalCaloriesGoal: Int get() = listOfNotNull(breakfast, lunch, dinner, snack).sumOf { it.calories }.coerceAtLeast(1)
     val carbsGoal: Int get() = listOfNotNull(breakfast, lunch, dinner, snack).sumOf { it.carbs }.coerceAtLeast(1)
@@ -35,64 +35,86 @@ data class HomeUiState(
     val carbsConsumed: Int get() = listOfNotNull(breakfast, lunch, dinner, snack).filter { it.consumed }.sumOf { it.carbs }
     val proteinConsumed: Int get() = listOfNotNull(breakfast, lunch, dinner, snack).filter { it.consumed }.sumOf { it.protein }
     val fatConsumed: Int get() = listOfNotNull(breakfast, lunch, dinner, snack).filter { it.consumed }.sumOf { it.fat }
-
     val caloriesRemaining: Int get() = totalCaloriesGoal - caloriesConsumed
 }
 
 class HomeViewModel : ViewModel() {
-
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
-
     private val currentUserId: Long get() = UserSession.currentUserId
 
     init {
-        if (currentUserId != -1L) {
-            fetchTodayData()
-        } else {
-            println("ERROR")
-            _uiState.update { it.copy(isLoading = false) }
-        }
+        if (currentUserId != -1L) fetchTodayData()
+        else _uiState.update { it.copy(isLoading = false) }
     }
 
-    private fun fetchTodayData() {
+    fun fetchTodayData() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
                 val authHeader = "Bearer ${UserSession.token}"
-
                 val planResponse = RetrofitClient.api.getTodayPlan(authHeader, currentUserId)
                 val shoppingListResponse = RetrofitClient.api.getShoppingList(authHeader, currentUserId)
 
                 if (planResponse.isSuccessful) {
                     val plan = planResponse.body()
-                    _uiState.update { state ->
-                        state.copy(
-                            breakfast = plan?.breakfast,
-                            lunch = plan?.lunch,
-                            dinner = plan?.dinner,
-                            snack = plan?.snack
-                        )
-                    }
-                } else {
-                    println("API Meal Error: Code ${planResponse.code()}")
+                    _uiState.update { it.copy(breakfast = plan?.breakfast, lunch = plan?.lunch, dinner = plan?.dinner, snack = plan?.snack) }
                 }
-
                 if (shoppingListResponse.isSuccessful) {
                     _uiState.update { it.copy(shoppingList = shoppingListResponse.body()) }
                 }
+            } catch (e: Exception) { e.printStackTrace() }
+            finally { _uiState.update { it.copy(isLoading = false) } }
+        }
+    }
 
+    fun loadAlternatives(mealType: String) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isSwapping = true, alternatives = emptyList()) }
+
+            try {
+                val formattedType = mealType.uppercase().trim()
+                val response = RetrofitClient.api.getMealAlternatives(
+                    "Bearer ${UserSession.token}",
+                    currentUserId,
+                    formattedType
+                )
+
+                if (response.isSuccessful) {
+                    val list = response.body() ?: emptyList()
+                    _uiState.update { it.copy(alternatives = list) }
+                } else {
+                    println("API error: ${response.errorBody()?.string()}")
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {
-                _uiState.update { it.copy(isLoading = false) }
+                _uiState.update { it.copy(isSwapping = false) }
             }
         }
     }
 
-    fun addWater() {
-        _uiState.update { it.copy(waterConsumedMl = it.waterConsumedMl + it.glassSizeMl) }
+    fun swapMeal(mealType: String, newMealId: Long) {
+        viewModelScope.launch {
+            try {
+                val formattedType = mealType.uppercase().trim()
+                val response = RetrofitClient.api.swapMeal(
+                    "Bearer ${UserSession.token}",
+                    currentUserId,
+                    formattedType,
+                    newMealId
+                )
+
+                if (response.isSuccessful) {
+                    fetchTodayData()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
+
+    fun addWater() { _uiState.update { it.copy(waterConsumedMl = it.waterConsumedMl + it.glassSizeMl) } }
 
     fun toggleMeal(mealId: Long, mealType: String, isConsumed: Boolean) {
         _uiState.update { state ->
@@ -104,43 +126,26 @@ class HomeViewModel : ViewModel() {
                 else -> state
             }
         }
-
         viewModelScope.launch {
             try {
-                val authHeader = "Bearer ${UserSession.token}"
-                val response = RetrofitClient.api.toggleMealConsumed(authHeader, mealId, isConsumed)
-
-                if (!response.isSuccessful) {
-                    println("Server error when meal is checked/unchecked: ${response.code()}")
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+                RetrofitClient.api.toggleMealConsumed("Bearer ${UserSession.token}", mealId, isConsumed)
+            } catch (e: Exception) { e.printStackTrace() }
         }
     }
 
     fun toggleShoppingListItem(itemId: Long, isChecked: Boolean) {
         _uiState.update { currentState ->
-            val updatedShoppingListItems = currentState.shoppingList?.items?.map { item ->
-                if (item.id == itemId) item.copy(isChecked = isChecked) else item
-            }
-            currentState.copy(
-                shoppingList = currentState.shoppingList?.copy(
-                    items = updatedShoppingListItems ?: emptyList()
-                )
-            )
+            val updatedItems = currentState.shoppingList?.items?.map { if (it.id == itemId) it.copy(isChecked = isChecked) else it }
+            currentState.copy(shoppingList = currentState.shoppingList?.copy(items = updatedItems ?: emptyList()))
         }
-
         viewModelScope.launch {
             try {
-                val authHeader = "Bearer ${UserSession.token}"
-                val response = RetrofitClient.api.toggleShoppingItem(authHeader, itemId, isChecked)
-                if (!response.isSuccessful) {
-                    println("Server error updating shopping item: ${response.code()}")
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+                RetrofitClient.api.toggleShoppingItem("Bearer ${UserSession.token}", itemId, isChecked)
+            } catch (e: Exception) { e.printStackTrace() }
         }
+    }
+
+    fun updateSteps(realSteps: Int) {
+        _uiState.update { it.copy(steps = realSteps) }
     }
 }

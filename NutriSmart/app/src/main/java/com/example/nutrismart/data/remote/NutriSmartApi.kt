@@ -97,4 +97,26 @@ interface NutriSmartApi {
         @Path("itemId") itemId: Long,
         @Query("isChecked") isChecked: Boolean
     ): retrofit2.Response<Unit>
+
+    @GET("nutrition/alternatives/{userId}")
+    suspend fun getMealAlternatives(
+        @Header("Authorization") token: String,
+        @Path("userId") userId: Long,
+        @Query("type") mealType: String
+    ): Response<List<MealDto>>
+
+    @POST("nutrition/swap/{userId}")
+    suspend fun swapMeal(
+        @Header("Authorization") token: String,
+        @Path("userId") userId: Long,
+        @Query("mealType") mealType: String,
+        @Query("newMealId") newMealId: Long
+    ): Response<MealPlanDto>
+
+    @GET("api/nutrition/plan")
+    suspend fun getDailyPlan(
+        @Header("Authorization") token: String,
+        @Query("userId") userId: Long,
+        @Query("date") date: String
+    ): Response<MealPlanDto>
 }
