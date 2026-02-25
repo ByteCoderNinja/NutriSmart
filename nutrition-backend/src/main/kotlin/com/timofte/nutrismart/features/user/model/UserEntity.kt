@@ -66,3 +66,10 @@ data class UserEntity(
     @Enumerated(EnumType.STRING)
     var currency: Currency = Currency.RON
 )
+
+data class UserUpdateDto(
+    val username: String? = null,
+    val email: String? = null,
+    val currentPassword: String? = null,
+    val newPassword: String? = null
+)

@@ -43,15 +43,27 @@ fun NutriSmartApp() {
         }
 
         composable(
-            route = "verify/{email}",
-            arguments = listOf(navArgument("email") { type = NavType.StringType })
+            route = "verify/{email}?isEdit={isEdit}",
+            arguments = listOf(
+                navArgument("email") { type = NavType.StringType },
+                navArgument("isEdit") {
+                    type = NavType.BoolType
+                    defaultValue = false
+                }
+            )
         ) { backStackEntry ->
             val email = backStackEntry.arguments?.getString("email") ?: ""
+            val isEdit = backStackEntry.arguments?.getBoolean("isEdit") ?: false
+
             VerifyScreen(
                 email = email,
                 onVerificationSuccess = {
-                    navController.navigate("onboarding") {
-                        popUpTo("login") { inclusive = false }
+                    if (isEdit) {
+                        navController.popBackStack()
+                    } else {
+                        navController.navigate("onboarding") {
+                            popUpTo("login") { inclusive = false }
+                        }
                     }
                 }
             )
@@ -68,7 +80,19 @@ fun NutriSmartApp() {
         }
 
         composable("main_screen") {
-            MainScreen()
+            MainScreen(
+                onNavigateToLogin = {
+                    navController.navigate("login") {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+                onNavigateToEditPlan = {
+                    navController.navigate("onboarding")
+                },
+                onNavigateToVerifyEmail = { email ->
+                    navController.navigate("verify/$email?isEdit=true")
+                }
+            )
         }
     }
 }

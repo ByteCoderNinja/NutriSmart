@@ -15,10 +15,11 @@ import kotlinx.coroutines.launch
 data class HomeUiState(
     val isLoading: Boolean = true,
     val isSwapping: Boolean = false,
-    val steps: Int = 4520,
+    val steps: Int = 0,
     val stepsGoal: Int = 10000,
     val waterConsumedMl: Int = 0,
     val glassSizeMl: Int = 250,
+    val waterGoalMl: Int = 2000,
     val breakfast: MealDto? = null,
     val lunch: MealDto? = null,
     val dinner: MealDto? = null,
@@ -147,5 +148,12 @@ class HomeViewModel : ViewModel() {
 
     fun updateSteps(realSteps: Int) {
         _uiState.update { it.copy(steps = realSteps) }
+    }
+
+    fun updateWaterGoalBasedOnWeather(temperature: Int) {
+        _uiState.update { state ->
+            val newGoal = if (temperature >= 30) 3000 else 2000
+            state.copy(waterGoalMl = newGoal)
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.timofte.nutrismart.features.user.controller
 
 import com.timofte.nutrismart.features.user.dto.OnboardingRequest
 import com.timofte.nutrismart.features.user.model.UserEntity
+import com.timofte.nutrismart.features.user.model.UserUpdateDto
 import com.timofte.nutrismart.features.user.service.UserService
 import org.springframework.security.core.Authentication
 import org.springframework.http.HttpStatus
@@ -53,9 +54,23 @@ class UserController(private val userService: UserService) {
         @RequestBody request: OnboardingRequest,
         authentication: Authentication
     ): ResponseEntity<UserEntity> {
-        val email = authentication?.name
+        val email = authentication.name
             ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
         val updatedUser = userService.completeUserProfile(email, request)
         return ResponseEntity.ok(updatedUser)
+    }
+
+    @PatchMapping("/{userId}")
+    fun patchUser(
+        @PathVariable userId: Long,
+        @RequestBody updateDto: UserUpdateDto
+    ): ResponseEntity<UserEntity> {
+        return try {
+            val updatedUser = userService.updateUser(userId, updateDto)
+            ResponseEntity.ok(updatedUser)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ResponseEntity.badRequest().build()
+        }
     }
 }

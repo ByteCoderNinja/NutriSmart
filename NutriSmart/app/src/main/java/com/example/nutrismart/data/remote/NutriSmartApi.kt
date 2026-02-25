@@ -4,10 +4,12 @@ import com.example.nutrismart.data.model.*
 import com.google.gson.annotations.SerializedName
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -119,4 +121,23 @@ interface NutriSmartApi {
         @Query("userId") userId: Long,
         @Query("date") date: String
     ): Response<MealPlanDto>
+
+    @GET("/api/users/{userId}")
+    suspend fun getUser(
+        @Header("Authorization") token: String,
+        @Path("userId") userId: Long
+    ): Response<UserDto>
+
+    @DELETE("/api/users/{userId}")
+    suspend fun deleteUser(
+        @Header("Authorization") token: String,
+        @Path("userId") userId: Long
+    ): Response<Void>
+
+    @PATCH("/api/users/{userId}")
+    suspend fun patchUser(
+        @Header("Authorization") token: String,
+        @Path("userId") userId: Long,
+        @Body request: UpdateUserRequest
+    ): Response<UserDto>
 }

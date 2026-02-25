@@ -1,7 +1,6 @@
 package com.example.nutrismart.ui.screens.home
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -45,32 +44,30 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.nutrismart.data.remote.MealDto
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.platform.LocalContext
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.StepsRecord
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.nutrismart.data.health.HealthConnectManager
+import com.example.nutrismart.data.remote.MealDto
 import kotlinx.coroutines.launch
 
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
@@ -210,7 +207,6 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DateHeaderSection() {
     val formatter = java.time.format.DateTimeFormatter.ofPattern("EEEE, d MMM")
@@ -267,20 +263,20 @@ fun MainStatsCard(
             HorizontalDivider()
             Spacer(modifier = Modifier.height(16.dp))
 
-            WaterTrackerSection(state.waterConsumedMl, state.glassSizeMl, onAddWaterClick)
+            WaterTrackerSection(state.waterConsumedMl, state.waterGoalMl, state.glassSizeMl, onAddWaterClick)
         }
     }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun WaterTrackerSection(consumedMl: Int, glassSize: Int, onAddClick: () -> Unit) {
+fun WaterTrackerSection(consumedMl: Int, goalMl: Int, glassSize: Int, onAddClick: () -> Unit) {
     val consumedGlassesCount = consumedMl / glassSize
     val waterColor = Color(0xFF2196F3)
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text("Water Intake", fontSize = 16.sp, fontWeight = FontWeight.Medium)
-        Text("$consumedMl ml", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("$consumedMl ml / $goalMl ml", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
         Spacer(modifier = Modifier.height(12.dp))
 

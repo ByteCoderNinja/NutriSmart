@@ -4,6 +4,8 @@ import com.timofte.nutrismart.features.nutrition.service.NutritionService
 import com.timofte.nutrismart.features.user.dto.OnboardingRequest
 import com.timofte.nutrismart.features.user.model.*
 import com.timofte.nutrismart.features.user.repository.UserRepository
+import com.timofte.nutrismart.infrastructure.mail.EmailService
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.Period
@@ -11,7 +13,9 @@ import java.time.Period
 @Service
 class UserService(
     private val userRepository: UserRepository,
-    private val nutritionService: NutritionService
+    private val nutritionService: NutritionService,
+    private val emailService: EmailService,
+    private val passwordEncoder: PasswordEncoder
 ) {
 
     fun completeUserProfile(email: String, request: OnboardingRequest): UserEntity {
@@ -137,5 +141,43 @@ class UserService(
         } else {
             throw RuntimeException("User not found")
         }
+    }
+
+    fun updateUser(userId: Long, updateDto: UserUpdateDto): UserEntity {
+        val existingUser = userRepository.findById(userId)
+            .orElseThrow { RuntimeException("User not found") }
+
+        var userToSave = existingUser.copy(
+            username = updateDto.username ?: existingUser.username
+        )
+
+        if (updateDto.email != null && updateDto.email != existingUser.email) {
+            val newCode = String.format("%06d", java.util.Random().nextInt(999999))
+
+            userToSave = userToSave.copy(
+                email = updateDto.email,
+                isVerified = false,
+                verificationCode = newCode,
+                verificationCodeExpiresAt = java.time.LocalDateTime.now().plusMinutes(15)
+            )
+
+            try {
+                emailService.sendVerificationCode(updateDto.email, newCode)
+            } catch (e: Exception) {
+                println("Failed to send verification email: ${e.message}")
+            }
+        }
+
+        if (updateDto.currentPassword != null && updateDto.newPassword != null) {
+            if (!passwordEncoder.matches(updateDto.currentPassword, existingUser.passwordHash)) {
+                throw IllegalArgumentException("Current password is incorrect")
+            }
+
+            userToSave = userToSave.copy(
+                passwordHash = passwordEncoder.encode(updateDto.newPassword)
+            )
+        }
+
+        return userRepository.save(userToSave)
     }
 }

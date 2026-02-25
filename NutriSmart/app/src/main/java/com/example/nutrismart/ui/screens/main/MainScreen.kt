@@ -13,12 +13,23 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.nutrismart.ui.screens.fasting.FastingScreen
 import com.example.nutrismart.ui.screens.home.HomeScreen
+import com.example.nutrismart.ui.screens.home.HomeViewModel
+import com.example.nutrismart.ui.screens.profile.EditAccountSelectionScreen
+import com.example.nutrismart.ui.screens.profile.EditEmailScreen
+import com.example.nutrismart.ui.screens.profile.EditPasswordScreen
+import com.example.nutrismart.ui.screens.profile.EditUsernameScreen
+import com.example.nutrismart.ui.screens.profile.ProfileScreen
+import com.example.nutrismart.ui.screens.profile.ProfileViewModel
+import com.example.nutrismart.ui.screens.profile.SettingsScreen
+import com.example.nutrismart.ui.screens.weather.WeatherScreen
 
 sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
     object Home : BottomNavItem("home_tab", Icons.Default.Home, "Home")
@@ -29,7 +40,10 @@ sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: 
 
 @Composable
 fun MainScreen(
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    onNavigateToLogin: () -> Unit,
+    onNavigateToEditPlan: () -> Unit,
+    onNavigateToVerifyEmail: (String) -> Unit
 ) {
     val items = listOf(
         BottomNavItem.Home,
@@ -37,6 +51,9 @@ fun MainScreen(
         BottomNavItem.Weather,
         BottomNavItem.Profile
     )
+
+    val sharedHomeViewModel: HomeViewModel = viewModel()
+    val sharedProfileViewModel: ProfileViewModel = viewModel()
 
     Scaffold(
         bottomBar = {
@@ -71,11 +88,62 @@ fun MainScreen(
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(BottomNavItem.Home.route) {
-                HomeScreen()
+                HomeScreen(viewModel = sharedHomeViewModel)
             }
-            composable(BottomNavItem.Fasting.route) {}
-            composable(BottomNavItem.Weather.route) {}
-            composable(BottomNavItem.Profile.route) {}
+            composable(BottomNavItem.Fasting.route) {
+                FastingScreen()
+            }
+            composable(BottomNavItem.Weather.route) {
+                WeatherScreen(homeViewModel = sharedHomeViewModel)
+            }
+            composable(BottomNavItem.Profile.route) {
+                ProfileScreen(
+                    viewModel = sharedProfileViewModel,
+                    onNavigateToSettings = { navController.navigate("settings_screen") }
+                )
+            }
+
+            composable("settings_screen") {
+                SettingsScreen(
+                    onBackClick = { navController.popBackStack() },
+                    onNavigateToEditAccount = { navController.navigate("edit_account_screen") },
+                    onNavigateToEditPlan = onNavigateToEditPlan,
+                    onNavigateToLogin = onNavigateToLogin
+                )
+            }
+
+            composable("edit_account_screen") {
+                EditAccountSelectionScreen(
+                    onBackClick = { navController.popBackStack() },
+                    onEditUsernameClick = { navController.navigate("edit_username_screen") },
+                    onEditEmailClick = { navController.navigate("edit_email_screen") },
+                    onEditPasswordClick = { navController.navigate("edit_password_screen") }
+                )
+            }
+
+            composable("edit_username_screen") {
+                EditUsernameScreen(
+                    viewModel = sharedProfileViewModel,
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+
+            composable("edit_email_screen") {
+                EditEmailScreen(
+                    viewModel = sharedProfileViewModel,
+                    onBackClick = { navController.popBackStack() },
+                    onNavigateToVerify = { email ->
+                        onNavigateToVerifyEmail(email)
+                    }
+                )
+            }
+
+            composable("edit_password_screen") {
+                EditPasswordScreen(
+                    viewModel = sharedProfileViewModel,
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
         }
     }
 }

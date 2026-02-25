@@ -231,12 +231,13 @@ fun OnboardingScreen(
             label = { Text(
                 when (viewModel.currency) {
                     Currency.EUR ->
-                    "Daily Food Budget (EUR)"
+                        "Daily Food Budget (EUR)"
                     Currency.RON ->
-                    "Daily Food Budget (RON)"
+                        "Daily Food Budget (RON)"
                     Currency.USD ->
-                    "Daily Food Budget (USD)"
-                    else -> "Daily Food Budget (GBP)"
+                        "Daily Food Budget (USD)"
+                    Currency.GBP ->
+                        "Daily Food Budget (GBP)"
                 }
             ) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
