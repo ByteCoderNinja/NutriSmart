@@ -1,5 +1,6 @@
 package com.example.nutrismart.ui.screens.weather
 
+import com.example.nutrismart.BuildConfig
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -28,7 +29,7 @@ interface OpenWeatherApi {
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
         @Query("units") units: String = "metric",
-        @Query("appid") apiKey: String = "56d5dbd4e55fd1262659601af9403e71"
+        @Query("appid") apiKey: String = BuildConfig.WEATHER_API_KEY
     ): Response<WeatherResponse>
 }
 
