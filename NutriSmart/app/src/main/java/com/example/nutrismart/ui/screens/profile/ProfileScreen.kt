@@ -15,6 +15,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import java.time.LocalDate
+import java.time.Period
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -23,6 +25,17 @@ fun ProfileScreen(
     onNavigateToSettings: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    fun calculateAge(birthDateString: String?): String {
+        if (birthDateString.isNullOrEmpty()) return "--"
+        return try {
+            val dob = LocalDate.parse(birthDateString)
+            val today = LocalDate.now()
+            Period.between(dob, today).years.toString()
+        } catch (e: Exception) {
+            "--"
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -61,7 +74,7 @@ fun ProfileScreen(
                             Text("Email: ${uiState.user?.email ?: "N/A"}")
                             Text("Weight: ${uiState.user?.weight ?: "--"} kg")
                             Text("Height: ${uiState.user?.height ?: "--"} cm")
-                            Text("Age: ${uiState.user?.age ?: "--"} years")
+                            Text("Age: ${calculateAge(uiState.user?.dateOfBirth)} years")
                         }
                     }
 

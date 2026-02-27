@@ -77,6 +77,44 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
     var mealTypeForSwap by remember { mutableStateOf<String?>(null) }
     var showShoppingListBottomSheet by remember { mutableStateOf(false) }
 
+    val context = LocalContext.current
+    val healthConnectManager = remember { HealthConnectManager(context) }
+    val scope = rememberCoroutineScope()
+    val permissions = setOf(HealthPermission.getReadPermission(StepsRecord::class))
+
+    var hasHealthPermissions by remember { mutableStateOf(false) }
+    var shouldCheckPermissions by remember { mutableStateOf(true) }
+
+    val permissionsLauncher = rememberLauncherForActivityResult(
+        contract = PermissionController.createRequestPermissionResultContract()
+    ) { grantedPermissions ->
+        if (grantedPermissions.containsAll(permissions)) {
+            hasHealthPermissions = true
+            scope.launch {
+                val steps = healthConnectManager.readTodaySteps()
+                viewModel.updateSteps(steps)
+            }
+        } else {
+            hasHealthPermissions = false
+        }
+    }
+
+    LaunchedEffect(shouldCheckPermissions) {
+        if (shouldCheckPermissions && healthConnectManager.isAvailable) {
+            val healthConnectClient = HealthConnectClient.getOrCreate(context)
+            val granted = healthConnectClient.permissionController.getGrantedPermissions()
+
+            if (granted.containsAll(permissions)) {
+                hasHealthPermissions = true
+                val steps = healthConnectManager.readTodaySteps()
+                viewModel.updateSteps(steps)
+            } else {
+                hasHealthPermissions = false
+            }
+            shouldCheckPermissions = false
+        }
+    }
+
     LaunchedEffect(Unit) {
         if (uiState.breakfast == null && UserSession.currentUserId != -1L) {
             viewModel.fetchTodayData()
@@ -88,38 +126,6 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
             CircularProgressIndicator()
         }
         return
-    }
-
-    val context = LocalContext.current
-    val healthConnectManager = remember { HealthConnectManager(context) }
-
-    val permissions = setOf(HealthPermission.getReadPermission(StepsRecord::class))
-
-    val scope = rememberCoroutineScope()
-
-    val permissionsLauncher = rememberLauncherForActivityResult(
-        contract = PermissionController.createRequestPermissionResultContract()
-    ) { grantedPermissions ->
-        if (grantedPermissions.containsAll(permissions)) {
-            scope.launch {
-                val steps = healthConnectManager.readTodaySteps()
-                viewModel.updateSteps(steps)
-            }
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        if (healthConnectManager.isAvailable) {
-            val healthConnectClient = HealthConnectClient.getOrCreate(context)
-            val granted = healthConnectClient.permissionController.getGrantedPermissions()
-
-            if (granted.containsAll(permissions)) {
-                val steps = healthConnectManager.readTodaySteps()
-                viewModel.updateSteps(steps)
-            } else {
-                permissionsLauncher.launch(permissions)
-            }
-        }
     }
 
     LazyColumn(
@@ -134,7 +140,16 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
         }
 
         item {
-            MainStatsCard(state = uiState, onAddWaterClick = { viewModel.addWater() })
+            MainStatsCard(
+                state = uiState,
+                hasPermissions = hasHealthPermissions,
+                onAddWaterClick = { viewModel.addWater() },
+                onStepsClick = {
+                    if (!hasHealthPermissions) {
+                        permissionsLauncher.launch(permissions)
+                    }
+                }
+            )
             Spacer(modifier = Modifier.height(24.dp))
         }
 
@@ -239,7 +254,9 @@ fun DateHeaderSection() {
 @Composable
 fun MainStatsCard(
     state: HomeUiState,
-    onAddWaterClick: () -> Unit
+    hasPermissions: Boolean,
+    onAddWaterClick: () -> Unit,
+    onStepsClick: () -> Unit
 ) {
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
@@ -257,12 +274,22 @@ fun MainStatsCard(
             HorizontalDivider()
             Spacer(modifier = Modifier.height(16.dp))
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onStepsClick() }
+                    .padding(vertical = 8.dp)
+            ) {
                 Icon(Icons.AutoMirrored.Filled.DirectionsWalk, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
                     Text("Steps", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text("${state.steps} / ${state.stepsGoal}", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    if (hasPermissions) {
+                        Text("${state.steps} / ${state.stepsGoal}", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    } else {
+                        Text("Tap to connect Health", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
+                    }
                 }
             }
 

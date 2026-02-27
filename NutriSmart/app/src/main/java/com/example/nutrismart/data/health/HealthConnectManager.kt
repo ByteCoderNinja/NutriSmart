@@ -19,7 +19,6 @@ class HealthConnectManager(private val context: Context) {
 
     private val healthConnectClient by lazy { HealthConnectClient.getOrCreate(context) }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     suspend fun readTodaySteps(): Int {
         if (!isAvailable) return 0
 
@@ -27,14 +26,15 @@ class HealthConnectManager(private val context: Context) {
             val startOfDay = ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.DAYS).toInstant()
             val now = Instant.now()
 
-            val response = healthConnectClient.readRecords(
-                ReadRecordsRequest(
-                    recordType = StepsRecord::class,
+            val response = healthConnectClient.aggregate(
+                androidx.health.connect.client.request.AggregateRequest(
+                    metrics = setOf(StepsRecord.COUNT_TOTAL),
                     timeRangeFilter = TimeRangeFilter.between(startOfDay, now)
                 )
             )
 
-            response.records.sumOf { it.count }.toInt()
+            (response[StepsRecord.COUNT_TOTAL] ?: 0L).toInt()
+
         } catch (e: Exception) {
             e.printStackTrace()
             0
