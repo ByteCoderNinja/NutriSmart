@@ -64,6 +64,7 @@ import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.StepsRecord
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.nutrismart.data.UserSession
 import com.example.nutrismart.data.health.HealthConnectManager
 import com.example.nutrismart.data.remote.MealDto
 import kotlinx.coroutines.launch
@@ -75,6 +76,12 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
     var selectedMealForDetails by remember { mutableStateOf<Pair<String, MealDto>?>(null) }
     var mealTypeForSwap by remember { mutableStateOf<String?>(null) }
     var showShoppingListBottomSheet by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        if (uiState.breakfast == null && UserSession.currentUserId != -1L) {
+            viewModel.fetchTodayData()
+        }
+    }
 
     if (uiState.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -388,11 +395,12 @@ fun MealCardButton(
                     Text("P: ${meal.protein}g C: ${meal.carbs}g F: ${meal.fat}g", fontSize = 12.sp, color = Color.Gray)
                 }
             }
-            if (meal.consumed) {
-                IconButton(onClick = { onToggleConsume(false) }) { Icon(Icons.Default.Check, null, tint = Color(0xFF4CAF50)) }
-            } else {
-                FilledTonalIconButton(onClick = { onToggleConsume(true) }, modifier = Modifier.size(40.dp)) { Icon(Icons.Default.Add, null) }
-            }
+            Checkbox(
+                checked = meal.consumed,
+                onCheckedChange = { checked ->
+                    onToggleConsume(checked)
+                }
+            )
         }
     }
 }
@@ -469,7 +477,7 @@ fun ShoppingListContent(state: HomeUiState, viewModel: HomeViewModel) {
                             .padding(vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Checkbox(checked = item.isChecked,
+                        Checkbox(checked = item.checked,
                             onCheckedChange = { viewModel.toggleShoppingListItem(item.id, it) }
                         )
                         Column {

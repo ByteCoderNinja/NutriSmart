@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.nutrismart.data.SessionManager
 import com.example.nutrismart.data.UserSession
 import com.example.nutrismart.data.model.AuthRequest
 import com.example.nutrismart.data.remote.RetrofitClient
@@ -26,7 +27,7 @@ class LoginViewModel : ViewModel() {
         password = newPassword
     }
 
-    fun login() {
+    fun login(sessionManager: SessionManager) {
         isLoading = true
         errorMessage = null
 
@@ -42,6 +43,9 @@ class LoginViewModel : ViewModel() {
                     if (authData != null) {
                         UserSession.currentUserId = authData.userId
                         UserSession.token = authData.token
+
+                        sessionManager.saveAuthToken(authData.token)
+                        sessionManager.saveUserId(authData.userId)
                     }
 
                     loginSuccess = true

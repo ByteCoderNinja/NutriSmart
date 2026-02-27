@@ -38,11 +38,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.nutrismart.data.SessionManager
 
 @Composable
-fun FastingScreen(viewModel: FastingViewModel = viewModel()) {
-    val uiState by viewModel.uiState.collectAsState()
+fun FastingScreen() {
     val context = LocalContext.current
+
+    val viewModel: FastingViewModel = viewModel(
+        factory = viewModelFactory {
+            initializer {
+                FastingViewModel(SessionManager(context))
+            }
+        }
+    )
+
+    val uiState by viewModel.uiState.collectAsState()
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()

@@ -16,6 +16,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.nutrismart.data.UserSession
+import com.example.nutrismart.data.SessionManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,6 +29,7 @@ fun SettingsScreen(
     onNavigateToLogin: () -> Unit
 ) {
     val context = LocalContext.current
+    val sessionManager = remember { SessionManager(context) }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -48,6 +51,8 @@ fun SettingsScreen(
             SettingsItem("Edit plan", onClick = onNavigateToEditPlan)
             SettingsItem("Logout", onClick = {
                 viewModel.logout(onSuccess = onNavigateToLogin)
+                sessionManager.clearSession()
+                UserSession.clear()
             })
             SettingsItem(
                 title = "Delete account",

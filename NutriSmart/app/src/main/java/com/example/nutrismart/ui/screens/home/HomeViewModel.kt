@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import com.example.nutrismart.data.SessionManager
 
 data class HomeUiState(
     val isLoading: Boolean = true,
@@ -39,14 +40,18 @@ data class HomeUiState(
     val caloriesRemaining: Int get() = totalCaloriesGoal - caloriesConsumed
 }
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(private val sessionManager: SessionManager) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
     private val currentUserId: Long get() = UserSession.currentUserId
 
     init {
-        if (currentUserId != -1L) fetchTodayData()
-        else _uiState.update { it.copy(isLoading = false) }
+        val savedWater = sessionManager.getWaterIntake()
+        _uiState.update { it.copy(waterConsumedMl = savedWater) }
+
+        if (currentUserId != -1L) {
+            fetchTodayData()
+        }
     }
 
     fun fetchTodayData() {
@@ -115,7 +120,13 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    fun addWater() { _uiState.update { it.copy(waterConsumedMl = it.waterConsumedMl + it.glassSizeMl) } }
+    fun addWater() {
+        _uiState.update { state ->
+            val newWater = state.waterConsumedMl + state.glassSizeMl
+            sessionManager.saveWaterIntake(newWater)
+            state.copy(waterConsumedMl = newWater)
+        }
+    }
 
     fun toggleMeal(mealId: Long, mealType: String, isConsumed: Boolean) {
         _uiState.update { state ->
@@ -134,14 +145,14 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    fun toggleShoppingListItem(itemId: Long, isChecked: Boolean) {
+    fun toggleShoppingListItem(itemId: Long, checked: Boolean) {
         _uiState.update { currentState ->
-            val updatedItems = currentState.shoppingList?.items?.map { if (it.id == itemId) it.copy(isChecked = isChecked) else it }
+            val updatedItems = currentState.shoppingList?.items?.map { if (it.id == itemId) it.copy(checked = checked) else it }
             currentState.copy(shoppingList = currentState.shoppingList?.copy(items = updatedItems ?: emptyList()))
         }
         viewModelScope.launch {
             try {
-                RetrofitClient.api.toggleShoppingItem("Bearer ${UserSession.token}", itemId, isChecked)
+                RetrofitClient.api.toggleShoppingItem("Bearer ${UserSession.token}", itemId, checked)
             } catch (e: Exception) { e.printStackTrace() }
         }
     }

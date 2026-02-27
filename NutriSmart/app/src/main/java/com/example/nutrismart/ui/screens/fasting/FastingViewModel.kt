@@ -8,6 +8,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.nutrismart.data.SessionManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,12 +26,46 @@ data class FastingState(
     val timeRemainingString: String = "00:00:00"
 )
 
-class FastingViewModel : ViewModel() {
+class FastingViewModel(
+    private val sessionManager: SessionManager
+) : ViewModel() {
     private val _uiState = MutableStateFlow(FastingState())
     val uiState: StateFlow<FastingState> = _uiState.asStateFlow()
 
     init {
+        restoreFastingState()
         startTimer()
+    }
+
+    private fun restoreFastingState() {
+        val isActive = sessionManager.isFastingActive()
+        if (isActive) {
+            val endTime = sessionManager.getFastingEndTime()
+            if (System.currentTimeMillis() >= endTime) {
+                _uiState.update {
+                    it.copy(
+                        isFasting = false,
+                        progress = 1f,
+                        timeRemainingString = "00:00:00",
+                        selectedDurationHours = sessionManager.getFastingDurationHours()
+                    )
+                }
+                sessionManager.clearFastingState()
+            } else {
+                _uiState.update {
+                    it.copy(
+                        isFasting = true,
+                        startTimeInMillis = sessionManager.getFastingStartTime(),
+                        endTimeInMillis = endTime,
+                        selectedDurationHours = sessionManager.getFastingDurationHours()
+                    )
+                }
+            }
+        } else {
+            _uiState.update {
+                it.copy(selectedDurationHours = sessionManager.getFastingDurationHours())
+            }
+        }
     }
 
     fun selectDuration(hours: Int) {
@@ -45,6 +80,7 @@ class FastingViewModel : ViewModel() {
         if (currentState.isFasting) {
             _uiState.update { it.copy(isFasting = false, progress = 0f, timeRemainingString = "00:00:00") }
             cancelNotification(context)
+            sessionManager.clearFastingState()
         } else {
             val durationMillis = currentState.selectedDurationHours * 60 * 60 * 1000L
             val startTime = System.currentTimeMillis()
@@ -58,9 +94,11 @@ class FastingViewModel : ViewModel() {
                 )
             }
             scheduleNotification(context, endTime)
+            sessionManager.saveFastingState(true, startTime, endTime, currentState.selectedDurationHours)
         }
     }
 
+    @SuppressLint("DefaultLocale")
     private fun startTimer() {
         viewModelScope.launch {
             while (isActive) {

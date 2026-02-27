@@ -23,9 +23,9 @@ class MealService(private val mealRepository: MealRepository) {
         return mealRepository.findByType(type)
     }
 
-    fun toggleConsumed(id: Long, isConsumed: Boolean): Meal {
+    fun toggleConsumed(id: Long, consumed: Boolean): Meal {
         val meal = getMealById(id)
-        meal.isConsumed = isConsumed
+        meal.consumed = consumed
         return mealRepository.save(meal)
     }
 
@@ -35,7 +35,7 @@ class MealService(private val mealRepository: MealRepository) {
         return original.copy(
             id = 0,
             type = newType,
-            isConsumed = false
+            consumed = false
         )
     }
 }

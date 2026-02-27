@@ -13,7 +13,7 @@ data class ShoppingListItem(
     val category: String,
     val name: String,
 
-    var isChecked: Boolean = false,
+    var checked: Boolean = false,
 
     @ManyToOne
     @JoinColumn(name = "shopping_list_id")

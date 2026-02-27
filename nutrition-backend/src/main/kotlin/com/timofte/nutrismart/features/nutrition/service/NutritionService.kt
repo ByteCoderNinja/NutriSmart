@@ -124,7 +124,7 @@ class NutritionService(
                 ShoppingListItem(
                     category = category.name,
                     name = itemName,
-                    isChecked = false,
+                    checked = false,
                     shoppingList = shoppingList
                 )
             }
@@ -140,11 +140,11 @@ class NutritionService(
     }
 
     @Transactional
-    fun toggleShoppingItem(itemId: Long, isChecked: Boolean) {
+    fun toggleShoppingItem(itemId: Long, checked: Boolean) {
         val item = shoppingListItemRepository.findById(itemId)
             .orElseThrow { RuntimeException("Shopping item not found with id: $itemId") }
 
-        item.isChecked = isChecked
+        item.checked = checked
         shoppingListItemRepository.save(item)
     }
 
@@ -206,8 +206,8 @@ class NutritionService(
     }
 
     @Transactional
-    fun markMealAsConsumed(mealId: Long, isConsumed: Boolean): Meal {
-        return mealService.toggleConsumed(mealId, isConsumed)
+    fun markMealAsConsumed(mealId: Long, consumed: Boolean): Meal {
+        return mealService.toggleConsumed(mealId, consumed)
     }
 
     private fun recalculateTotals(plan: MealPlan) {
@@ -218,7 +218,7 @@ class NutritionService(
         plan.totalCarbs = meals.sumOf { it.carbs }
         plan.totalFat = meals.sumOf { it.fat }
 
-        plan.isCompleted = meals.all { it.isConsumed }
+        plan.isCompleted = meals.all { it.consumed }
     }
 
     fun getUniqueMealsFromHistory(userId: Long): List<Meal> {

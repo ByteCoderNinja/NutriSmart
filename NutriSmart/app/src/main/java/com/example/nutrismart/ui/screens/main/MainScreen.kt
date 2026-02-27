@@ -13,12 +13,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.nutrismart.data.SessionManager
 import com.example.nutrismart.ui.screens.fasting.FastingScreen
 import com.example.nutrismart.ui.screens.home.HomeScreen
 import com.example.nutrismart.ui.screens.home.HomeViewModel
@@ -52,7 +56,15 @@ fun MainScreen(
         BottomNavItem.Profile
     )
 
-    val sharedHomeViewModel: HomeViewModel = viewModel()
+    val context = LocalContext.current
+
+    val sharedHomeViewModel: HomeViewModel = viewModel(
+        factory = viewModelFactory {
+            initializer {
+                HomeViewModel(SessionManager(context))
+            }
+        }
+    )
     val sharedProfileViewModel: ProfileViewModel = viewModel()
 
     Scaffold(

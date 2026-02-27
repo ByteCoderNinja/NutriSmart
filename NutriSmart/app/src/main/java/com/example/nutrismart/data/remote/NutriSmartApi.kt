@@ -9,7 +9,6 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.PATCH
 import retrofit2.http.POST
-import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -21,7 +20,7 @@ data class MealDto(
     val fat: Int,
     val carbs: Int,
     val quantityDetails: String?,
-    val consumed: Boolean = false
+    @SerializedName("consumed") val consumed: Boolean
 )
 
 data class MealPlanDto(
@@ -42,7 +41,7 @@ data class ShoppingListItemDto(
     val id: Long,
     val category: String,
     val name: String,
-    val isChecked: Boolean
+    @SerializedName("checked") val checked: Boolean
 )
 
 interface NutriSmartApi {
@@ -93,7 +92,7 @@ interface NutriSmartApi {
         @Query("consumed") consumed: Boolean
     ): Response<MealDto>
 
-    @PATCH("api/nutrition/shopping-item/{itemId}/check")
+    @PATCH("nutrition/shopping-item/{itemId}/check")
     suspend fun toggleShoppingItem(
         @Header("Authorization") token: String,
         @Path("itemId") itemId: Long,
@@ -115,26 +114,26 @@ interface NutriSmartApi {
         @Query("newMealId") newMealId: Long
     ): Response<MealPlanDto>
 
-    @GET("api/nutrition/plan")
+    @GET("nutrition/plan")
     suspend fun getDailyPlan(
         @Header("Authorization") token: String,
         @Query("userId") userId: Long,
         @Query("date") date: String
     ): Response<MealPlanDto>
 
-    @GET("/api/users/{userId}")
+    @GET("users/{userId}")
     suspend fun getUser(
         @Header("Authorization") token: String,
         @Path("userId") userId: Long
     ): Response<UserDto>
 
-    @DELETE("/api/users/{userId}")
+    @DELETE("users/{userId}")
     suspend fun deleteUser(
         @Header("Authorization") token: String,
         @Path("userId") userId: Long
     ): Response<Void>
 
-    @PATCH("/api/users/{userId}")
+    @PATCH("users/{userId}")
     suspend fun patchUser(
         @Header("Authorization") token: String,
         @Path("userId") userId: Long,
