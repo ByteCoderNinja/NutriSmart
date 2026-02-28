@@ -1,15 +1,11 @@
 package com.example.nutrismart.data.health
 
 import android.content.Context
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.records.StepsRecord
-import androidx.health.connect.client.request.ReadRecordsRequest
+import androidx.health.connect.client.request.AggregateRequest
 import androidx.health.connect.client.time.TimeRangeFilter
-import java.time.Instant
-import java.time.ZoneId
-import java.time.ZonedDateTime
+import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
 class HealthConnectManager(private val context: Context) {
@@ -23,13 +19,14 @@ class HealthConnectManager(private val context: Context) {
         if (!isAvailable) return 0
 
         return try {
-            val startOfDay = ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.DAYS).toInstant()
-            val now = Instant.now()
+            val startOfDay = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS)
+
+            val endOfDay = startOfDay.plusDays(1)
 
             val response = healthConnectClient.aggregate(
-                androidx.health.connect.client.request.AggregateRequest(
+                AggregateRequest(
                     metrics = setOf(StepsRecord.COUNT_TOTAL),
-                    timeRangeFilter = TimeRangeFilter.between(startOfDay, now)
+                    timeRangeFilter = TimeRangeFilter.between(startOfDay, endOfDay)
                 )
             )
 
