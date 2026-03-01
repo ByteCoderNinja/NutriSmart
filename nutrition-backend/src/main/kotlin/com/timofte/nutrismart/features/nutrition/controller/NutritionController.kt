@@ -112,4 +112,10 @@ class NutritionController(private val nutritionService: NutritionService) {
             .filter { it.type == type }
         return ResponseEntity.ok(meals)
     }
+
+    @PostMapping("/shopping-list/reset/{userId}")
+    fun resetShoppingList(@PathVariable userId: Long): ResponseEntity<Void> {
+        nutritionService.resetShoppingListsForNewCycles()
+        return ResponseEntity.ok().build()
+    }
 }

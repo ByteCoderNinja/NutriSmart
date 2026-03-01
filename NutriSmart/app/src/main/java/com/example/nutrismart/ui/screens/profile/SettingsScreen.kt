@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -18,6 +17,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.nutrismart.data.UserSession
 import com.example.nutrismart.data.SessionManager
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,6 +33,16 @@ fun SettingsScreen(
     val sessionManager = remember { SessionManager(context) }
     var showDeleteDialog by remember { mutableStateOf(false) }
 
+    var wakeUpTime by remember {
+        mutableStateOf(LocalTime.parse(sessionManager.getWakeUpTime()))
+    }
+    var showTimePicker by remember { mutableStateOf(false) }
+    val timePickerState = rememberTimePickerState(
+        initialHour = wakeUpTime.hour,
+        initialMinute = wakeUpTime.minute,
+        is24Hour = true
+    )
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -45,8 +56,17 @@ fun SettingsScreen(
         }
     ) { paddingValues ->
         Column(
-            modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
         ) {
+            SettingsItem(
+                title = "Wake Up Time",
+                value = wakeUpTime.format(DateTimeFormatter.ofPattern("HH:mm")),
+                onClick = { showTimePicker = true }
+            )
+
             SettingsItem("Edit account", onClick = onNavigateToEditAccount)
             SettingsItem("Edit plan", onClick = onNavigateToEditPlan)
             SettingsItem("Logout", onClick = {
@@ -60,6 +80,32 @@ fun SettingsScreen(
                 onClick = { showDeleteDialog = true }
             )
         }
+    }
+
+    if (showTimePicker) {
+        AlertDialog(
+            onDismissRequest = { showTimePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    val newTime = LocalTime.of(timePickerState.hour, timePickerState.minute)
+                    wakeUpTime = newTime
+                    sessionManager.saveWakeUpTime(newTime.format(DateTimeFormatter.ofPattern("HH:mm")))
+                    showTimePicker = false
+                }) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTimePicker = false }) {
+                    Text("Cancel")
+                }
+            },
+            text = {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    TimePicker(state = timePickerState)
+                }
+            }
+        )
     }
 
     if (showDeleteDialog) {
@@ -92,17 +138,32 @@ fun SettingsScreen(
 }
 
 @Composable
-fun SettingsItem(title: String, textColor: Color = MaterialTheme.colorScheme.onSurface, onClick: () -> Unit) {
+fun SettingsItem(
+    title: String,
+    value: String? = null,
+    textColor: Color = MaterialTheme.colorScheme.onSurface,
+    onClick: () -> Unit
+) {
     Card(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp).clickable { onClick() }
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp)
+            .clickable { onClick() }
     ) {
         Row(
-            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(title, fontSize = 16.sp, color = textColor)
-            Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (value != null) {
+                    Text(text = value, fontSize = 16.sp, color = Color.Gray, modifier = Modifier.padding(end = 8.dp))
+                }
+                Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray)
+            }
         }
     }
 }

@@ -15,6 +15,7 @@ import com.timofte.nutrismart.features.user.model.UserEntity
 import com.timofte.nutrismart.features.user.repository.UserRepository
 import jakarta.transaction.Transactional
 import org.springframework.scheduling.annotation.Async
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -241,5 +242,27 @@ class NutritionService(
 
     fun getGenerationStatus(userId: Long): String {
         return generationStatus[userId] ?: "NOT_STARTED"
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    @Transactional
+    fun resetShoppingListsForNewCycles() {
+        val allShoppingLists = shoppingListRepository.findAll()
+
+        allShoppingLists.forEach { shoppingList ->
+            val userId = shoppingList.userId
+            val allPlans = mealPlanRepository.findByUserId(userId).sortedBy { it.date }
+
+            if (allPlans.isNotEmpty()) {
+                val firstPlanDate = allPlans.first().date
+                val numberOfPlans = allPlans.size
+
+                val daysDiff = ChronoUnit.DAYS.between(firstPlanDate, LocalDate.now())
+
+                if (daysDiff > 0 && daysDiff % numberOfPlans == 0L) {
+                    shoppingListItemRepository.resetAllItemsForUser(userId)
+                }
+            }
+        }
     }
 }

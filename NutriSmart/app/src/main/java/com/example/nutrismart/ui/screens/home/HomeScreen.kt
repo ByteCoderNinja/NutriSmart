@@ -33,10 +33,8 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -62,25 +60,43 @@ import androidx.compose.ui.unit.sp
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.permission.HealthPermission
+import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
 import androidx.health.connect.client.records.StepsRecord
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.nutrismart.data.UserSession
 import com.example.nutrismart.data.health.HealthConnectManager
 import com.example.nutrismart.data.remote.MealDto
 import kotlinx.coroutines.launch
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.health.connect.client.records.BasalMetabolicRateRecord
+import androidx.health.connect.client.records.ExerciseSessionRecord
+import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import com.example.nutrismart.data.SessionManager
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
     val uiState by viewModel.uiState.collectAsState()
     var selectedMealForDetails by remember { mutableStateOf<Pair<String, MealDto>?>(null) }
     var mealTypeForSwap by remember { mutableStateOf<String?>(null) }
     var showShoppingListBottomSheet by remember { mutableStateOf(false) }
+    var showBonusSnackSheet by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
+
+    val sessionManager = remember { SessionManager(context) }
+    val wakeUpTimeStr = sessionManager.getWakeUpTime()
+    val userWakeUpTime = remember(wakeUpTimeStr) { LocalTime.parse(wakeUpTimeStr) }
+
     val healthConnectManager = remember { HealthConnectManager(context) }
     val scope = rememberCoroutineScope()
-    val permissions = setOf(HealthPermission.getReadPermission(StepsRecord::class))
+    val permissions = setOf(
+        HealthPermission.getReadPermission(StepsRecord::class),
+        HealthPermission.getReadPermission(ExerciseSessionRecord::class),
+        HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class)
+    )
 
     var hasHealthPermissions by remember { mutableStateOf(false) }
     var shouldCheckPermissions by remember { mutableStateOf(true) }
@@ -92,7 +108,8 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
             hasHealthPermissions = true
             scope.launch {
                 val steps = healthConnectManager.readTodaySteps()
-                viewModel.updateSteps(steps)
+                val burned = healthConnectManager.readBurnedCalories(steps)
+                viewModel.updateHealthData(steps, burned)
             }
         } else {
             hasHealthPermissions = false
@@ -106,8 +123,11 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
 
             if (granted.containsAll(permissions)) {
                 hasHealthPermissions = true
-                val steps = healthConnectManager.readTodaySteps()
-                viewModel.updateSteps(steps)
+                scope.launch {
+                    val steps = healthConnectManager.readTodaySteps()
+                    val burned = healthConnectManager.readBurnedCalories(steps)
+                    viewModel.updateHealthData(steps, burned)
+                }
             } else {
                 hasHealthPermissions = false
             }
@@ -121,88 +141,170 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
         }
     }
 
-    if (uiState.isLoading) {
+    var isRefreshing by remember { mutableStateOf(false) }
+
+    LaunchedEffect(uiState.isLoading) {
+        if (!uiState.isLoading) {
+            isRefreshing = false
+        }
+    }
+
+    if (uiState.isLoading && uiState.breakfast == null && !isRefreshing) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
         return
     }
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        contentPadding = PaddingValues(top = 16.dp, bottom = 80.dp)
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = {
+            isRefreshing = true
+            viewModel.fetchTodayData()
+        },
+        modifier = Modifier.fillMaxSize()
     ) {
-        item {
-            DateHeaderSection()
-            Spacer(modifier = Modifier.height(16.dp))
-        }
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            contentPadding = PaddingValues(top = 16.dp, bottom = 80.dp)
+        ) {
+            item {
+                DateHeaderSection()
+                Spacer(modifier = Modifier.height(16.dp))
+            }
 
-        item {
-            MainStatsCard(
-                state = uiState,
-                hasPermissions = hasHealthPermissions,
-                onAddWaterClick = { viewModel.addWater() },
-                onStepsClick = {
-                    if (!hasHealthPermissions) {
-                        permissionsLauncher.launch(permissions)
+            item {
+                MainStatsCard(
+                    state = uiState,
+                    hasPermissions = hasHealthPermissions,
+                    onAddWaterClick = { viewModel.addWater() },
+                    onStepsClick = {
+                        if (!hasHealthPermissions) {
+                            permissionsLauncher.launch(permissions)
+                        }
+                    }
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+
+            item {
+                MacrosRow(state = uiState)
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+
+            item {
+                Text(
+                    text = "Today's Meal Plan",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
+                val meals = listOf("Breakfast" to uiState.breakfast, "Lunch" to uiState.lunch, "Dinner" to uiState.dinner, "Snack" to uiState.snack)
+
+                meals.forEach { (type, meal) ->
+                    meal?.let {
+                        val timeRange = getRecommendedTimeRange(userWakeUpTime, type)
+
+                        Text(
+                            text = timeRange,
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(start = 8.dp, bottom = 4.dp, top = 8.dp)
+                        )
+
+                        MealCardButton(
+                            mealType = type,
+                            meal = it,
+                            onCardClick = { selectedMealForDetails = type to it },
+                            onToggleConsume = { consumed -> viewModel.toggleMeal(it.id, type, consumed) },
+                            onSwapClick = { mealTypeForSwap = type; viewModel.loadAlternatives(type) }
+                        )
                     }
                 }
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-        }
 
-        item {
-            MacrosRow(state = uiState)
-            Spacer(modifier = Modifier.height(24.dp))
-        }
-
-        item {
-            Text(
-                text = "Today's Meal Plan",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            val meals = listOf("Breakfast" to uiState.breakfast, "Lunch" to uiState.lunch, "Dinner" to uiState.dinner, "Snack" to uiState.snack)
-
-            meals.forEach { (type, meal) ->
-                meal?.let {
-                    MealCardButton(
-                        mealType = type,
-                        meal = it,
-                        onCardClick = { selectedMealForDetails = type to it },
-                        onToggleConsume = { consumed -> viewModel.toggleMeal(it.id, type, consumed) },
-                        onSwapClick = { mealTypeForSwap = type; viewModel.loadAlternatives(type) }
+                if (uiState.burnedCalories >= 100) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Bonus Meal (Earned!)",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF4CAF50),
+                        modifier = Modifier.padding(bottom = 8.dp)
                     )
+
+                    if (uiState.bonusSnack != null) {
+                        MealCardButton(
+                            mealType = "Bonus Snack",
+                            meal = uiState.bonusSnack!!,
+                            onCardClick = { selectedMealForDetails = "Bonus Snack" to uiState.bonusSnack!! },
+                            onToggleConsume = { consumed -> viewModel.toggleBonusSnackConsumed(consumed) },
+                            onSwapClick = {
+                                showBonusSnackSheet = true
+                                viewModel.loadBonusSnacks()
+                            }
+                        )
+                    } else {
+                        ElevatedCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    showBonusSnackSheet = true
+                                    viewModel.loadBonusSnacks()
+                                },
+                            shape = RoundedCornerShape(16.dp),
+                            colors = CardDefaults.elevatedCardColors(containerColor = Color(0xFFE8F5E9))
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(Icons.Default.Add, contentDescription = null, tint = Color(0xFF2E7D32))
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Column {
+                                    Text(
+                                        text = "Claim your Bonus Snack!",
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFF2E7D32),
+                                        fontSize = 16.sp
+                                    )
+                                    Text(
+                                        text = "You burned ${uiState.burnedCalories} kcal. Tap to choose a treat.",
+                                        fontSize = 12.sp,
+                                        color = Color(0xFF2E7D32).copy(alpha = 0.8f)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-        }
-
-        item {
-            ElevatedCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { showShoppingListBottomSheet = true },
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
-            ) {
-                Row(
-                    modifier = Modifier.padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
+            item {
+                ElevatedCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { showShoppingListBottomSheet = true },
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
                 ) {
-                    Icon(Icons.Default.Check, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Text(
-                        text = "View Grocery List",
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontSize = 16.sp
-                    )
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.Check, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = "View Grocery List",
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontSize = 16.sp
+                        )
+                    }
                 }
             }
         }
@@ -222,6 +324,44 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
             onDismiss = { mealTypeForSwap = null },
             onSelected = { newMealId -> viewModel.swapMeal(type, newMealId); mealTypeForSwap = null }
         )
+    }
+
+    if (showBonusSnackSheet) {
+        ModalBottomSheet(onDismissRequest = { showBonusSnackSheet = false }) {
+            Column(modifier = Modifier.fillMaxWidth().padding(16.dp).padding(bottom = 32.dp)) {
+                Text("Choose your Bonus Snack", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Text("Showing items under ${uiState.burnedCalories} kcal", fontSize = 14.sp, color = Color.Gray)
+                Spacer(modifier = Modifier.height(16.dp))
+
+                if (uiState.isSwapping) {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                } else if (uiState.availableBonusSnacks.isEmpty()) {
+                    Text("No snacks available for this amount of calories.", modifier = Modifier.padding(16.dp))
+                } else {
+                    LazyColumn {
+                        items(uiState.availableBonusSnacks) { meal ->
+                            OutlinedCard(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp)
+                                    .clickable {
+                                        viewModel.selectBonusSnack(meal)
+                                        showBonusSnackSheet = false
+                                    }
+                            ) {
+                                Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(meal.name, fontWeight = FontWeight.Bold)
+                                        Text("${meal.calories} kcal | P:${meal.protein} C:${meal.carbs} F:${meal.fat}", fontSize = 12.sp)
+                                    }
+                                    Icon(Icons.Default.ChevronRight, null)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     selectedMealForDetails?.let { (type, meal) ->
@@ -463,7 +603,7 @@ fun MealSwapBottomSheet(mealType: String, alternatives: List<MealDto>, isLoading
                             ) {
                                 Column(
                                     modifier = Modifier
-                                    .weight(1f)
+                                        .weight(1f)
                                 ) {
                                     Text(
                                         meal.name,
@@ -592,4 +732,23 @@ fun MacroDetailItem(label: String, value: String, color: Color) {
         Text(value, fontWeight = FontWeight.Bold, fontSize = 16.sp)
         Text(label, fontSize = 12.sp, color = Color.Gray)
     }
+}
+
+@Composable
+fun getRecommendedTimeRange(wakeUpTime: LocalTime, mealType: String): String {
+    val formatter = DateTimeFormatter.ofPattern("HH:mm")
+
+    val (startOffset, endOffset) = when (mealType.uppercase()) {
+        "BREAKFAST" -> Pair(1L, 2L)
+        "LUNCH" -> Pair(5L, 6L)
+        "SNACK" -> Pair(8L, 9L)
+        "DINNER" -> Pair(10L, 11L)
+        "BONUS SNACK" -> Pair(12L, 13L)
+        else -> Pair(0L, 0L)
+    }
+
+    val startTime = wakeUpTime.plusHours(startOffset)
+    val endTime = wakeUpTime.plusHours(endOffset)
+
+    return "${startTime.format(formatter)} - ${endTime.format(formatter)}"
 }

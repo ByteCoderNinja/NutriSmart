@@ -78,7 +78,6 @@ fun ProfileScreen(
                         }
                     }
 
-                    // Goals Card
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp)

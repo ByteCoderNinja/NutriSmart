@@ -66,4 +66,12 @@ class SessionManager(context: Context) {
             0
         }
     }
+
+    fun saveWakeUpTime(time: String) {
+        prefs.edit { putString("wake_up_time", time) }
+    }
+
+    fun getWakeUpTime(): String {
+        return prefs.getString("wake_up_time", "08:00") ?: "08:00"
+    }
 }

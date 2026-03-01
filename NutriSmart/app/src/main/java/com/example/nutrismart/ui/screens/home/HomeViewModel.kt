@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import com.example.nutrismart.data.SessionManager
+import java.time.LocalTime
 
 data class HomeUiState(
     val isLoading: Boolean = true,
@@ -25,19 +26,23 @@ data class HomeUiState(
     val lunch: MealDto? = null,
     val dinner: MealDto? = null,
     val snack: MealDto? = null,
+    val bonusSnack: MealDto? = null,
+    val availableBonusSnacks: List<MealDto> = emptyList(),
     val shoppingList: ShoppingListDto? = null,
-    val alternatives: List<MealDto> = emptyList()
+    val alternatives: List<MealDto> = emptyList(),
+    val wakeUpTime: LocalTime = LocalTime.of(8,0),
+    val burnedCalories: Int = 0
 ) {
     val totalCaloriesGoal: Int get() = listOfNotNull(breakfast, lunch, dinner, snack).sumOf { it.calories }.coerceAtLeast(1)
     val carbsGoal: Int get() = listOfNotNull(breakfast, lunch, dinner, snack).sumOf { it.carbs }.coerceAtLeast(1)
     val proteinGoal: Int get() = listOfNotNull(breakfast, lunch, dinner, snack).sumOf { it.protein }.coerceAtLeast(1)
     val fatGoal: Int get() = listOfNotNull(breakfast, lunch, dinner, snack).sumOf { it.fat }.coerceAtLeast(1)
 
-    val caloriesConsumed: Int get() = listOfNotNull(breakfast, lunch, dinner, snack).filter { it.consumed }.sumOf { it.calories }
-    val carbsConsumed: Int get() = listOfNotNull(breakfast, lunch, dinner, snack).filter { it.consumed }.sumOf { it.carbs }
-    val proteinConsumed: Int get() = listOfNotNull(breakfast, lunch, dinner, snack).filter { it.consumed }.sumOf { it.protein }
-    val fatConsumed: Int get() = listOfNotNull(breakfast, lunch, dinner, snack).filter { it.consumed }.sumOf { it.fat }
-    val caloriesRemaining: Int get() = totalCaloriesGoal - caloriesConsumed
+    val caloriesConsumed: Int get() = listOfNotNull(breakfast, lunch, dinner, snack, bonusSnack).filter { it.consumed }.sumOf { it.calories }
+    val carbsConsumed: Int get() = listOfNotNull(breakfast, lunch, dinner, snack, bonusSnack).filter { it.consumed }.sumOf { it.carbs }
+    val proteinConsumed: Int get() = listOfNotNull(breakfast, lunch, dinner, snack, bonusSnack).filter { it.consumed }.sumOf { it.protein }
+    val fatConsumed: Int get() = listOfNotNull(breakfast, lunch, dinner, snack, bonusSnack).filter { it.consumed }.sumOf { it.fat }
+    val caloriesRemaining: Int get() = totalCaloriesGoal - caloriesConsumed + burnedCalories
 }
 
 class HomeViewModel(private val sessionManager: SessionManager) : ViewModel() {
@@ -157,14 +162,49 @@ class HomeViewModel(private val sessionManager: SessionManager) : ViewModel() {
         }
     }
 
-    fun updateSteps(realSteps: Int) {
-        _uiState.update { it.copy(steps = realSteps) }
+    fun updateHealthData(realSteps: Int, burnedKcal: Int) {
+        _uiState.update { it.copy(steps = realSteps, burnedCalories = burnedKcal) }
     }
 
     fun updateWaterGoalBasedOnWeather(temperature: Int) {
         _uiState.update { state ->
             val newGoal = if (temperature >= 30) 3000 else 2000
             state.copy(waterGoalMl = newGoal)
+        }
+    }
+
+    fun loadBonusSnacks() {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isSwapping = true, availableBonusSnacks = emptyList()) }
+            try {
+                val response = RetrofitClient.api.getMealAlternatives(
+                    "Bearer ${UserSession.token}",
+                    UserSession.currentUserId,
+                    "SNACK"
+                )
+
+                if (response.isSuccessful) {
+                    val allSnacks = response.body() ?: emptyList()
+                    val maxCaloriesAllowed = _uiState.value.burnedCalories
+                    val filtered = allSnacks.filter { it.calories <= maxCaloriesAllowed }
+
+                    _uiState.update { it.copy(availableBonusSnacks = filtered) }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                _uiState.update { it.copy(isSwapping = false) }
+            }
+        }
+    }
+
+    fun selectBonusSnack(meal: MealDto) {
+        _uiState.update { it.copy(bonusSnack = meal) }
+    }
+
+    fun toggleBonusSnackConsumed(isConsumed: Boolean) {
+        _uiState.update { state ->
+            state.copy(bonusSnack = state.bonusSnack?.copy(consumed = isConsumed))
         }
     }
 }
