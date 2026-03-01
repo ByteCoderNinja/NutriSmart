@@ -64,7 +64,12 @@ data class UserEntity(
     var isImperial: Boolean = false,
 
     @Enumerated(EnumType.STRING)
-    var currency: Currency = Currency.RON
+    var currency: Currency = Currency.RON,
+
+    @ElementCollection(targetClass = DislikedFood::class)
+    @CollectionTable(name = "user_disliked_foods", joinColumns = [JoinColumn(name = "user_id")])
+    @Enumerated(EnumType.STRING)
+    var dislikedFoods: Set<DislikedFood> = emptySet()
 )
 
 data class UserUpdateDto(

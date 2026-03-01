@@ -41,6 +41,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -60,20 +61,18 @@ import androidx.compose.ui.unit.sp
 import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.permission.HealthPermission
-import androidx.health.connect.client.records.ActiveCaloriesBurnedRecord
+import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.StepsRecord
+import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.nutrismart.data.SessionManager
 import com.example.nutrismart.data.UserSession
 import com.example.nutrismart.data.health.HealthConnectManager
 import com.example.nutrismart.data.remote.MealDto
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.health.connect.client.records.BasalMetabolicRateRecord
-import androidx.health.connect.client.records.ExerciseSessionRecord
-import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import com.example.nutrismart.data.SessionManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -145,6 +144,8 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
 
     LaunchedEffect(uiState.isLoading) {
         if (!uiState.isLoading) {
+            viewModel.fetchTodayData()
+            delay(1000)
             isRefreshing = false
         }
     }
@@ -180,6 +181,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                     state = uiState,
                     hasPermissions = hasHealthPermissions,
                     onAddWaterClick = { viewModel.addWater() },
+                    onRemoveWaterClick = { viewModel.removeWater() },
                     onStepsClick = {
                         if (!hasHealthPermissions) {
                             permissionsLauncher.launch(permissions)
@@ -396,6 +398,7 @@ fun MainStatsCard(
     state: HomeUiState,
     hasPermissions: Boolean,
     onAddWaterClick: () -> Unit,
+    onRemoveWaterClick: () -> Unit,
     onStepsClick: () -> Unit
 ) {
     ElevatedCard(
@@ -437,14 +440,26 @@ fun MainStatsCard(
             HorizontalDivider()
             Spacer(modifier = Modifier.height(16.dp))
 
-            WaterTrackerSection(state.waterConsumedMl, state.waterGoalMl, state.glassSizeMl, onAddWaterClick)
+            WaterTrackerSection(
+                state.waterConsumedMl,
+                state.waterGoalMl,
+                state.glassSizeMl,
+                onAddWaterClick,
+                onRemoveClick = onRemoveWaterClick
+            )
         }
     }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun WaterTrackerSection(consumedMl: Int, goalMl: Int, glassSize: Int, onAddClick: () -> Unit) {
+fun WaterTrackerSection(
+    consumedMl: Int,
+    goalMl: Int,
+    glassSize: Int,
+    onAddClick: () -> Unit,
+    onRemoveClick: () -> Unit
+) {
     val consumedGlassesCount = consumedMl / glassSize
     val waterColor = Color(0xFF2196F3)
 
@@ -467,6 +482,7 @@ fun WaterTrackerSection(consumedMl: Int, goalMl: Int, glassSize: Int, onAddClick
                     modifier = Modifier
                         .padding(horizontal = 6.dp)
                         .size(48.dp)
+                        .clickable { onRemoveClick() }
                 )
             }
 

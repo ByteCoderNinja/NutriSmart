@@ -25,7 +25,7 @@ class ProfileViewModel : ViewModel() {
         fetchUserData()
     }
 
-    private fun fetchUserData() {
+    fun fetchUserData() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {

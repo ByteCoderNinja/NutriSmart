@@ -48,6 +48,13 @@ class GeminiService(
         val heightUnit = if (user.isImperial) "ft" else "cm"
         val currencySymbol = user.currency.symbol
 
+        val avoidedFoodsText = if (user.dislikedFoods.isNotEmpty()) {
+            val foodsList = user.dislikedFoods.joinToString(", ") { it.name.replace("_", " ").lowercase() }
+            "- Explicitly Avoid These Foods: $foodsList"
+        } else {
+            "- Explicitly Avoid These Foods: None"
+        }
+
         val unitInstructions = if (user.isImperial) {
             """
             - SYSTEM: IMPERIAL (US Standard)
@@ -76,6 +83,7 @@ class GeminiService(
             - Activity Level: ${user.activityLevel}
             - Goal: ${user.targetWeight} $weightUnit
             - Medical Conditions: ${user.medicalConditions}
+            $avoidedFoodsText
             - Budget Constraint: ${user.maxDailyBudget} $currencySymbol / day
             - Calories: ${user.targetCalories} kcal/day
             
@@ -87,6 +95,7 @@ class GeminiService(
                - Example: Make a large batch of Chili for Dinner Day 3 and eat leftovers for Lunch Day 4.
             4. Ingredients: Reuse perishable ingredients (like spinach, opened greek yogurt) across multiple days to minimize food waste.
             5. Variety: Ensure meals are not repetitive (don't eat the same breakfast 14 days in a row), but keep the shopping list practical.
+            6. AVERSIONS (CRITICAL): Do NOT include any ingredients listed in 'Explicitly Avoid These Foods' under any circumstances!
             
             $unitInstructions
             

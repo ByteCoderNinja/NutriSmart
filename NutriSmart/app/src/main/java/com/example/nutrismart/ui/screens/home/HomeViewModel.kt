@@ -133,6 +133,14 @@ class HomeViewModel(private val sessionManager: SessionManager) : ViewModel() {
         }
     }
 
+    fun removeWater() {
+        _uiState.update { state ->
+            val newWater = (state.waterConsumedMl - state.glassSizeMl).coerceAtLeast(0)
+            sessionManager.saveWaterIntake(newWater)
+            state.copy(waterConsumedMl = newWater)
+        }
+    }
+
     fun toggleMeal(mealId: Long, mealType: String, isConsumed: Boolean) {
         _uiState.update { state ->
             when (mealType) {

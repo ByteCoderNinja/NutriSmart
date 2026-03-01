@@ -69,8 +69,10 @@ class WeatherViewModel : ViewModel() {
 
         if (condition.contains("Rain", ignoreCase = true) || condition.contains("Drizzle", ignoreCase = true)) {
             recs.add("It's raining outside. Consider replacing your outdoor run with an indoor workout.")
-        } else if (temp in 15..25 && !condition.contains("Rain", ignoreCase = true)) {
+        } else if (temp in 15..29 && !condition.contains("Rain", ignoreCase = true)) {
             recs.add("Perfect weather for a walk or an outdoor run!")
+        } else {
+            recs.add("You can go out for a walk, but dress well")
         }
 
         return recs

@@ -35,6 +35,7 @@ class OnboardingViewModel : ViewModel() {
 
     var selectedDietaryPreferences = mutableStateListOf<DietaryPreference>()
     var selectedMedicalConditions = mutableStateListOf<MedicalCondition>()
+    var selectedDislikedFoods by mutableStateOf<Set<DislikedFood>>(emptySet())
 
     var isLoading by mutableStateOf(false)
     var errorMessage by mutableStateOf<String?>(null)
@@ -47,7 +48,8 @@ class OnboardingViewModel : ViewModel() {
         "Calculating target calories...",
         "Generating 14-day AI recipes...",
         "Adding items to your shopping list...",
-        "Finalizing your plan..."
+        "Finalizing your plan...",
+        "Do not panic if it looks stuck\nAI is working"
     )
 
     fun toggleDiet(diet: DietaryPreference) {
@@ -64,6 +66,16 @@ class OnboardingViewModel : ViewModel() {
         } else {
             selectedMedicalConditions.add(condition)
         }
+    }
+
+    fun toggleDislikedFood(food: DislikedFood, isSelected: Boolean) {
+        val currentSet = selectedDislikedFoods.toMutableSet()
+        if (isSelected) {
+            currentSet.add(food)
+        } else {
+            currentSet.remove(food)
+        }
+        selectedDislikedFoods = currentSet
     }
 
     fun submitProfile() {
@@ -90,6 +102,7 @@ class OnboardingViewModel : ViewModel() {
                     maxDailyBudget = budget.toDoubleOrNull() ?: 0.0,
                     dietaryPreferences = selectedDietaryPreferences.toList(),
                     medicalConditions = selectedMedicalConditions.toList(),
+                    dislikedFoods = selectedDislikedFoods.toList(),
                     isImperial = isImperial,
                     currency = currency
                 )

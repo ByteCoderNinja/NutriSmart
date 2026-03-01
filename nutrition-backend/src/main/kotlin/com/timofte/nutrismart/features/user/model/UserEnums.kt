@@ -41,3 +41,30 @@ enum class Currency(val symbol: String) {
 enum class AuthProvider {
     LOCAL, GOOGLE
 }
+
+enum class DislikedFood {
+    BEEF,
+    PORK,
+    CHICKEN,
+    LAMB,
+    TURKEY,
+    FISH,
+    SEAFOOD,
+    SPINACH,
+    BROCCOLI,
+    MUSHROOMS,
+    ONIONS,
+    GARLIC,
+    TOMATOES,
+    EGGPLANT,
+    ZUCCHINI,
+    BELL_PEPPERS,
+    OLIVES,
+    CILANTRO,
+    NETTLES,
+    EGGS,
+    DAIRY,
+    NUTS,
+    PEANUTS,
+    SOY
+}

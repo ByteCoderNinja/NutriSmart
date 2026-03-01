@@ -32,6 +32,7 @@ class UserService(
             maxDailyBudget = request.maxDailyBudget
             dietaryPreferences = request.dietaryPreferences
             medicalConditions = request.medicalConditions
+            dislikedFoods = request.dislikedFoods
             isImperial = request.isImperial
             currency = request.currency
 
@@ -103,6 +104,7 @@ class UserService(
                 existingUser.targetWeight != updatedData.targetWeight ||
                 existingUser.dietaryPreferences != updatedData.dietaryPreferences ||
                 existingUser.medicalConditions != updatedData.medicalConditions ||
+                existingUser.dislikedFoods != updatedData.dislikedFoods ||
                 existingUser.activityLevel != updatedData.activityLevel ||
                 existingUser.maxDailyBudget != updatedData.maxDailyBudget ||
                 existingUser.isImperial != updatedData.isImperial ||
@@ -117,6 +119,7 @@ class UserService(
             dateOfBirth = updatedData.dateOfBirth
             dietaryPreferences = updatedData.dietaryPreferences
             medicalConditions = updatedData.medicalConditions
+            dislikedFoods = updatedData.dislikedFoods
             maxDailyBudget = updatedData.maxDailyBudget
             isImperial = updatedData.isImperial
             currency = updatedData.currency

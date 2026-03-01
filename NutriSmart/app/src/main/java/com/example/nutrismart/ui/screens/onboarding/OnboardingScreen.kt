@@ -19,6 +19,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.nutrismart.data.model.*
+import com.example.nutrismart.ui.components.DislikedFoodsSelector
 import java.time.Instant
 import java.time.ZoneId
 
@@ -267,6 +268,17 @@ fun OnboardingScreen(
         )
 
         Spacer(modifier = Modifier.height(24.dp))
+
+        SectionHeader("Foods to Avoid")
+        Text("Select ingredients you dislike or are allergic to:", style = MaterialTheme.typography.bodySmall, color = Color.Gray, modifier = Modifier.fillMaxWidth())
+        Spacer(modifier = Modifier.height(8.dp))
+
+        DislikedFoodsSelector(
+            selectedFoods = viewModel.selectedDislikedFoods,
+            onFoodToggled = { food, isSelected ->
+                viewModel.toggleDislikedFood(food, isSelected)
+            }
+        )
 
         if (viewModel.errorMessage != null) {
             Text(viewModel.errorMessage!!, color = Color.Red)

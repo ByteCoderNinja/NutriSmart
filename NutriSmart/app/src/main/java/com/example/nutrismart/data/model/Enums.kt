@@ -34,3 +34,30 @@ enum class MedicalCondition {
 enum class Currency {
     RON, EUR, USD, GBP
 }
+
+enum class DislikedFood(val displayName: String) {
+    BEEF("Beef"),
+    PORK("Pork"),
+    CHICKEN("Chicken"),
+    LAMB("Lamb"),
+    TURKEY("Turkey"),
+    FISH("Fish"),
+    SEAFOOD("Seafood"),
+    SPINACH("Spinach"),
+    BROCCOLI("Broccoli"),
+    MUSHROOMS("Mushrooms"),
+    ONIONS("Onions"),
+    GARLIC("Garlic"),
+    TOMATOES("Tomatoes"),
+    EGGPLANT("Eggplant"),
+    ZUCCHINI("Zucchini"),
+    BELL_PEPPERS("Bell Peppers"),
+    OLIVES("Olives"),
+    CILANTRO("Cilantro"),
+    NETTLES("Nettles"),
+    EGGS("Eggs"),
+    DAIRY("Dairy"),
+    NUTS("Nuts"),
+    PEANUTS("Peanuts"),
+    SOY("Soy")
+}
