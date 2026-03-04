@@ -2,6 +2,7 @@ package com.example.nutrismart.ui.screens.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.nutrismart.data.SessionManager
 import com.example.nutrismart.data.UserSession
 import com.example.nutrismart.data.model.UserDto
 import com.example.nutrismart.data.remote.RetrofitClient
@@ -14,14 +15,17 @@ import kotlinx.coroutines.launch
 data class ProfileUiState(
     val isLoading: Boolean = true,
     val user: UserDto? = null,
+    val isGoogleUser: Boolean = false,
     val errorMessage: String? = null
 )
 
-class ProfileViewModel : ViewModel() {
+class ProfileViewModel(private val sessionManager: SessionManager) : ViewModel() {
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
     init {
+        val isGoogle = sessionManager.isGoogleUser()
+        _uiState.update { it.copy(isGoogleUser = isGoogle) }
         fetchUserData()
     }
 
@@ -65,6 +69,7 @@ class ProfileViewModel : ViewModel() {
 
     fun logout(onSuccess: () -> Unit) {
         UserSession.clear()
+        sessionManager.clearSession()
         onSuccess()
     }
 
@@ -143,5 +148,9 @@ class ProfileViewModel : ViewModel() {
                 onError(e.message ?: "Unknown error occurred")
             }
         }
+    }
+
+    fun checkUserType(sessionManager: SessionManager): Boolean {
+        return sessionManager.isGoogleUser()
     }
 }

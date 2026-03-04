@@ -6,6 +6,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -15,19 +16,23 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.nutrismart.data.SessionManager
+import com.example.nutrismart.ui.auth.handleGoogleSignIn
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = viewModel(),
-    onLoginSuccess: () -> Unit,
+    onLoginSuccess: (Boolean) -> Unit,
     onNavigateToRegister: () -> Unit
 ) {
     val context = LocalContext.current
     val sessionManager = remember { SessionManager(context) }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(viewModel.loginSuccess) {
         if (viewModel.loginSuccess) {
-            onLoginSuccess()
+            onLoginSuccess(!viewModel.isNewUser)
+            viewModel.resetNavigation()
         }
     }
 
@@ -91,7 +96,16 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        TextButton(onClick = onNavigateToRegister) {
+        Button(onClick = {
+            scope.launch {
+                val idToken = handleGoogleSignIn(context)
+                if (idToken != null) {
+                    viewModel.loginWithGoogle(idToken, sessionManager)
+                } else {
+                    viewModel.errorMessage = "Google Sign-In failed!"
+                }
+            }
+        }) {
             Text("Continue with Google")
         }
 

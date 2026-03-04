@@ -14,11 +14,15 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditAccountSelectionScreen(
+    viewModel: ProfileViewModel,
     onBackClick: () -> Unit,
     onEditUsernameClick: () -> Unit,
     onEditEmailClick: () -> Unit,
     onEditPasswordClick: () -> Unit
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+    val isGoogleUser = uiState.user?.isGoogleUser ?: false
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -33,8 +37,18 @@ fun EditAccountSelectionScreen(
     ) { paddingValues ->
         Column(modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp)) {
             SettingsItem("Change Username", onClick = onEditUsernameClick)
-            SettingsItem("Change Email", onClick = onEditEmailClick)
-            SettingsItem("Change Password", onClick = onEditPasswordClick)
+
+            if (!uiState.isGoogleUser) {
+                SettingsItem("Change Email", onClick = onEditEmailClick)
+                SettingsItem("Change Password", onClick = onEditPasswordClick)
+            } else {
+                Text(
+                    text = "Account managed by Google",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.outline,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
         }
     }
 }

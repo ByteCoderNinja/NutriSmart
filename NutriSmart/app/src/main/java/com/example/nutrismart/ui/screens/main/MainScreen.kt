@@ -57,6 +57,7 @@ fun MainScreen(
     )
 
     val context = LocalContext.current
+    val sessionManager = remember { SessionManager(context) }
 
     val sharedHomeViewModel: HomeViewModel = viewModel(
         factory = viewModelFactory {
@@ -65,7 +66,13 @@ fun MainScreen(
             }
         }
     )
-    val sharedProfileViewModel: ProfileViewModel = viewModel()
+    val sharedProfileViewModel: ProfileViewModel = viewModel(
+        factory = viewModelFactory {
+            initializer {
+                ProfileViewModel(sessionManager)
+            }
+        }
+    )
 
     Scaffold(
         bottomBar = {
@@ -117,6 +124,7 @@ fun MainScreen(
 
             composable("settings_screen") {
                 SettingsScreen(
+                    viewModel = sharedProfileViewModel,
                     onBackClick = { navController.popBackStack() },
                     onNavigateToEditAccount = { navController.navigate("edit_account_screen") },
                     onNavigateToEditPlan = onNavigateToEditPlan,
@@ -126,6 +134,7 @@ fun MainScreen(
 
             composable("edit_account_screen") {
                 EditAccountSelectionScreen(
+                    viewModel = sharedProfileViewModel,
                     onBackClick = { navController.popBackStack() },
                     onEditUsernameClick = { navController.navigate("edit_username_screen") },
                     onEditEmailClick = { navController.navigate("edit_email_screen") },

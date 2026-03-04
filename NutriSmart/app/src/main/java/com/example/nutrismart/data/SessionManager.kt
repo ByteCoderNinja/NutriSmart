@@ -74,4 +74,20 @@ class SessionManager(context: Context) {
     fun getWakeUpTime(): String {
         return prefs.getString("wake_up_time", "08:00") ?: "08:00"
     }
+
+    fun saveProfileComplete(isComplete: Boolean) {
+        prefs.edit { putBoolean("IS_PROFILE_COMPLETE", isComplete) }
+    }
+
+    fun isProfileComplete(): Boolean {
+        return prefs.getBoolean("IS_PROFILE_COMPLETE", false)
+    }
+
+    fun saveIsGoogleUser(isGoogle: Boolean) {
+        prefs.edit { putBoolean("IS_GOOGLE_USER", isGoogle) }
+    }
+
+    fun isGoogleUser(): Boolean {
+        return prefs.getBoolean("IS_GOOGLE_USER", false)
+    }
 }

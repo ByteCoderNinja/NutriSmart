@@ -87,7 +87,7 @@ class AuthService(
             ?: throw RuntimeException("Invalid Google ID Token")
 
         val email = payload.email
-        val name = payload["name"] as String? ?: "Google User"
+        val name = payload["name"] as String? ?: payload.email.split("@")[0]
 
         var user = userRepository.findByEmail(email)
 
@@ -113,6 +113,6 @@ class AuthService(
             .build()
 
         val token = jwtUtils.generateToken(userDetails)
-        return AuthResponse(token, user.id)
+        return AuthResponse(token, user.id, user.isProfileComplete)
     }
 }

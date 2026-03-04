@@ -18,7 +18,7 @@ class CustomUserDetailsService(
 
         return User.builder()
             .username(userEntity.email)
-            .password(userEntity.passwordHash)
+            .password(userEntity.passwordHash ?: "")
             .roles("USER")
             .build()
     }

@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nutrismart.data.model.*
 import com.example.nutrismart.data.remote.RetrofitClient
-import com.example.nutrismart.ui.screens.verify.SessionManager
+import com.example.nutrismart.data.UserSession
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -107,11 +107,11 @@ class OnboardingViewModel : ViewModel() {
                     currency = currency
                 )
 
-                val token = SessionManager.token ?: ""
+                val token = if (UserSession.token.isNotEmpty()) "Bearer ${UserSession.token}" else ""
                 val response = RetrofitClient.api.completeProfile(token, request)
 
                 if (response.isSuccessful) {
-                    val userId = SessionManager.userId ?: throw Exception("User ID not found")
+                    val userId = UserSession.currentUserId ?: throw Exception("User ID not found")
                     startPlanGeneration(userId)
                 } else {
                     errorMessage = "Error: ${response.code()} - ${response.message()}"
@@ -128,7 +128,7 @@ class OnboardingViewModel : ViewModel() {
     private fun startPlanGeneration(userId: Long) {
         viewModelScope.launch {
             try {
-                val token = SessionManager.token ?: ""
+                val token = if (UserSession.token.isNotEmpty()) "Bearer ${UserSession.token}" else ""
 
                 val startResponse = RetrofitClient.api.startPlanGeneration(token, userId)
 
@@ -164,7 +164,7 @@ class OnboardingViewModel : ViewModel() {
             delay(5000)
 
             try {
-                val token = SessionManager.token ?: ""
+                val token = if (UserSession.token.isNotEmpty()) "Bearer ${UserSession.token}" else ""
 
                 val statusResponse = RetrofitClient.api.checkGenerationStatus(token, userId)
 

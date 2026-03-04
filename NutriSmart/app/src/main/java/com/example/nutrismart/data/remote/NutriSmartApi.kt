@@ -96,7 +96,7 @@ interface NutriSmartApi {
     suspend fun toggleShoppingItem(
         @Header("Authorization") token: String,
         @Path("itemId") itemId: Long,
-        @Query("isChecked") isChecked: Boolean
+        @Query("checked") isChecked: Boolean
     ): retrofit2.Response<Unit>
 
     @GET("nutrition/alternatives/{userId}")
@@ -139,4 +139,7 @@ interface NutriSmartApi {
         @Path("userId") userId: Long,
         @Body request: UpdateUserRequest
     ): Response<UserDto>
+
+    @POST("auth/google")
+    suspend fun googleLogin(@Body request: GoogleLoginRequest): Response<AuthResponse>
 }

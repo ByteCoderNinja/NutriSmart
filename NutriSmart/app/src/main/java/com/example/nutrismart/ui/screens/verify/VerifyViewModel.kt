@@ -5,19 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.nutrismart.data.SessionManager
+import com.example.nutrismart.data.UserSession
 import com.example.nutrismart.data.model.VerifyRequest
 import com.example.nutrismart.data.remote.RetrofitClient
 import kotlinx.coroutines.launch
-
-object SessionManager {
-    var token: String? = null
-    var userId: Long? = null
-
-    fun clearSession() {
-        token = null
-        userId = null
-    }
-}
 
 class VerifyViewModel : ViewModel() {
     var code by mutableStateOf("")
@@ -36,8 +28,8 @@ class VerifyViewModel : ViewModel() {
                 if (response.isSuccessful && response.body() != null) {
                     val token = response.body()!!.token
                     val authResponse = response.body()!!
-                    SessionManager.token = "Bearer $token"
-                    SessionManager.userId = authResponse.userId
+                    UserSession.token = token
+                    UserSession.currentUserId = authResponse.userId
                     verificationSuccess = true
                 } else {
                     errorMessage = "Invalid code"

@@ -10,5 +10,6 @@ data class UserDto(
     val height: Double? = null,
     val dateOfBirth: String? = null,
     val targetWeight: Double? = null,
-    val stepGoal: Int? = 10000
+    val stepGoal: Int? = 10000,
+    val isGoogleUser: Boolean = false
 )

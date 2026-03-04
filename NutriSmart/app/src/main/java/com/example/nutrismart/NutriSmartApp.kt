@@ -30,6 +30,7 @@ fun NutriSmartApp() {
 
     val savedToken = sessionManager.fetchAuthToken()
     val savedUserId = sessionManager.fetchUserId()
+    val isProfileComplete = sessionManager.isProfileComplete()
 
     if (savedToken != null) {
         UserSession.token = savedToken
@@ -37,7 +38,11 @@ fun NutriSmartApp() {
     }
 
     val startDestination = if (!savedToken.isNullOrEmpty()) {
-        "main_screen"
+        if (isProfileComplete) {
+            "main_screen"
+        } else {
+            "onboarding"
+        }
     } else {
         "login"
     }
@@ -46,7 +51,17 @@ fun NutriSmartApp() {
 
         composable("login") {
             LoginScreen(
-                onLoginSuccess = { navController.navigate("main_screen") },
+                onLoginSuccess = { isProfileComplete ->
+                    if (isProfileComplete) {
+                        navController.navigate("main_screen") {
+                            popUpTo("login") { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate("onboarding") {
+                            popUpTo("login") { inclusive = true }
+                        }
+                    }
+                },
                 onNavigateToRegister = { navController.navigate("register") }
             )
         }

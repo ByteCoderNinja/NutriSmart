@@ -142,14 +142,6 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
 
     var isRefreshing by remember { mutableStateOf(false) }
 
-    LaunchedEffect(uiState.isLoading) {
-        if (!uiState.isLoading) {
-            viewModel.fetchTodayData()
-            delay(1000)
-            isRefreshing = false
-        }
-    }
-
     if (uiState.isLoading && uiState.breakfast == null && !isRefreshing) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
@@ -329,7 +321,18 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
     }
 
     if (showBonusSnackSheet) {
-        ModalBottomSheet(onDismissRequest = { showBonusSnackSheet = false }) {
+        val bonusSheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = false)
+
+        LaunchedEffect(uiState.isSwapping) {
+            if (!uiState.isSwapping) {
+                bonusSheetState.partialExpand()
+            }
+        }
+
+        ModalBottomSheet(
+            onDismissRequest = { showBonusSnackSheet = false },
+            sheetState = bonusSheetState
+        ) {
             Column(modifier = Modifier.fillMaxWidth().padding(16.dp).padding(bottom = 32.dp)) {
                 Text("Choose your Bonus Snack", fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 Text("Showing items under ${uiState.burnedCalories} kcal", fontSize = 14.sp, color = Color.Gray)
@@ -591,7 +594,18 @@ fun MealCardButton(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MealSwapBottomSheet(mealType: String, alternatives: List<MealDto>, isLoading: Boolean, onDismiss: () -> Unit, onSelected: (Long) -> Unit) {
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    val sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = false)
+
+    LaunchedEffect(isLoading) {
+        if (!isLoading) {
+            sheetState.partialExpand()
+        }
+    }
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState
+    ) {
         Column(modifier = Modifier.fillMaxWidth().padding(16.dp).padding(bottom = 32.dp)) {
             Text(
                 "Choose another $mealType",
@@ -654,7 +668,7 @@ fun ShoppingListContent(state: HomeUiState, viewModel: HomeViewModel) {
             Text("Your shopping list is empty.")
         } else {
             LazyColumn {
-                items(state.shoppingList!!.items) { item ->
+                items(state.shoppingList!!.items.sortedBy { it.id }) { item ->
                     Row(
                         modifier = Modifier.fillMaxWidth()
                             .padding(vertical = 8.dp),
