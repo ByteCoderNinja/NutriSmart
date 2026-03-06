@@ -1,5 +1,6 @@
 package com.timofte.nutrismart.features.user.model
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.persistence.*
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -70,7 +71,11 @@ data class UserEntity(
     @CollectionTable(name = "user_disliked_foods", joinColumns = [JoinColumn(name = "user_id")])
     @Enumerated(EnumType.STRING)
     var dislikedFoods: Set<DislikedFood> = emptySet()
-)
+) {
+    @get:JsonProperty("isGoogleUser")
+    val isGoogleUser: Boolean
+        get() = provider == AuthProvider.GOOGLE
+}
 
 data class UserUpdateDto(
     val username: String? = null,

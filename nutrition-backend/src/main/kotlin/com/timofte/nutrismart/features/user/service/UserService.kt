@@ -150,6 +150,15 @@ class UserService(
         val existingUser = userRepository.findById(userId)
             .orElseThrow { RuntimeException("User not found") }
 
+        if (existingUser.provider == AuthProvider.GOOGLE) {
+            if (updateDto.email != null && updateDto.email != existingUser.email) {
+                throw IllegalArgumentException("Email cannot be updated for Google accounts")
+            }
+            if (updateDto.newPassword != null) {
+                throw IllegalArgumentException("Password cannot be updated for Google accounts")
+            }
+        }
+
         var userToSave = existingUser.copy(
             username = updateDto.username ?: existingUser.username
         )

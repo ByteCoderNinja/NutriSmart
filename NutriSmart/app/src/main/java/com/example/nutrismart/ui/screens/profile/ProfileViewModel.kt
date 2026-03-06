@@ -24,8 +24,6 @@ class ProfileViewModel(private val sessionManager: SessionManager) : ViewModel()
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
     init {
-        val isGoogle = sessionManager.isGoogleUser()
-        _uiState.update { it.copy(isGoogleUser = isGoogle) }
         fetchUserData()
     }
 
@@ -38,7 +36,12 @@ class ProfileViewModel(private val sessionManager: SessionManager) : ViewModel()
 
                 val response = RetrofitClient.api.getUser(token, userId)
                 if (response.isSuccessful) {
-                    _uiState.update { it.copy(user = response.body(), isLoading = false) }
+                    val user = response.body()
+                    _uiState.update { it.copy(
+                        user = user,
+                        isGoogleUser = user?.isGoogleUser ?: false,
+                        isLoading = false
+                    ) }
                 } else {
                     _uiState.update { it.copy(errorMessage = "Failed to load data", isLoading = false) }
                 }

@@ -20,6 +20,8 @@ import com.example.nutrismart.data.SessionManager
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
+import com.example.nutrismart.ui.screens.profile.components.SettingsItem
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
@@ -134,36 +136,5 @@ fun SettingsScreen(
                 }
             }
         )
-    }
-}
-
-@Composable
-fun SettingsItem(
-    title: String,
-    value: String? = null,
-    textColor: Color = MaterialTheme.colorScheme.onSurface,
-    onClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 6.dp)
-            .clickable { onClick() }
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(title, fontSize = 16.sp, color = textColor)
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                if (value != null) {
-                    Text(text = value, fontSize = 16.sp, color = Color.Gray, modifier = Modifier.padding(end = 8.dp))
-                }
-                Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray)
-            }
-        }
     }
 }
