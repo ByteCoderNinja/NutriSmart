@@ -2,6 +2,7 @@ package com.example.nutrismart.ui.screens.onboarding
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -23,7 +24,6 @@ import com.example.nutrismart.ui.components.DislikedFoodsSelector
 import java.time.Instant
 import java.time.ZoneId
 
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OnboardingScreen(
@@ -65,6 +65,7 @@ fun OnboardingScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
             .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -86,7 +87,7 @@ fun OnboardingScreen(
                         selected = (viewModel.gender == g),
                         onClick = { viewModel.gender = g }
                     )
-                    Text(text = g.name)
+                    Text(text = g.name, color = MaterialTheme.colorScheme.onBackground)
                 }
             }
         }
@@ -115,7 +116,7 @@ fun OnboardingScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Text("Unit System:", fontWeight = FontWeight.SemiBold)
+            Text("Unit System:", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onBackground)
             Row {
                 FilterChip(
                     selected = !viewModel.isImperial,
@@ -183,7 +184,7 @@ fun OnboardingScreen(
             ) {
                 ActivityLevel.entries.forEach { level ->
                     DropdownMenuItem(
-                        text = { Text(level.name) },
+                        text = { Text(level.name, color = MaterialTheme.colorScheme.onBackground) },
                         onClick = {
                             viewModel.activityLevel = level
                             showActivityMenu = false
@@ -196,7 +197,7 @@ fun OnboardingScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Text("Currency:", fontWeight = FontWeight.SemiBold)
+            Text("Currency:", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onBackground)
             Row {
                 FilterChip(
                     selected = viewModel.currency == Currency.RON,
@@ -323,7 +324,12 @@ fun OnboardingScreen(
 @Composable
 fun SectionHeader(title: String) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        Text(
+            title,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground
+        )
         HorizontalDivider(color = MaterialTheme.colorScheme.primaryContainer, thickness = 1.dp)
         Spacer(modifier = Modifier.height(8.dp))
     }
@@ -373,7 +379,7 @@ fun <T> MultiSelectDropdown(
                                 onCheckedChange = null
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(itemLabel(item))
+                            Text(itemLabel(item), color = MaterialTheme.colorScheme.onBackground)
                         }
                     },
                     onClick = {

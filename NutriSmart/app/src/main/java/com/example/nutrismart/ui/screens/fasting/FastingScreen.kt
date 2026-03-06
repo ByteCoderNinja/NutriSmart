@@ -144,7 +144,7 @@ fun FastingScreen() {
                 .padding(bottom = 16.dp),
             shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (uiState.isFasting) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+                containerColor = if (uiState.isFasting) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.primary
             )
         ) {
             Icon(
