@@ -181,6 +181,10 @@ class UserService(
             )
         }
 
+        if (updateDto.weight != null && updateDto.weight != existingUser.weight) {
+            userToSave.weight = updateDto.weight
+        }
+
         return userRepository.save(userToSave)
     }
 }

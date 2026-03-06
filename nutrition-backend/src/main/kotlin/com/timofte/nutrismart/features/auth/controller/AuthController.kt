@@ -38,4 +38,26 @@ class AuthController(
     fun googleLogin(@RequestBody request: GoogleLoginRequest): ResponseEntity<AuthResponse> {
         return ResponseEntity.ok(authService.googleLogin(request))
     }
+
+    @PostMapping("/forgot-password")
+    fun forgotPassword(@RequestBody request: ForgotPasswordRequest): ResponseEntity<ApiResponse<String>> {
+        authService.processForgotPassword(request.email)
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                message = "Verification code sent if email exists.",
+                data = null
+            )
+        )
+    }
+
+    @PostMapping("/reset-password")
+    fun resetPassword(@RequestBody request: ResetPasswordRequest): ResponseEntity<ApiResponse<String>> {
+        try {
+            authService.resetUserPassword(request)
+            return ResponseEntity.ok(ApiResponse(success = true, message = "Password successfully reset.", data = null))
+        } catch (e: Exception) {
+            return ResponseEntity.badRequest().body(ApiResponse(success = false, message = e.message ?: "Error", data = null))
+        }
+    }
 }

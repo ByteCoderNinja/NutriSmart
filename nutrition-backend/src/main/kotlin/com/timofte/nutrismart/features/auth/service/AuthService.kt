@@ -115,4 +115,37 @@ class AuthService(
         val token = jwtUtils.generateToken(userDetails)
         return AuthResponse(token, user.id, user.isProfileComplete)
     }
+
+    fun processForgotPassword(email: String) {
+        val user = userRepository.findByEmail(email) ?: return
+
+        val resetCode = String.format("%06d", Random().nextInt(999999))
+
+        user.verificationCode = resetCode
+        user.verificationCodeExpiresAt = LocalDateTime.now().plusMinutes(15)
+        userRepository.save(user)
+
+        emailService.sendVerificationCode(user.email, resetCode)
+    }
+
+    fun resetUserPassword(request: ResetPasswordRequest) {
+        val user = userRepository.findByEmail(request.email)
+            ?: throw IllegalArgumentException("User not found")
+
+        if (user.verificationCode != request.code ||
+            user.verificationCodeExpiresAt == null ||
+            user.verificationCodeExpiresAt!!.isBefore(LocalDateTime.now())) {
+            throw RuntimeException("Invalid or expired verification code")
+        }
+
+        if (passwordEncoder.matches(request.newPassword, user.passwordHash)) {
+            throw RuntimeException("New password cannot be the same as the old password")
+        }
+
+        user.passwordHash = passwordEncoder.encode(request.newPassword)
+        user.verificationCode = null
+        user.verificationCodeExpiresAt = null
+
+        userRepository.save(user)
+    }
 }

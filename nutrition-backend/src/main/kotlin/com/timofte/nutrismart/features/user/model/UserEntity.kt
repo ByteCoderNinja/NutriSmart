@@ -17,7 +17,7 @@ data class UserEntity(
     @Column(nullable = false)
     val username: String,
 
-    val passwordHash: String?,
+    var passwordHash: String?,
 
     @Enumerated(EnumType.STRING)
     var provider: AuthProvider = AuthProvider.LOCAL,
@@ -76,5 +76,6 @@ data class UserUpdateDto(
     val username: String? = null,
     val email: String? = null,
     val currentPassword: String? = null,
-    val newPassword: String? = null
+    val newPassword: String? = null,
+    val weight: Double? = null,
 )
