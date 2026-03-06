@@ -1,4 +1,4 @@
-package com.example.nutrismart.ui.components
+package com.example.nutrismart.ui.core_components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi

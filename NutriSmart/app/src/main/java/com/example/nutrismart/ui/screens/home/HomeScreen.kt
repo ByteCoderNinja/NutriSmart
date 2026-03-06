@@ -1,8 +1,18 @@
 package com.example.nutrismart.ui.screens.home
 
+import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,7 +29,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.DirectionsWalk
 import androidx.compose.material.icons.filled.Add
@@ -27,6 +40,8 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.LocalDrink
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.icons.filled.RestaurantMenu
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -39,7 +54,6 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -52,8 +66,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -69,9 +85,13 @@ import com.example.nutrismart.data.SessionManager
 import com.example.nutrismart.data.UserSession
 import com.example.nutrismart.data.health.HealthConnectManager
 import com.example.nutrismart.data.remote.MealDto
+import com.example.nutrismart.notifications.EatingReminder
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -91,6 +111,17 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
 
     val healthConnectManager = remember { HealthConnectManager(context) }
     val scope = rememberCoroutineScope()
+
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {}
+
+    LaunchedEffect(Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            notificationPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
+
     val permissions = setOf(
         HealthPermission.getReadPermission(StepsRecord::class),
         HealthPermission.getReadPermission(ExerciseSessionRecord::class),
@@ -112,6 +143,12 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
             }
         } else {
             hasHealthPermissions = false
+        }
+    }
+
+    LaunchedEffect(uiState.waterConsumedMl) {
+        if (uiState.waterConsumedMl > 0 && uiState.waterConsumedMl == uiState.waterGoalMl) {
+            Toast.makeText(context, "Congratulations! You've reached your daily water goal! 💧", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -140,6 +177,60 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
         }
     }
 
+    val breakfastRange = getRecommendedTimeRange(userWakeUpTime, "Breakfast")
+    val lunchRange = getRecommendedTimeRange(userWakeUpTime, "Lunch")
+    val dinnerRange = getRecommendedTimeRange(userWakeUpTime, "Dinner")
+    val snackRange = getRecommendedTimeRange(userWakeUpTime, "Snack")
+
+    LaunchedEffect(uiState.breakfast, uiState.lunch, uiState.dinner, uiState.snack) {
+        if (uiState.breakfast != null) {
+            val meals = listOf(
+                Triple("Breakfast", uiState.breakfast, breakfastRange),
+                Triple("Lunch", uiState.lunch, lunchRange),
+                Triple("Dinner", uiState.dinner, dinnerRange),
+                Triple("Snack", uiState.snack, snackRange)
+            )
+
+            meals.forEach { (type, mealDto, range) ->
+                mealDto?.let { meal ->
+                    if (!meal.consumed) {
+                        val times = range.split(" - ")
+
+                        if (times.size == 2) {
+                            val startStr = times[0].trim()
+                            val endStr = times[1].trim()
+
+                            runCatching {
+                                val startTime = LocalTime.parse(startStr)
+                                val endTime = LocalTime.parse(endStr)
+
+                                val startDateTime = LocalDateTime.of(LocalDate.now(), startTime)
+                                val endDateTime = LocalDateTime.of(LocalDate.now(), endTime)
+
+                                val startMillis = startDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                                val endMillis = endDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+
+                                val currentMillis = System.currentTimeMillis()
+
+                                if (startMillis > currentMillis) {
+                                    scheduleMealNotification(context, type, startMillis, false)
+                                }
+                                if (endMillis > currentMillis) {
+                                    scheduleMealNotification(context, type, endMillis, true)
+                                }
+                            }.onFailure { e ->
+                                e.printStackTrace()
+                            }
+                        }
+                    } else {
+                        cancelMealNotification(context, type, false)
+                        cancelMealNotification(context, type, true)
+                    }
+                }
+            }
+        }
+    }
+
     var isRefreshing by remember { mutableStateOf(false) }
 
     if (uiState.isLoading && uiState.breakfast == null && !isRefreshing) {
@@ -149,11 +240,25 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
         return
     }
 
+    LaunchedEffect(uiState.isLoading) {
+        if (!uiState.isLoading) {
+            isRefreshing = false
+        }
+    }
+
     PullToRefreshBox(
         isRefreshing = isRefreshing,
         onRefresh = {
             isRefreshing = true
             viewModel.fetchTodayData()
+
+            if (hasHealthPermissions) {
+                scope.launch {
+                    val steps = healthConnectManager.readTodaySteps()
+                    val burned = healthConnectManager.readBurnedCalories(steps)
+                    viewModel.updateHealthData(steps, burned)
+                }
+            }
         },
         modifier = Modifier.fillMaxSize()
     ) {
@@ -178,7 +283,8 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                         if (!hasHealthPermissions) {
                             permissionsLauncher.launch(permissions)
                         }
-                    }
+                    },
+                    onAdjustWeight = { delta -> viewModel.adjustWeight(delta) }
                 )
                 Spacer(modifier = Modifier.height(24.dp))
             }
@@ -214,7 +320,13 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                             mealType = type,
                             meal = it,
                             onCardClick = { selectedMealForDetails = type to it },
-                            onToggleConsume = { consumed -> viewModel.toggleMeal(it.id, type, consumed) },
+                            onToggleConsume = { consumed ->
+                                viewModel.toggleMeal(it.id, type, consumed)
+                                if (consumed) {
+                                    cancelMealNotification(context, type, false)
+                                    cancelMealNotification(context, type, true)
+                                }
+                            },
                             onSwapClick = { mealTypeForSwap = type; viewModel.loadAlternatives(type) }
                         )
                     }
@@ -279,24 +391,26 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
             }
 
             item {
-                ElevatedCard(
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .height(64.dp)
                         .clickable { showShoppingListBottomSheet = true },
                     shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF5DB056))
                 ) {
                     Row(
-                        modifier = Modifier.padding(16.dp),
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.Check, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                        Icon(Icons.Default.Check, contentDescription = null, tint = Color.White)
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
                             text = "View Grocery List",
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontSize = 16.sp
+                            color = Color.White,
+                            fontSize = 18.sp
                         )
                     }
                 }
@@ -374,10 +488,66 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
     }
 }
 
+@SuppressLint("ScheduleExactAlarm")
+fun scheduleMealNotification(
+    context: Context,
+    mealType: String,
+    timeInMillis: Long,
+    isReminder: Boolean
+) {
+    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    val intent = Intent(context, EatingReminder::class.java).apply {
+        putExtra("MEAL_TYPE", mealType)
+        putExtra("IS_REMINDER", isReminder)
+    }
+
+    val requestCode = mealType.hashCode() + (if (isReminder) 1 else 0)
+
+    val pendingIntent = PendingIntent.getBroadcast(
+        context,
+        requestCode,
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (alarmManager.canScheduleExactAlarms()) {
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent)
+        } else {
+            alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent)
+        }
+    } else {
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent)
+    }
+}
+
+fun cancelMealNotification(
+    context: Context,
+    mealType: String,
+    isReminder: Boolean
+) {
+    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    val intent = Intent(context, EatingReminder::class.java)
+    val requestCode = mealType.hashCode() + (if (isReminder) 1 else 0)
+
+    val pendingIntent = PendingIntent.getBroadcast(
+        context,
+        requestCode,
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
+
+    try {
+        alarmManager.cancel(pendingIntent)
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
+
 @Composable
 fun DateHeaderSection() {
-    val formatter = java.time.format.DateTimeFormatter.ofPattern("EEEE, d MMM")
-    val todayDate = java.time.LocalDate.now().format(formatter)
+    val formatter = DateTimeFormatter.ofPattern("EEEE, d MMM")
+    val todayDate = LocalDate.now().format(formatter)
 
     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -402,7 +572,8 @@ fun MainStatsCard(
     hasPermissions: Boolean,
     onAddWaterClick: () -> Unit,
     onRemoveWaterClick: () -> Unit,
-    onStepsClick: () -> Unit
+    onStepsClick: () -> Unit,
+    onAdjustWeight: (Double) -> Unit
 ) {
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
@@ -449,6 +620,15 @@ fun MainStatsCard(
                 state.glassSizeMl,
                 onAddWaterClick,
                 onRemoveClick = onRemoveWaterClick
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(16.dp))
+
+            WeightTrackerSection(
+                currentWeight = state.weight,
+                onAdjustWeight = onAdjustWeight
             )
         }
     }
@@ -517,9 +697,9 @@ fun MacrosRow(state: HomeUiState) {
         val proteinProgress = if (state.proteinGoal > 0) state.proteinConsumed.toFloat() / state.proteinGoal else 0f
         val fatProgress = if (state.fatGoal > 0) state.fatConsumed.toFloat() / state.fatGoal else 0f
 
-        MacroCard(modifier = Modifier.weight(1f), title = "Carbs", value = "${state.carbsConsumed}g", progress = carbsProgress, color = Color(0xFFFFA726))
-        MacroCard(modifier = Modifier.weight(1f), title = "Protein", value = "${state.proteinConsumed}g", progress = proteinProgress, color = Color(0xFFEF5350))
-        MacroCard(modifier = Modifier.weight(1f), title = "Fat", value = "${state.fatConsumed}g", progress = fatProgress, color = Color(0xFF66BB6A))
+        MacroCard(modifier = Modifier.weight(1f), title = "Carbs", value = "${state.carbsConsumed}g", progress = carbsProgress, color = Color(0xFF2881B4))
+        MacroCard(modifier = Modifier.weight(1f), title = "Protein", value = "${state.proteinConsumed}g", progress = proteinProgress, color = Color(0xFF5DB056))
+        MacroCard(modifier = Modifier.weight(1f), title = "Fat", value = "${state.fatConsumed}g", progress = fatProgress, color = Color(0xFFFFA726))
     }
 }
 
@@ -555,15 +735,31 @@ fun MealCardButton(
     onToggleConsume: (Boolean) -> Unit,
     onSwapClick: () -> Unit
 ) {
+    val isConsumed = meal.consumed
+    val cardAlpha = if (isConsumed) 0.5f else 1f
+
     Card(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp).clip(RoundedCornerShape(16.dp)).clickable { onCardClick() },
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .clickable { onCardClick() }
+            .alpha(cardAlpha),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
-        Row(modifier = Modifier.padding(16.dp).fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier.padding(18.dp).fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(mealType, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = MaterialTheme.colorScheme.primary)
+                    Text(
+                        text = mealType,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        color = Color(0xFF4CAF50)
+                    )
                     Spacer(modifier = Modifier.width(8.dp))
                     Icon(
                         imageVector = Icons.Default.Refresh,
@@ -572,20 +768,32 @@ fun MealCardButton(
                         tint = Color.Gray
                     )
                 }
-                Text(meal.name, fontSize = 18.sp, fontWeight = FontWeight.SemiBold, maxLines = 1)
-                Row(modifier = Modifier.padding(top = 4.dp)) {
-                    Text("${meal.calories} kcal", fontSize = 12.sp, color = Color.Gray)
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = meal.name,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 2,
+                    lineHeight = 22.sp
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("${meal.calories} kcal", fontSize = 13.sp, color = Color.Gray, fontWeight = FontWeight.Medium)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("•", fontSize = 12.sp, color = Color.Gray)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("P: ${meal.protein}g C: ${meal.carbs}g F: ${meal.fat}g", fontSize = 12.sp, color = Color.Gray)
+                    Text("P: ${meal.protein}g  C: ${meal.carbs}g  F: ${meal.fat}g", fontSize = 13.sp, color = Color.Gray)
                 }
             }
-            Checkbox(
-                checked = meal.consumed,
-                onCheckedChange = { checked ->
-                    onToggleConsume(checked)
-                }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            CircularCheckbox(
+                checked = isConsumed,
+                onCheckedChange = { checked -> onToggleConsume(checked) }
             )
         }
     }
@@ -695,27 +903,50 @@ fun MealDetailBottomSheet(
     meal: MealDto,
     onDismiss: () -> Unit
 ) {
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        containerColor = MaterialTheme.colorScheme.surface
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp)
                 .padding(bottom = 40.dp)
         ) {
-            Text(mealType, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
-            Text(meal.name, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+            Text(
+                text = mealType.uppercase(),
+                style = MaterialTheme.typography.labelMedium,
+                color = Color(0xFF5DB056),
+                fontWeight = FontWeight.Bold,
+                letterSpacing = 1.sp
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = meal.name,
+                fontSize = 26.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                lineHeight = 32.sp
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.Bottom) {
                 Text(
                     text = "${meal.calories}",
-                    fontSize = 48.sp,
+                    fontSize = 56.sp,
                     fontWeight = FontWeight.ExtraBold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = Color(0xFF5DB056)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("kcal", fontSize = 20.sp, color = Color.Gray)
+                Text(
+                    text = "kcal",
+                    fontSize = 20.sp,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -724,30 +955,35 @@ fun MealDetailBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                MacroDetailItem("Carbs", "${meal.carbs}g", Color(0xFFFFA726))
-                MacroDetailItem("Protein", "${meal.protein}g", Color(0xFFEF5350))
-                MacroDetailItem("Fat", "${meal.fat}g", Color(0xFF66BB6A))
+                MacroDetailItem("Carbs", "${meal.carbs}g", Color(0xFF2881B4))
+                MacroDetailItem("Protein", "${meal.protein}g", Color(0xFF5DB056))
+                MacroDetailItem("Fat", "${meal.fat}g", Color(0xFFFFA726))
             }
 
             Spacer(modifier = Modifier.height(32.dp))
             HorizontalDivider(
-                modifier = Modifier.padding(vertical = 8.dp),
-                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
             )
             Spacer(modifier = Modifier.height(24.dp))
 
-            Text("Ingredients / Quantity", fontWeight = FontWeight.Bold, fontSize = 18.sp)
-            Spacer(modifier = Modifier.height(8.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.RestaurantMenu, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(20.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Ingredients & Quantity", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = MaterialTheme.colorScheme.onSurface)
+            }
 
-            Surface(
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                shape = RoundedCornerShape(12.dp),
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
+                shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
                     text = meal.quantityDetails ?: "No quantity details available.",
-                    modifier = Modifier.padding(16.dp),
-                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(20.dp),
+                    fontSize = 15.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     lineHeight = 24.sp
                 )
             }
@@ -757,10 +993,49 @@ fun MealDetailBottomSheet(
 
 @Composable
 fun MacroDetailItem(label: String, value: String, color: Color) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Box(modifier = Modifier.size(8.dp).clip(RoundedCornerShape(4.dp)).background(color))
-        Text(value, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-        Text(label, fontSize = 12.sp, color = Color.Gray)
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
+        shape = RoundedCornerShape(16.dp),
+        modifier = Modifier.width(95.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(modifier = Modifier.size(12.dp).clip(CircleShape).background(color))
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(value, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
+            Text(label, fontSize = 12.sp, color = Color.Gray)
+        }
+    }
+}
+
+@Composable
+fun CircularCheckbox(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val backgroundColor = if (checked) Color(0xFF4CAF50) else Color.Transparent
+    val borderColor = if (checked) Color(0xFF4CAF50) else Color.Gray
+
+    Box(
+        modifier = modifier
+            .size(26.dp)
+            .clip(CircleShape)
+            .background(backgroundColor)
+            .border(2.dp, borderColor, CircleShape)
+            .clickable { onCheckedChange(!checked) },
+        contentAlignment = Alignment.Center
+    ) {
+        if (checked) {
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.size(18.dp)
+            )
+        }
     }
 }
 
@@ -781,4 +1056,74 @@ fun getRecommendedTimeRange(wakeUpTime: LocalTime, mealType: String): String {
     val endTime = wakeUpTime.plusHours(endOffset)
 
     return "${startTime.format(formatter)} - ${endTime.format(formatter)}"
+}
+
+@Composable
+fun WeightTrackerSection(
+    currentWeight: Double,
+    onAdjustWeight: (Double) -> Unit
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text("Weight", fontSize = 16.sp, fontWeight = FontWeight.Medium)
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth().padding(top = 12.dp)
+        ) {
+            RepeatingIconButton(
+                icon = Icons.Default.Remove,
+                onClick = { onAdjustWeight(-0.1) }
+            )
+
+            Text(
+                text = "${currentWeight} kg",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(horizontal = 24.dp)
+            )
+
+            RepeatingIconButton(
+                icon = Icons.Default.Add,
+                onClick = { onAdjustWeight(0.1) }
+            )
+        }
+    }
+}
+
+@Composable
+fun RepeatingIconButton(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    onClick: () -> Unit
+) {
+    val coroutineScope = rememberCoroutineScope()
+
+    Box(
+        modifier = Modifier
+            .size(48.dp)
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onPress = {
+                        onClick()
+
+                        val job = coroutineScope.launch {
+                            delay(400)
+                            while (true) {
+                                onClick()
+                                delay(100)
+                            }
+                        }
+
+                        tryAwaitRelease()
+                        job.cancel()
+                    }
+                )
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface)
+    }
 }

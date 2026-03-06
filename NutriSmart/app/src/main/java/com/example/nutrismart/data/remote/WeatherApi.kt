@@ -1,4 +1,4 @@
-package com.example.nutrismart.ui.screens.weather
+package com.example.nutrismart.data.remote
 
 import com.example.nutrismart.BuildConfig
 import retrofit2.Response

@@ -12,7 +12,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import com.example.nutrismart.data.SessionManager
+import com.example.nutrismart.data.model.UpdateUserRequest
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import java.time.LocalTime
+import kotlin.math.roundToInt
 
 data class HomeUiState(
     val isLoading: Boolean = true,
@@ -31,7 +35,8 @@ data class HomeUiState(
     val shoppingList: ShoppingListDto? = null,
     val alternatives: List<MealDto> = emptyList(),
     val wakeUpTime: LocalTime = LocalTime.of(8,0),
-    val burnedCalories: Int = 0
+    val burnedCalories: Int = 0,
+    val weight: Double = 0.0
 ) {
     val totalCaloriesGoal: Int get() = listOfNotNull(breakfast, lunch, dinner, snack).sumOf { it.calories }.coerceAtLeast(1)
     val carbsGoal: Int get() = listOfNotNull(breakfast, lunch, dinner, snack).sumOf { it.carbs }.coerceAtLeast(1)
@@ -49,6 +54,7 @@ class HomeViewModel(private val sessionManager: SessionManager) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
     private val currentUserId: Long get() = UserSession.currentUserId
+    private var updateWeightJob: Job? = null
 
     init {
         val savedWater = sessionManager.getWaterIntake()
@@ -66,11 +72,20 @@ class HomeViewModel(private val sessionManager: SessionManager) : ViewModel() {
                 val authHeader = "Bearer ${UserSession.token}"
                 val planResponse = RetrofitClient.api.getTodayPlan(authHeader, currentUserId)
                 val shoppingListResponse = RetrofitClient.api.getShoppingList(authHeader, currentUserId)
+                val userResponse = RetrofitClient.api.getUser(authHeader, currentUserId)
+
+                if (userResponse.isSuccessful) {
+                    val user = userResponse.body()
+                    if (user != null) {
+                        _uiState.update { it.copy(weight = user.weight ?: 0.0) }
+                    }
+                }
 
                 if (planResponse.isSuccessful) {
                     val plan = planResponse.body()
                     _uiState.update { it.copy(breakfast = plan?.breakfast, lunch = plan?.lunch, dinner = plan?.dinner, snack = plan?.snack) }
                 }
+
                 if (shoppingListResponse.isSuccessful) {
                     _uiState.update { it.copy(shoppingList = shoppingListResponse.body()) }
                 }
@@ -213,6 +228,36 @@ class HomeViewModel(private val sessionManager: SessionManager) : ViewModel() {
     fun toggleBonusSnackConsumed(isConsumed: Boolean) {
         _uiState.update { state ->
             state.copy(bonusSnack = state.bonusSnack?.copy(consumed = isConsumed))
+        }
+    }
+
+    fun adjustWeight(delta: Double) {
+        val currentWeight = _uiState.value.weight
+        val newWeight = (currentWeight + delta).coerceAtLeast(30.0)
+
+        val roundedWeight = (newWeight * 10.0).roundToInt() / 10.0
+
+        _uiState.update { it.copy(weight = roundedWeight) }
+
+        updateWeightJob?.cancel()
+
+        updateWeightJob = viewModelScope.launch {
+            delay(1500)
+            saveWeightToBackend(roundedWeight)
+        }
+    }
+
+    private suspend fun saveWeightToBackend(newWeight: Double) {
+        try {
+            val userId = UserSession.currentUserId
+            if (userId == -1L) return
+
+            val authHeader = "Bearer ${UserSession.token}"
+            val requestBody = UpdateUserRequest(weight = newWeight)
+
+            RetrofitClient.api.patchUser(authHeader, userId, requestBody)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 }

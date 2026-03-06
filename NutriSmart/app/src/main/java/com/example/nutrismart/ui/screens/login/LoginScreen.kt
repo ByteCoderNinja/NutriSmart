@@ -31,7 +31,8 @@ import com.example.nutrismart.R
 fun LoginScreen(
     viewModel: LoginViewModel = viewModel(),
     onLoginSuccess: (Boolean) -> Unit,
-    onNavigateToRegister: () -> Unit
+    onNavigateToRegister: () -> Unit,
+    onNavigateToForgotPassword: () -> Unit
 ) {
     val context = LocalContext.current
     val sessionManager = remember { SessionManager(context) }
@@ -112,6 +113,18 @@ fun LoginScreen(
             singleLine = true,
             isError = viewModel.errorMessage != null
         )
+
+        TextButton(
+            onClick = onNavigateToForgotPassword,
+            modifier = Modifier.align(Alignment.End)
+        ) {
+            Text(
+                text = "Forgot password?",
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
 
         if (viewModel.errorMessage != null) {
             Text(

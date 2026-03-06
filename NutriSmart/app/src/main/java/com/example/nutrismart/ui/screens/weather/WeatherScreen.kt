@@ -109,10 +109,13 @@ fun WeatherScreen(
                 Text(uiState.cityName, fontSize = 16.sp, color = Color.Gray)
             }
 
-            ElevatedCard(
+            Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFF2881B4)
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
                 Column(
                     modifier = Modifier.padding(24.dp),
@@ -122,23 +125,23 @@ fun WeatherScreen(
                         imageVector = if (uiState.condition.contains("Rain") || uiState.condition.contains("Cloud")) Icons.Default.Cloud else Icons.Default.WbSunny,
                         contentDescription = "Weather Icon",
                         modifier = Modifier.size(64.dp),
-                        tint = if (uiState.condition.contains("Rain")) Color.Gray else Color(0xFFFFA726)
+                        tint = if (uiState.condition.contains("Rain")) Color.White else Color(0xFFFFD54F)
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "${uiState.temperature}°C",
                         fontSize = 48.sp,
                         fontWeight = FontWeight.ExtraBold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        color = Color.White
                     )
                     Text(
                         text = uiState.condition,
                         fontSize = 20.sp,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                        color = Color.White.copy(alpha = 0.8f)
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
-                    HorizontalDivider(color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.2f))
+                    HorizontalDivider(color = Color.White.copy(alpha = 0.2f))
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Row(
@@ -173,8 +176,8 @@ fun WeatherScreen(
 @Composable
 fun WeatherDetailItem(label: String, value: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(label, fontSize = 14.sp, color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f))
-        Text(value, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimaryContainer)
+        Text(label, fontSize = 14.sp, color = Color.White.copy(alpha = 0.7f))
+        Text(value, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
     }
 }
 

@@ -1,5 +1,6 @@
-package com.example.nutrismart.ui.screens.weather
+package com.example.nutrismart.notifications
 
+import android.R
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.BroadcastReceiver
@@ -7,26 +8,26 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 
-class WeatherNotificationReceiver : BroadcastReceiver() {
+class FastingNotificationReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val channelId = "weather_alerts_channel"
+        val channelId = "fasting_channel"
 
         val channel = NotificationChannel(
             channelId,
-            "Weather & Hydration Alerts",
+            "Fasting Noitifications",
             NotificationManager.IMPORTANCE_HIGH
         )
         notificationManager.createNotificationChannel(channel)
 
         val notification = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(android.R.drawable.ic_dialog_alert)
-            .setContentTitle("Beware of the heatwave!")
-            .setContentText("It's over 30°C outside and you haven't drunk enough water. Stay hydrated and stay away from sun!")
+            .setSmallIcon(R.drawable.ic_lock_idle_alarm)
+            .setContentTitle("Fasting Complete!")
+            .setContentText("You have successfully reached your fasting goal. Time to eat!")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .build()
 
-        notificationManager.notify(2001, notification)
+        notificationManager.notify(1001, notification)
     }
 }

@@ -142,4 +142,10 @@ interface NutriSmartApi {
 
     @POST("auth/google")
     suspend fun googleLogin(@Body request: GoogleLoginRequest): Response<AuthResponse>
+
+    @POST("auth/forgot-password")
+    suspend fun forgotPassword(@Body request: Map<String, String>): Response<Void>
+
+    @POST("auth/reset-password")
+    suspend fun resetPassword(@Body request: Map<String, String>): Response<Void>
 }
