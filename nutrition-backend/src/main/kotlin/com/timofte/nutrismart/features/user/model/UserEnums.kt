@@ -16,7 +16,9 @@ enum class DietaryPreference {
     STANDARD,
     VEGAN,
     VEGETARIAN,
+    PESCO_VEGETARIAN,
     KETO,
+    PALEO,
     HIGH_PROTEIN
 }
 
@@ -27,8 +29,13 @@ enum class MedicalCondition {
     HYPERTENSION,
     LACTOSE_INTOLERANCE,
     GLUTEN_INTOLERANCE,
+    CELIAC_DISEASE,
     HIGH_CHOLESTEROL,
-    GASTRITIS
+    GASTRITIS,
+    IRRITABLE_BOWEL_SYNDROME,
+    POLYCYSTIC_OVARY_SYNDROME,
+    GOUT,
+    HYPOTHYROIDISM
 }
 
 enum class Currency(val symbol: String) {
@@ -48,10 +55,33 @@ enum class DislikedFood {
     CHICKEN,
     LAMB,
     TURKEY,
+    DUCK,
+    RABBIT,
+    VENISON,
+    ORGAN_MEATS,
+
     FISH,
+    SALMON,
+    TUNA,
+    WHITE_FISH,
     SEAFOOD,
+    SHRIMP,
+    SQUID,
+    MUSSELS,
+
+    EGGS,
+    MILK,
+    YOGURT,
+    BUTTER,
+    CHEESE,
+    COTTAGE_CHEESE,
+    HARD_CHEESE,
+    CREAM,
+
     SPINACH,
     BROCCOLI,
+    CAULIFLOWER,
+    CABBAGE,
     MUSHROOMS,
     ONIONS,
     GARLIC,
@@ -60,11 +90,38 @@ enum class DislikedFood {
     ZUCCHINI,
     BELL_PEPPERS,
     OLIVES,
-    CILANTRO,
+    CARROTS,
+    CELERY,
+    ASPARAGUS,
+    PEAS,
+    CORN,
+    SWEET_POTATOES,
     NETTLES,
-    EGGS,
-    DAIRY,
+
+    APPLES,
+    BANANAS,
+    CITRUS_FRUITS,
+    BERRIES,
+    MELONS,
+    AVOCADO,
+    COCONUT,
+    RAISINS,
+
+    BEANS,
+    LENTILS,
+    CHICKPEAS,
     NUTS,
     PEANUTS,
-    SOY
+    ALMONDS,
+    WALNUTS,
+    SOY,
+    TOFU,
+
+    CILANTRO,
+    DILL,
+    PARSLEY,
+    MINT,
+    SPICY_FOOD,
+    MUSTARD,
+    MAYONNAISE
 }

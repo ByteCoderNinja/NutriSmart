@@ -73,6 +73,18 @@ class GeminiService(
             """.trimIndent()
         }
 
+        val dietText = if (user.dietaryPreferences.isNotEmpty()) {
+            user.dietaryPreferences.joinToString(", ") { it.name.replace("_", " ") }
+        } else {
+            "None"
+        }
+
+        val medicalText = if (user.medicalConditions.isNotEmpty()) {
+            user.medicalConditions.joinToString(", ") { it.name.replace("_", " ") }
+        } else {
+            "None"
+        }
+
         return """
             IMPORTANT: Return ONLY the raw JSON. Do not include any Markdown formatting like \``json. Do not add any introductory text.
             Act as a professional nutritionist. Generate a 14-DAY meal plan (Day 1 to Day 14) for a user with the following profile:
@@ -82,7 +94,8 @@ class GeminiService(
             - Height: ${user.height} $heightUnit
             - Activity Level: ${user.activityLevel}
             - Goal: ${user.targetWeight} $weightUnit
-            - Medical Conditions: ${user.medicalConditions}
+            - Diet: $dietText
+            - Medical Conditions: $medicalText
             $avoidedFoodsText
             - Budget Constraint: ${user.maxDailyBudget} $currencySymbol / day
             - Calories: ${user.targetCalories} kcal/day
@@ -96,6 +109,7 @@ class GeminiService(
             4. Ingredients: Reuse perishable ingredients (like spinach, opened greek yogurt) across multiple days to minimize food waste.
             5. Variety: Ensure meals are not repetitive (don't eat the same breakfast 14 days in a row), but keep the shopping list practical.
             6. AVERSIONS (CRITICAL): Do NOT include any ingredients listed in 'Explicitly Avoid These Foods' under any circumstances!
+            7. DIETARY REQUIREMENT (CRITICAL): The user's diet is $dietText. You MUST strictly adhere to this diet (e.g., if Vegan, absolutely NO meat, NO dairy, NO eggs, NO honey).
             
             $unitInstructions
             

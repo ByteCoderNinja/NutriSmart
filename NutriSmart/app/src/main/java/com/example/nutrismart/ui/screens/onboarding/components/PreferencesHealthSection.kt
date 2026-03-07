@@ -30,7 +30,7 @@ fun PreferencesHealthSection(
         items = DietaryPreference.entries,
         selectedItems = viewModel.selectedDietaryPreferences,
         onSelectionChanged = { viewModel.toggleDiet(it) },
-        itemLabel = { it.name },
+        itemLabel = { it.name.replace("_", " ").lowercase().replaceFirstChar { char -> char.uppercase() } },
         colors = textFieldColors,
         shape = premiumShape
     )
@@ -42,7 +42,7 @@ fun PreferencesHealthSection(
         items = MedicalCondition.entries,
         selectedItems = viewModel.selectedMedicalConditions,
         onSelectionChanged = { viewModel.toggleCondition(it) },
-        itemLabel = { it.name },
+        itemLabel = { it.name.replace("_", " ").lowercase().replaceFirstChar { char -> char.uppercase() } },
         colors = textFieldColors,
         shape = premiumShape
     )
