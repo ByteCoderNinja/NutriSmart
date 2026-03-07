@@ -16,7 +16,9 @@ enum class DietaryPreference {
     STANDARD,
     VEGAN,
     VEGETARIAN,
+    PESCO_VEGETARIAN,
     KETO,
+    PALEO,
     HIGH_PROTEIN
 }
 
