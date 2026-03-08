@@ -74,13 +74,13 @@ class GeminiService(
         }
 
         val dietText = if (user.dietaryPreferences.isNotEmpty()) {
-            user.dietaryPreferences.joinToString(", ") { it.name.replace("_", " ") }
+            user.dietaryPreferences.joinToString(", ") { it.name.lowercase().replace("_", " ") }
         } else {
-            "None"
+            "Standard"
         }
 
         val medicalText = if (user.medicalConditions.isNotEmpty()) {
-            user.medicalConditions.joinToString(", ") { it.name.replace("_", " ") }
+            user.medicalConditions.joinToString(", ") { it.name.lowercase().replace("_", " ") }
         } else {
             "None"
         }
@@ -109,7 +109,13 @@ class GeminiService(
             4. Ingredients: Reuse perishable ingredients (like spinach, opened greek yogurt) across multiple days to minimize food waste.
             5. Variety: Ensure meals are not repetitive (don't eat the same breakfast 14 days in a row), but keep the shopping list practical.
             6. AVERSIONS (CRITICAL): Do NOT include any ingredients listed in 'Explicitly Avoid These Foods' under any circumstances!
-            7. DIETARY REQUIREMENT (CRITICAL): The user's diet is $dietText. You MUST strictly adhere to this diet (e.g., if Vegan, absolutely NO meat, NO dairy, NO eggs, NO honey).
+            7. DIETARY REQUIREMENT (STRICT ADHERENCE REQUIRED): The user follows a $dietText diet.
+               - IF VEGAN: You MUST NOT include ANY animal products (no meat, no poultry, no fish, no seafood, no dairy, no eggs, no honey, no lard, no gelatin).
+               - IF VEGETARIAN: You MUST NOT include ANY meat, poultry, or fish.
+               - IF PESCO-VEGETARIAN: You MUST NOT include ANY meat or poultry, but fish and seafood are allowed.
+               - IF KETO: Focus on high-fat, moderate-protein, and extremely low-carb ingredients.
+               - IF PALEO: NO grains, NO legumes, NO dairy, NO processed sugars.
+               Failure to follow these dietary restrictions will make the plan dangerous and unusable.
             
             $unitInstructions
             

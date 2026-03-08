@@ -5,6 +5,7 @@ import com.timofte.nutrismart.features.user.dto.OnboardingRequest
 import com.timofte.nutrismart.features.user.model.*
 import com.timofte.nutrismart.features.user.repository.UserRepository
 import com.timofte.nutrismart.infrastructure.mail.EmailService
+import jakarta.transaction.Transactional
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -18,6 +19,7 @@ class UserService(
     private val passwordEncoder: PasswordEncoder
 ) {
 
+    @Transactional
     fun completeUserProfile(email: String, request: OnboardingRequest): UserEntity {
         val user = userRepository.findByEmail(email)
             ?: throw RuntimeException("User not found for email: $email")
@@ -50,6 +52,7 @@ class UserService(
         return savedUser
     }
 
+    @Transactional
     fun calculateAndSaveUserNeeds(user: UserEntity): UserEntity {
         if (user.dateOfBirth == null || user.weight == null || user.height == null || user.gender == null) {
             return userRepository.save(user)
@@ -93,10 +96,12 @@ class UserService(
         return userRepository.findById(id).orElseThrow { RuntimeException("User not found") }
     }
 
+    @Transactional
     fun saveUser(user: UserEntity): UserEntity {
         return calculateAndSaveUserNeeds(user)
     }
 
+    @Transactional
     fun updateUser(id: Long, updatedData: UserEntity): UserEntity {
         val existingUser = getUser(id)
 
