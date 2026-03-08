@@ -11,8 +11,10 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception::class)
     fun handleGeneralException(e: Exception): ResponseEntity<ApiResponse<Nothing>> {
+        e.printStackTrace()
+        val message = e.message ?: e.javaClass.simpleName
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(ApiResponse.error("Intern error: ${e.message}"))
+            .body(ApiResponse.error("Server Error: $message"))
     }
 
     @ExceptionHandler(IllegalArgumentException::class)

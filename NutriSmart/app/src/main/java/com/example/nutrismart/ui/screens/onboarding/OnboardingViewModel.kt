@@ -95,11 +95,11 @@ class OnboardingViewModel : ViewModel() {
                 val request = OnboardingRequest(
                     dateOfBirth = dateString,
                     gender = gender,
-                    height = height.toDoubleOrNull() ?: 0.0,
-                    weight = weight.toDoubleOrNull() ?: 0.0,
-                    targetWeight = targetWeight.toDoubleOrNull() ?: 0.0,
+                    height = height.replace(',', '.').toDoubleOrNull() ?: 0.0,
+                    weight = weight.replace(',', '.').toDoubleOrNull() ?: 0.0,
+                    targetWeight = targetWeight.replace(',', '.').toDoubleOrNull() ?: 0.0,
                     activityLevel = activityLevel,
-                    maxDailyBudget = budget.toDoubleOrNull() ?: 0.0,
+                    maxDailyBudget = budget.replace(',', '.').toDoubleOrNull() ?: 0.0,
                     dietaryPreferences = selectedDietaryPreferences.toList(),
                     medicalConditions = selectedMedicalConditions.toList(),
                     dislikedFoods = selectedDislikedFoods.toList(),
@@ -111,10 +111,20 @@ class OnboardingViewModel : ViewModel() {
                 val response = RetrofitClient.api.completeProfile(token, request)
 
                 if (response.isSuccessful) {
-                    val userId = UserSession.currentUserId ?: throw Exception("User ID not found")
+                    val userId = UserSession.currentUserId
+                    if (userId == -1L) {
+                        errorMessage = "Error: User ID not found in session."
+                        isLoading = false
+                        return@launch
+                    }
                     startPlanGeneration(userId)
                 } else {
-                    errorMessage = "Error: ${response.code()} - ${response.message()}"
+                    val errorBody = response.errorBody()?.string()
+                    errorMessage = if (!errorBody.isNullOrEmpty() && errorBody.contains("message")) {
+                        "Error ${response.code()}: AI profile save failed."
+                    } else {
+                        "Error: ${response.code()} - ${response.message()}"
+                    }
                     isLoading = false
                 }
 

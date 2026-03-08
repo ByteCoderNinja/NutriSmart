@@ -16,9 +16,9 @@ data class OnboardingRequest(
     val targetWeight: Double,
     val activityLevel: ActivityLevel,
     val maxDailyBudget: Double,
-    val dietaryPreferences: Set<DietaryPreference>,
-    val medicalConditions: Set<MedicalCondition>,
-    val dislikedFoods: Set<DislikedFood>,
-    val isImperial: Boolean,
-    val currency: Currency
+    val dietaryPreferences: Set<DietaryPreference> = emptySet(),
+    val medicalConditions: Set<MedicalCondition> = emptySet(),
+    val dislikedFoods: Set<DislikedFood> = emptySet(),
+    val isImperial: Boolean = false,
+    val currency: Currency = Currency.RON
 )
