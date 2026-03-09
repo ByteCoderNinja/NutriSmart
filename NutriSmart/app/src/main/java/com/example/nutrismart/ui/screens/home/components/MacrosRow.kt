@@ -24,7 +24,10 @@ import androidx.compose.ui.unit.sp
 import com.example.nutrismart.ui.screens.home.HomeUiState
 
 @Composable
-fun MacrosRow(state: HomeUiState) {
+fun MacrosRow(
+    state: HomeUiState,
+    isImperial: Boolean
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)

@@ -45,7 +45,10 @@ class HomeViewModel(private val sessionManager: SessionManager) : ViewModel() {
                 if (userResponse.isSuccessful) {
                     val user = userResponse.body()
                     if (user != null) {
-                        _uiState.update { it.copy(weight = user.weight ?: 0.0) }
+                        _uiState.update { it.copy(
+                            weight = user.weight ?: 0.0,
+                            isImperial = user.isImperial
+                        ) }
                     }
                 }
 

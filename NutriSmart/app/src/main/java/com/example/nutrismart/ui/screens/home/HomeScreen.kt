@@ -1,5 +1,6 @@
 package com.example.nutrismart.ui.screens.home
 
+import android.Manifest
 import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -34,6 +35,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -91,7 +93,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
 
     LaunchedEffect(Unit) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            notificationPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
     }
 
@@ -250,6 +252,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                 MainStatsCard(
                     state = uiState,
                     hasPermissions = hasHealthPermissions,
+                    isImperial = uiState.isImperial,
                     onAddWaterClick = { viewModel.addWater() },
                     onRemoveWaterClick = { viewModel.removeWater() },
                     onStepsClick = {
@@ -263,7 +266,10 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
             }
 
             item {
-                MacrosRow(state = uiState)
+                MacrosRow(
+                    state = uiState,
+                    isImperial = uiState.isImperial
+                )
                 Spacer(modifier = Modifier.height(24.dp))
             }
 
@@ -408,7 +414,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
     }
 
     if (showBonusSnackSheet) {
-        val bonusSheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = false)
+        val bonusSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
 
         LaunchedEffect(uiState.isSwapping) {
             if (!uiState.isSwapping) {

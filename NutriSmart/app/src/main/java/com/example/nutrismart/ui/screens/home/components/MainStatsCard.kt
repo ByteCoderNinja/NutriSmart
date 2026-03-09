@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -42,11 +43,13 @@ import androidx.compose.ui.unit.sp
 import com.example.nutrismart.ui.screens.home.HomeUiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 @Composable
 fun MainStatsCard(
     state: HomeUiState,
     hasPermissions: Boolean,
+    isImperial: Boolean,
     onAddWaterClick: () -> Unit,
     onRemoveWaterClick: () -> Unit,
     onStepsClick: () -> Unit,
@@ -95,6 +98,7 @@ fun MainStatsCard(
                 state.waterConsumedMl,
                 state.waterGoalMl,
                 state.glassSizeMl,
+                isImperial = isImperial,
                 onAddWaterClick,
                 onRemoveClick = onRemoveWaterClick
             )
@@ -105,6 +109,7 @@ fun MainStatsCard(
 
             WeightTrackerSection(
                 currentWeight = state.weight,
+                isImperial = isImperial,
                 onAdjustWeight = onAdjustWeight
             )
         }
@@ -117,15 +122,23 @@ fun WaterTrackerSection(
     consumedMl: Int,
     goalMl: Int,
     glassSize: Int,
+    isImperial: Boolean,
     onAddClick: () -> Unit,
     onRemoveClick: () -> Unit
 ) {
-    val consumedGlassesCount = consumedMl / glassSize
+    val consumedGlassesCount = if (glassSize > 0) consumedMl / glassSize else 0
+    val goalGlassesCount = if (glassSize > 0) goalMl / glassSize else 0
     val waterColor = Color(0xFF2196F3)
+
+    val waterText = if (isImperial) {
+        "$consumedGlassesCount / $goalGlassesCount cups"
+    } else {
+        "$consumedMl ml / $goalMl ml"
+    }
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text("Water Intake", fontSize = 16.sp, fontWeight = FontWeight.Medium)
-        Text("$consumedMl ml / $goalMl ml", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(waterText, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -167,8 +180,12 @@ fun WaterTrackerSection(
 @Composable
 fun WeightTrackerSection(
     currentWeight: Double,
+    isImperial: Boolean,
     onAdjustWeight: (Double) -> Unit
 ) {
+    val weightUnit = if (isImperial) "lbs" else "kg"
+    val formattedWeight = String.format(Locale.US, "%.1f", currentWeight)
+
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text("Weight", fontSize = 16.sp, fontWeight = FontWeight.Medium)
 
@@ -183,7 +200,7 @@ fun WeightTrackerSection(
             )
 
             Text(
-                text = "${currentWeight} kg",
+                text = "$formattedWeight $weightUnit",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
@@ -200,7 +217,7 @@ fun WeightTrackerSection(
 
 @Composable
 fun RepeatingIconButton(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     onClick: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()

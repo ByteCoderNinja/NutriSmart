@@ -22,7 +22,8 @@ data class HomeUiState(
     val alternatives: List<MealDto> = emptyList(),
     val wakeUpTime: LocalTime = LocalTime.of(8,0),
     val burnedCalories: Int = 0,
-    val weight: Double = 0.0
+    val weight: Double = 0.0,
+    val isImperial: Boolean = false
 ) {
     val totalCaloriesGoal: Int get() = listOfNotNull(breakfast, lunch, dinner, snack).sumOf { it.calories }.coerceAtLeast(1)
     val carbsGoal: Int get() = listOfNotNull(breakfast, lunch, dinner, snack).sumOf { it.carbs }.coerceAtLeast(1)

@@ -86,53 +86,51 @@ class GeminiService(
         }
 
         return """
-            IMPORTANT: Return ONLY the raw JSON. Do not include any Markdown formatting like \``json. Do not add any introductory text.
-            Act as a professional nutritionist. Generate a 14-DAY meal plan (Day 1 to Day 14) for a user with the following profile:
-            - Age: $age
-            - Gender: ${user.gender}
-            - Weight: ${user.weight} $weightUnit
-            - Height: ${user.height} $heightUnit
-            - Activity Level: ${user.activityLevel}
-            - Goal: ${user.targetWeight} $weightUnit
-            - Diet: $dietText
-            - Medical Conditions: $medicalText
-            $avoidedFoodsText
-            - Budget Constraint: ${user.maxDailyBudget} $currencySymbol / day
-            - Calories: ${user.targetCalories} kcal/day
-            
-            IMPORTANT RULES FOR THE PLAN:
-            1. Output Format: Strictly valid JSON.
-            2. Duration: Generate exactly 14 days (Day 1 to Day 14).
-            3. Smart Cooking Strategy (CRITICAL): Use a "Cook Once, Eat Twice" strategy where possible to save time and money. 
-               - Example: Roast Chicken Dinner on Day 1 becomes Chicken Salad Lunch on Day 2.
-               - Example: Make a large batch of Chili for Dinner Day 3 and eat leftovers for Lunch Day 4.
-            4. Ingredients: Reuse perishable ingredients (like spinach, opened greek yogurt) across multiple days to minimize food waste.
-            5. Variety: Ensure meals are not repetitive (don't eat the same breakfast 14 days in a row), but keep the shopping list practical.
-            6. AVERSIONS (CRITICAL): Do NOT include any ingredients listed in 'Explicitly Avoid These Foods' under any circumstances!
-            7. DIETARY REQUIREMENT (STRICT ADHERENCE REQUIRED): The user follows a $dietText diet.
-               - IF VEGAN: You MUST NOT include ANY animal products (no meat, no poultry, no fish, no seafood, no dairy, no eggs, no honey, no lard, no gelatin).
-               - IF VEGETARIAN: You MUST NOT include ANY meat, poultry, or fish.
-               - IF PESCO-VEGETARIAN: You MUST NOT include ANY meat or poultry, but fish and seafood are allowed.
-               - IF KETO: Focus on high-fat, moderate-protein, and extremely low-carb ingredients.
-               - IF PALEO: NO grains, NO legumes, NO dairy, NO processed sugars.
-               Failure to follow these dietary restrictions will make the plan dangerous and unusable.
-            
-            $unitInstructions
-            
-            JSON STRUCTURE MUST BE EXACTLY THIS:
+        IMPORTANT: Return ONLY the raw JSON. Do not include any Markdown formatting like \`json. Do not add any introductory text.
+        Act as a professional nutritionist. Generate a 14-DAY meal plan (Day 1 to Day 14) for a user with the following profile:
+        - Age: $age
+        - Gender: ${user.gender}
+        - Weight: ${user.weight} $weightUnit
+        - Height: ${user.height} $heightUnit
+        - Activity Level: ${user.activityLevel}
+        - Goal: ${user.targetWeight} $weightUnit
+        - Diet: $dietText
+        - Medical Conditions: $medicalText
+        $avoidedFoodsText
+        - Budget Constraint: ${user.maxDailyBudget} $currencySymbol / day
+        - Calories: ${user.targetCalories} kcal/day
+        
+        IMPORTANT RULES FOR THE PLAN:
+        1. FULL DURATION (CRITICAL): You MUST generate exactly 14 full day objects (dayNumber 1 through 14). Do NOT use shortcuts, do NOT skip meals, and do NOT use "..." to abbreviate. Every single meal (breakfast, lunch, dinner, snack) for all 14 days must be fully written out.
+        2. Smart Cooking Strategy (CRITICAL): Use a "Cook Once, Eat Twice" strategy where possible to save time and money. 
+           - Example: Roast Chicken Dinner on Day 1 becomes Chicken Salad Lunch on Day 2.
+           - Example: Make a large batch of Chili for Dinner Day 3 and eat leftovers for Lunch Day 4.
+        3. Ingredients: Reuse perishable ingredients (like spinach, opened greek yogurt) across multiple days to minimize food waste.
+        4. Variety: Ensure meals are not repetitive (don't eat the same breakfast 14 days in a row), but keep the shopping list practical.
+        5. AVERSIONS (CRITICAL): Do NOT include any ingredients listed in 'Explicitly Avoid These Foods' under any circumstances!
+        6. DIETARY REQUIREMENT (STRICT ADHERENCE REQUIRED): The user follows a $dietText diet.
+           - IF VEGAN: You MUST NOT include ANY animal products (no meat, no poultry, no fish, no seafood, no dairy, no eggs, no honey, no lard, no gelatin).
+           - IF VEGETARIAN: You MUST NOT include ANY meat, poultry, or fish.
+           - IF PESCO-VEGETARIAN: You MUST NOT include ANY meat or poultry, but fish and seafood are allowed.
+           - IF KETO: Focus on high-fat, moderate-protein, and extremely low-carb ingredients.
+           - IF PALEO: NO grains, NO legumes, NO dairy, NO processed sugars.
+           Failure to follow these dietary restrictions will make the plan dangerous and unusable.
+        7. Ensure day-over-day variety. Aside from the 'Cook Once, Eat Twice' strategy, avoid using the exact same recipe for the same meal type (e.g., don't serve the same breakfast more than 3 times in 14 days).
+        
+        $unitInstructions
+        
+        JSON STRUCTURE MUST BE EXACTLY THIS (Generate all 14 days without skipping):
+        {
+          "days": [
             {
-              "days": [
-                {
-                  "dayNumber": 1,
-                  "breakfast": { "name": "...", "calories": 400, "protein": 20, "fat": 15, "carbs": 45, "quantityDetails": "..." },
-                  "lunch": { "name": "...", "calories": 600, "protein": 35, "fat": 20, "carbs": 65, "quantityDetails": "..." },
-                  "dinner": { "name": "...", "calories": 500, "protein": 30, "fat": 15, "carbs": 55, "quantityDetails": "..." },
-                  "snack": { "name": "...", "calories": 200, "protein": 10, "fat": 10, "carbs": 20, "quantityDetails": "..." }
-                },
-                ... (repeat for days 1 to 14)
-              ]
+              "dayNumber": 1,
+              "breakfast": { "name": "Example Meal", "calories": 400, "protein": 20, "fat": 15, "carbs": 45, "quantityDetails": "2 eggs, 1 slice toast" },
+              "lunch": { "name": "Example Meal", "calories": 600, "protein": 35, "fat": 20, "carbs": 65, "quantityDetails": "150g chicken, 50g rice" },
+              "dinner": { "name": "Example Meal", "calories": 500, "protein": 30, "fat": 15, "carbs": 55, "quantityDetails": "200g salmon, asparagus" },
+              "snack": { "name": "Example Snack", "calories": 200, "protein": 10, "fat": 10, "carbs": 20, "quantityDetails": "1 apple, 15g almonds" }
             }
-            "quantityDetails" should be descriptive (e.g., "2 eggs, 1 slice toast").
+          ]
+        }
         """.trimIndent()
     }
 
@@ -172,7 +170,12 @@ class GeminiService(
 
     private fun <T> callGemini(prompt: String, responseType: Class<T>): T? {
         val requestBody = GeminiRequest(
-            contents = listOf(Content(parts = listOf(Part(text = prompt))))
+            contents = listOf(Content(parts = listOf(Part(text = prompt)))),
+            generationConfig = GenerationConfig(
+                responseMimeType = "application/json",
+                maxOutputTokens = 8192,
+                temperature = 0.2
+            )
         )
         val headers = HttpHeaders().apply { contentType = MediaType.APPLICATION_JSON }
         val entity = HttpEntity(requestBody, headers)
@@ -192,13 +195,14 @@ class GeminiService(
     }
 
     private fun cleanJsonString(rawText: String): String {
-        val startIndex = rawText.indexOf('{')
-        val endIndex = rawText.lastIndexOf('}')
+        val trimmed = rawText.trim()
+        val startIndex = trimmed.indexOf('{')
+        val endIndex = trimmed.lastIndexOf('}')
 
-        if (startIndex != -1 && endIndex != -1 && startIndex < endIndex) {
-            return rawText.substring(startIndex, endIndex + 1)
+        return if (startIndex != -1 && endIndex != -1 && startIndex < endIndex) {
+            trimmed.substring(startIndex, endIndex + 1)
+        } else {
+            trimmed
         }
-
-        return rawText
     }
 }
