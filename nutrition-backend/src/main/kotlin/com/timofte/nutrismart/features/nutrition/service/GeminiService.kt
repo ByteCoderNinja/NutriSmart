@@ -119,7 +119,7 @@ class GeminiService(
         
         $unitInstructions
         
-        JSON STRUCTURE MUST BE EXACTLY THIS (Generate all 14 days without skipping):
+        JSON STRUCTURE MUST BE EXACTLY THIS:
         {
           "days": [
             {
@@ -128,9 +128,11 @@ class GeminiService(
               "lunch": { "name": "Example Meal", "calories": 600, "protein": 35, "fat": 20, "carbs": 65, "quantityDetails": "150g chicken, 50g rice" },
               "dinner": { "name": "Example Meal", "calories": 500, "protein": 30, "fat": 15, "carbs": 55, "quantityDetails": "200g salmon, asparagus" },
               "snack": { "name": "Example Snack", "calories": 200, "protein": 10, "fat": 10, "carbs": 20, "quantityDetails": "1 apple, 15g almonds" }
-            }
+            },
+            ... (repeat for days 1 to 14)
           ]
         }
+        "quantityDetails" should be descriptive (e.g., "2 eggs, 1 slice toast").
         """.trimIndent()
     }
 
@@ -170,12 +172,7 @@ class GeminiService(
 
     private fun <T> callGemini(prompt: String, responseType: Class<T>): T? {
         val requestBody = GeminiRequest(
-            contents = listOf(Content(parts = listOf(Part(text = prompt)))),
-            generationConfig = GenerationConfig(
-                responseMimeType = "application/json",
-                maxOutputTokens = 8192,
-                temperature = 0.2
-            )
+            contents = listOf(Content(parts = listOf(Part(text = prompt))))
         )
         val headers = HttpHeaders().apply { contentType = MediaType.APPLICATION_JSON }
         val entity = HttpEntity(requestBody, headers)
@@ -195,14 +192,13 @@ class GeminiService(
     }
 
     private fun cleanJsonString(rawText: String): String {
-        val trimmed = rawText.trim()
-        val startIndex = trimmed.indexOf('{')
-        val endIndex = trimmed.lastIndexOf('}')
+        val startIndex = rawText.indexOf('{')
+        val endIndex = rawText.lastIndexOf('}')
 
-        return if (startIndex != -1 && endIndex != -1 && startIndex < endIndex) {
-            trimmed.substring(startIndex, endIndex + 1)
-        } else {
-            trimmed
+        if (startIndex != -1 && endIndex != -1 && startIndex < endIndex) {
+            return rawText.substring(startIndex, endIndex + 1)
         }
+
+        return rawText
     }
 }
