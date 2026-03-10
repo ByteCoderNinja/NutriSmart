@@ -10,7 +10,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,10 +21,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.nutrismart.data.SessionManager
-import com.example.nutrismart.ui.auth.handleGoogleSignIn
-import kotlinx.coroutines.launch
 import com.example.nutrismart.R
+import com.example.nutrismart.data.SessionManager
+import com.example.nutrismart.ui.auth.rememberGoogleSignInLauncher
 
 @Composable
 fun LoginScreen(
@@ -36,7 +34,15 @@ fun LoginScreen(
 ) {
     val context = LocalContext.current
     val sessionManager = remember { SessionManager(context) }
-    val scope = rememberCoroutineScope()
+
+    val launchGoogleSignIn = rememberGoogleSignInLauncher(
+        onSuccess = { idToken ->
+            viewModel.loginWithGoogle(idToken, sessionManager)
+        },
+        onError = { errorMessage ->
+            viewModel.errorMessage = errorMessage
+        }
+    )
 
     LaunchedEffect(viewModel.loginSuccess) {
         if (viewModel.loginSuccess) {
@@ -165,16 +171,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(20.dp))
 
         OutlinedButton(
-            onClick = {
-                scope.launch {
-                    val idToken = handleGoogleSignIn(context)
-                    if (idToken != null) {
-                        viewModel.loginWithGoogle(idToken, sessionManager)
-                    } else {
-                        viewModel.errorMessage = "Google Sign-In failed!"
-                    }
-                }
-            },
+            onClick = { launchGoogleSignIn() },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
