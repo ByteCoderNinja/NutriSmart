@@ -86,37 +86,45 @@ class GeminiService(
         }
 
         return """
-        You are a backend server that outputs ONLY valid JSON.
-        Do NOT use markdown, do NOT use ```json tags, do NOT add explanations.
-        
-        PROFILE:
-        Age: $age, Gender: ${user.gender}, Weight: ${user.weight} $weightUnit, Goal: ${user.targetWeight} $weightUnit
-        Diet: $dietText, Avoid: $avoidedFoodsText, Medical: $medicalText
-        Calories: ${user.targetCalories} kcal/day
-        $unitInstructions
-        
-        INSTRUCTIONS:
-        1. Generate a JSON object containing a single key called "days".
-        2. The "days" array MUST contain EXACTLY 14 objects.
-        3. You MUST generate the objects for Day 1, Day 2, Day 3, Day 4, Day 5, Day 6, Day 7, Day 8, Day 9, Day 10, Day 11, Day 12, Day 13, and Day 14.
-        4. Each day object MUST contain exactly these 5 keys: "dayNumber", "breakfast", "lunch", "dinner", and "snack".
-        5. The meal keys ("breakfast", "lunch", "dinner", "snack") MUST be single JSON objects, NEVER arrays.
-        6. The sum of calories for the 4 meals in a day MUST equal ${user.targetCalories}.
-        7. You MUST use the exact same calorie split for all 14 days.
-        
-        FORMAT YOU MUST FOLLOW:
-        {
-          "days": [
+            IMPORTANT: Return ONLY the raw JSON. Do not include any Markdown formatting like \``json. Do not add any introductory text.
+            Act as a professional nutritionist. Generate a 14-DAY meal plan (Day 1 to Day 14) for a user with the following profile:
+            - Age: $age
+            - Gender: ${user.gender}
+            - Weight: ${user.weight} $weightUnit
+            - Height: ${user.height} $heightUnit
+            - Activity Level: ${user.activityLevel}
+            - Goal: ${user.targetWeight} $weightUnit
+            - Diet: $dietText
+            - Avoid: $avoidedFoodsText
+            - Medical Conditions: ${user.medicalConditions}
+            - Budget Constraint: ${user.maxDailyBudget} $currencySymbol / day
+            - Calories: ${user.targetCalories} kcal/day
+            
+            IMPORTANT RULES FOR THE PLAN:
+            1. Output Format: Strictly valid JSON.
+            2. Duration: Generate exactly 14 days (Day 1 to Day 14).
+            3. Smart Cooking Strategy (CRITICAL): Use a "Cook Once, Eat Twice" strategy where possible to save time and money. 
+               - Example: Roast Chicken Dinner on Day 1 becomes Chicken Salad Lunch on Day 2.
+               - Example: Make a large batch of Chili for Dinner Day 3 and eat leftovers for Lunch Day 4.
+            4. Ingredients: Reuse perishable ingredients (like spinach, opened greek yogurt) across multiple days to minimize food waste.
+            5. Variety: Ensure meals are not repetitive (don't eat the same breakfast 14 days in a row), but keep the shopping list practical.
+            
+            $unitInstructions
+            
+            JSON STRUCTURE MUST BE EXACTLY THIS:
             {
-              "dayNumber": 1,
-              "breakfast": {"name": "", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "quantityDetails": ""},
-              "lunch": {"name": "", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "quantityDetails": ""},
-              "dinner": {"name": "", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "quantityDetails": ""},
-              "snack": {"name": "", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "quantityDetails": ""}
+              "days": [
+                {
+                  "dayNumber": 1,
+                  "breakfast": { "name": "...", "calories": 400, "protein": 20, "fat": 15, "carbs": 45, "quantityDetails": "..." },
+                  "lunch": { "name": "...", "calories": 600, "protein": 35, "fat": 20, "carbs": 65, "quantityDetails": "..." },
+                  "dinner": { "name": "...", "calories": 500, "protein": 30, "fat": 15, "carbs": 55, "quantityDetails": "..." },
+                  "snack": { "name": "...", "calories": 200, "protein": 10, "fat": 10, "carbs": 20, "quantityDetails": "..." }
+                },
+                ... (repeat for days 1 to 14)
+              ]
             }
-          ]
-        }
-        Now, generate the full JSON array containing all 14 days based on the format above. Do not skip any days.
+            "quantityDetails" should be descriptive (e.g., "2 eggs, 1 slice toast").
         """.trimIndent()
     }
 
