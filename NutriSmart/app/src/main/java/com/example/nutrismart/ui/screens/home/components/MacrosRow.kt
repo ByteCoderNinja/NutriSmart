@@ -25,8 +25,7 @@ import com.example.nutrismart.ui.screens.home.HomeUiState
 
 @Composable
 fun MacrosRow(
-    state: HomeUiState,
-    isImperial: Boolean
+    state: HomeUiState
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),

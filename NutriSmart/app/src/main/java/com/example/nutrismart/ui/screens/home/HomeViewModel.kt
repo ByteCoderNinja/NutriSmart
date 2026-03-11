@@ -2,20 +2,18 @@ package com.example.nutrismart.ui.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.nutrismart.data.SessionManager
 import com.example.nutrismart.data.UserSession
+import com.example.nutrismart.data.model.UpdateUserRequest
 import com.example.nutrismart.data.remote.MealDto
 import com.example.nutrismart.data.remote.RetrofitClient
-import com.example.nutrismart.data.remote.ShoppingListDto
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import com.example.nutrismart.data.SessionManager
-import com.example.nutrismart.data.model.UpdateUserRequest
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import java.time.LocalTime
 import kotlin.math.roundToInt
 
 class HomeViewModel(private val sessionManager: SessionManager) : ViewModel() {

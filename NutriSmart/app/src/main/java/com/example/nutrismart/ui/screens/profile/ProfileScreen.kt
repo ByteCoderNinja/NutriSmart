@@ -7,6 +7,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.DirectionsWalk
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -169,7 +170,7 @@ fun ProfileScreen(
                         )
                         StatCard(
                             modifier = Modifier.weight(1f),
-                            icon = Icons.Default.DirectionsWalk,
+                            icon = Icons.AutoMirrored.Filled.DirectionsWalk,
                             value = user?.stepGoal?.toString() ?: "10000",
                             unit = "steps/day",
                             cardColor = cardColor

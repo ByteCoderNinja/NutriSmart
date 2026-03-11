@@ -1,16 +1,20 @@
 package com.example.nutrismart.ui.screens.onboarding
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.nutrismart.data.model.*
-import com.example.nutrismart.data.remote.RetrofitClient
 import com.example.nutrismart.data.UserSession
+import com.example.nutrismart.data.model.ActivityLevel
+import com.example.nutrismart.data.model.Currency
+import com.example.nutrismart.data.model.DietaryPreference
+import com.example.nutrismart.data.model.DislikedFood
+import com.example.nutrismart.data.model.Gender
+import com.example.nutrismart.data.model.MedicalCondition
+import com.example.nutrismart.data.model.OnboardingRequest
+import com.example.nutrismart.data.remote.RetrofitClient
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -18,7 +22,6 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-@RequiresApi(Build.VERSION_CODES.O)
 class OnboardingViewModel : ViewModel() {
 
     var birthDate by mutableStateOf(LocalDate.now().minusYears(18))
@@ -47,7 +50,6 @@ class OnboardingViewModel : ViewModel() {
         "Analyzing your profile...",
         "Calculating target calories...",
         "Generating 14-day AI recipes...",
-        "Adding items to your shopping list...",
         "Finalizing your plan...",
         "Do not panic if it looks stuck\nAI is working"
     )
@@ -160,9 +162,13 @@ class OnboardingViewModel : ViewModel() {
         return viewModelScope.launch {
             var index = 0
             while (isActive) {
-                loadingMessage = messages[index % messages.size]
-                index++
-                delay(13000)
+                loadingMessage = messages[index]
+
+                if (index < messages.size - 1) {
+                    index++
+                }
+
+                delay(6000)
             }
         }
     }

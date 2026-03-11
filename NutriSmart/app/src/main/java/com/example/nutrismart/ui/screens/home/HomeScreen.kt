@@ -267,8 +267,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
 
             item {
                 MacrosRow(
-                    state = uiState,
-                    isImperial = uiState.isImperial
+                    state = uiState
                 )
                 Spacer(modifier = Modifier.height(24.dp))
             }

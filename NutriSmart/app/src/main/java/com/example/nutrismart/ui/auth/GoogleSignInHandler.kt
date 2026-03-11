@@ -36,7 +36,7 @@ fun rememberGoogleSignInLauncher(
                 onError("Error Code: ${e.statusCode}")
             }
         } else {
-            Log.w("GoogleAuthClassic", "Login canceld. (Code: ${result.resultCode})")
+            Log.w("GoogleAuthClassic", "Login canceled. (Code: ${result.resultCode})")
         }
     }
 

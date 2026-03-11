@@ -52,7 +52,7 @@ fun GoalsLifestyleSection(
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = showActivityMenu) },
             colors = textFieldColors,
             shape = premiumShape,
-            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
+            modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable).fillMaxWidth()
         )
         ExposedDropdownMenu(
             expanded = showActivityMenu,

@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.nutrismart.data.SessionManager
 import com.example.nutrismart.data.UserSession
 import com.example.nutrismart.data.model.VerifyRequest
 import com.example.nutrismart.data.remote.RetrofitClient

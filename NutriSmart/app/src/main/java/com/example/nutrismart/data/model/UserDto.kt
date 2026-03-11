@@ -1,7 +1,5 @@
 package com.example.nutrismart.data.model
 
-import com.google.gson.annotations.SerializedName
-
 data class UserDto(
     val id: Long,
     val username: String,
