@@ -24,7 +24,7 @@ class GeminiService(
         .registerModule(KotlinModule.Builder().build())
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-    private val apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent"
+    private val apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent"
 
     fun generateWeeklyPlan(user: UserEntity): WeeklyPlanDTO {
 
