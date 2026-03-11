@@ -86,7 +86,7 @@ class GeminiService(
         }
 
         return """
-        IMPORTANT: Return ONLY the raw JSON. Do not include any Markdown formatting like \`json. Do not add any introductory text.
+        IMPORTANT: Return ONLY the raw JSON. Do not include any Markdown formatting like `json. Do not add any introductory text.
         Act as a professional nutritionist. Generate a 14-DAY meal plan (Day 1 to Day 14) for a user with the following profile:
         - Age: $age
         - Gender: ${user.gender}
@@ -100,22 +100,26 @@ class GeminiService(
         - Budget Constraint: ${user.maxDailyBudget} $currencySymbol / day
         - Calories: ${user.targetCalories} kcal/day
         
+        CRITICAL GENERATION RULES:
+        1. MANDATORY LENGTH: The `days` array MUST contain exactly 14 objects. You must output Day 1, Day 2, Day 3, Day 4, Day 5, Day 6, Day 7, Day 8, Day 9, Day 10, Day 11, Day 12, Day 13, and Day 14. Do NOT skip any days. Do NOT abbreviate.
+        2. MANDATORY MEALS PER DAY: EVERY single day object MUST contain exactly 4 meal objects: "breakfast", "lunch", "dinner", and "snack". Never skip a meal in any day.
+        
         IMPORTANT RULES FOR THE PLAN:
-        1. FULL DURATION (CRITICAL): You MUST generate exactly 14 full day objects (dayNumber 1 through 14). Do NOT use shortcuts, do NOT skip meals, and do NOT use "..." to abbreviate. Every single meal (breakfast, lunch, dinner, snack) for all 14 days must be fully written out.
-        2. Smart Cooking Strategy (CRITICAL): Use a "Cook Once, Eat Twice" strategy where possible to save time and money. 
+        3. Smart Cooking Strategy: Use a "Cook Once, Eat Twice" strategy where possible to save time and money. 
            - Example: Roast Chicken Dinner on Day 1 becomes Chicken Salad Lunch on Day 2.
-           - Example: Make a large batch of Chili for Dinner Day 3 and eat leftovers for Lunch Day 4.
-        3. Ingredients: Reuse perishable ingredients (like spinach, opened greek yogurt) across multiple days to minimize food waste.
-        4. Variety: Ensure meals are not repetitive (don't eat the same breakfast 14 days in a row), but keep the shopping list practical.
-        5. AVERSIONS (CRITICAL): Do NOT include any ingredients listed in 'Explicitly Avoid These Foods' under any circumstances!
-        6. DIETARY REQUIREMENT (STRICT ADHERENCE REQUIRED): The user follows a $dietText diet.
-           - IF VEGAN: You MUST NOT include ANY animal products (no meat, no poultry, no fish, no seafood, no dairy, no eggs, no honey, no lard, no gelatin).
-           - IF VEGETARIAN: You MUST NOT include ANY meat, poultry, or fish.
-           - IF PESCO-VEGETARIAN: You MUST NOT include ANY meat or poultry, but fish and seafood are allowed.
-           - IF KETO: Focus on high-fat, moderate-protein, and extremely low-carb ingredients.
+        4. Ingredients: Reuse perishable ingredients across multiple days to minimize food waste.
+        5. Variety: Ensure meals are not repetitive, but keep the shopping list practical.
+        6. AVERSIONS (CRITICAL): Do NOT include any ingredients listed in 'Explicitly Avoid These Foods' under any circumstances!
+        7. DIETARY REQUIREMENT (STRICT ADHERENCE REQUIRED): The user follows a $dietText diet.
+           - IF VEGAN: NO animal products (no meat, poultry, fish, seafood, dairy, eggs, honey).
+           - IF VEGETARIAN: NO meat, poultry, or fish.
+           - IF PESCO-VEGETARIAN: NO meat or poultry (fish/seafood allowed).
+           - IF KETO: High-fat, moderate-protein, extremely low-carb.
            - IF PALEO: NO grains, NO legumes, NO dairy, NO processed sugars.
-           Failure to follow these dietary restrictions will make the plan dangerous and unusable.
-        7. Ensure day-over-day variety. Aside from the 'Cook Once, Eat Twice' strategy, avoid using the exact same recipe for the same meal type (e.g., don't serve the same breakfast more than 3 times in 14 days).
+        8. CONSISTENT MEAL CALORIES ACROSS ALL DAYS (CRITICAL): 
+           - Determine a fixed calorie target for each meal type so their sum equals exactly ${user.targetCalories} kcal.
+           - You MUST use these EXACT SAME calorie numbers for EVERY SINGLE DAY (Days 1 through 14).
+           - Example: If Day 1 Breakfast is 400 kcal, then Day 2 to Day 14 Breakfasts MUST ALSO be exactly 400 kcal. Do NOT vary calories for the same meal type.
         
         $unitInstructions
         
@@ -124,15 +128,16 @@ class GeminiService(
           "days": [
             {
               "dayNumber": 1,
-              "breakfast": { "name": "Example Meal", "calories": 400, "protein": 20, "fat": 15, "carbs": 45, "quantityDetails": "2 eggs, 1 slice toast" },
-              "lunch": { "name": "Example Meal", "calories": 600, "protein": 35, "fat": 20, "carbs": 65, "quantityDetails": "150g chicken, 50g rice" },
-              "dinner": { "name": "Example Meal", "calories": 500, "protein": 30, "fat": 15, "carbs": 55, "quantityDetails": "200g salmon, asparagus" },
-              "snack": { "name": "Example Snack", "calories": 200, "protein": 10, "fat": 10, "carbs": 20, "quantityDetails": "1 apple, 15g almonds" }
+              "breakfast": { "name": "...", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "quantityDetails": "..." },
+              "lunch": { "name": "...", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "quantityDetails": "..." },
+              "dinner": { "name": "...", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "quantityDetails": "..." },
+              "snack": { "name": "...", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "quantityDetails": "..." }
             },
-            ... (repeat for days 1 to 14)
+            // You MUST continue outputting objects for dayNumber 2 through 14 in this exact same format.
           ]
         }
         "quantityDetails" should be descriptive (e.g., "2 eggs, 1 slice toast").
+        Before outputting the JSON, internally verify that you have generated exactly 14 day objects, each with 4 meals.
         """.trimIndent()
     }
 
