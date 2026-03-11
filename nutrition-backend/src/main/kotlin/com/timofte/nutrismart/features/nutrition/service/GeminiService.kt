@@ -54,7 +54,6 @@ class GeminiService(
             "- Explicitly Avoid These Foods: None"
         }
 
-        // AI CALCULAT ASTA:
         val unitInstructions = if (user.isImperial) {
             """
             - SYSTEM: IMPERIAL (US Standard)
@@ -96,7 +95,7 @@ class GeminiService(
             - Goal: ${user.targetWeight} $weightUnit
             - Diet: $dietText
             - Avoid: $avoidedFoodsText
-            - Medical Conditions: ${user.medicalConditions}
+            - Medical Conditions: $medicalText
             - Budget Constraint: ${user.maxDailyBudget} $currencySymbol / day
             - Calories: ${user.targetCalories} kcal/day
             
@@ -125,6 +124,7 @@ class GeminiService(
               ]
             }
             "quantityDetails" should be descriptive (e.g., "2 eggs, 1 slice toast").
+            Continue generating the objects for Day 2, Day 3, and all the way until Day 14 without repeating a meal in a day. We want 14 different breakfast, 14 different lunches, 14 different dinners, 14 different snacks, so a total of 14*4=56 different meals.
         """.trimIndent()
     }
 
