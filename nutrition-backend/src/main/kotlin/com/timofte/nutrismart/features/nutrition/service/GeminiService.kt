@@ -27,7 +27,6 @@ class GeminiService(
     private val apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent"
 
     fun generateWeeklyPlan(user: UserEntity): WeeklyPlanDTO {
-
         val promptText = buildPlanPrompt(user)
 
         return callGemini(promptText, WeeklyPlanDTO::class.java)
@@ -55,6 +54,7 @@ class GeminiService(
             "- Explicitly Avoid These Foods: None"
         }
 
+        // AI CALCULAT ASTA:
         val unitInstructions = if (user.isImperial) {
             """
             - SYSTEM: IMPERIAL (US Standard)
@@ -86,54 +86,37 @@ class GeminiService(
         }
 
         return """
-        Return ONLY valid, raw JSON. Do not include any Markdown formatting like `json`. Do not add any introductory text.
-        Act as a professional nutritionist. Generate a 14-DAY meal plan.
+        You are a backend server that outputs ONLY valid JSON.
+        Do NOT use markdown, do NOT use ```json tags, do NOT add explanations.
         
-        USER PROFILE:
-        - Age: $age
-        - Gender: ${user.gender}
-        - Weight: ${user.weight} $weightUnit
-        - Height: ${user.height} $heightUnit
-        - Activity Level: ${user.activityLevel}
-        - Goal: ${user.targetWeight} $weightUnit
-        - Diet: $dietText
-        - Avoid: $avoidedFoodsText
-        - Medical: $medicalText
-        - Budget: ${user.maxDailyBudget} $currencySymbol / day
-        - Target Calories: ${user.targetCalories} kcal/day
+        PROFILE:
+        Age: $age, Gender: ${user.gender}, Weight: ${user.weight} $weightUnit, Goal: ${user.targetWeight} $weightUnit
+        Diet: $dietText, Avoid: $avoidedFoodsText, Medical: $medicalText
+        Calories: ${user.targetCalories} kcal/day
+        $unitInstructions
         
-        NUTRITION RULES:
-        1. STRICT DIET: Follow the $dietText diet completely.
-        2. AVERSIONS: NEVER include any ingredients from the 'Avoid' list.
-        3. CONSISTENT CALORIES: The daily target is ${user.targetCalories} kcal. Split this across 4 meals (Breakfast, Lunch, Dinner, Snack). You MUST use the EXACT SAME calorie split for ALL 14 days. (e.g., if Day 1 Breakfast is 400 kcal, Day 2 to Day 14 Breakfasts MUST also be exactly 400 kcal).
+        INSTRUCTIONS:
+        1. Generate a JSON object containing a single key called "days".
+        2. The "days" array MUST contain EXACTLY 14 objects.
+        3. You MUST generate the objects for Day 1, Day 2, Day 3, Day 4, Day 5, Day 6, Day 7, Day 8, Day 9, Day 10, Day 11, Day 12, Day 13, and Day 14.
+        4. Each day object MUST contain exactly these 5 keys: "dayNumber", "breakfast", "lunch", "dinner", and "snack".
+        5. The meal keys ("breakfast", "lunch", "dinner", "snack") MUST be single JSON objects, NEVER arrays.
+        6. The sum of calories for the 4 meals in a day MUST equal ${user.targetCalories}.
+        7. You MUST use the exact same calorie split for all 14 days.
         
-        CRITICAL JSON STRUCTURE RULES (NO EXCEPTIONS):
-        1. The root MUST be a single object with the key "days".
-        2. "days" MUST be an array of EXACTLY 14 day objects (Day 1 through Day 14).
-        3. EVERY day object MUST have exactly these 5 keys: "dayNumber", "breakfast", "lunch", "dinner", and "snack".
-        4. "breakfast", "lunch", "dinner", and "snack" MUST ALWAYS BE SINGLE OBJECTS. They CANNOT be arrays.
-        5. You must write out the full independent object for Day 1, then Day 2, all the way to Day 14. Do not link days together.
-        
-        EXPECTED JSON TEMPLATE:
+        FORMAT YOU MUST FOLLOW:
         {
           "days": [
             {
               "dayNumber": 1,
-              "breakfast": {"name": "...", "calories": 400, "protein": 20, "fat": 15, "carbs": 45, "quantityDetails": "..."},
-              "lunch": {"name": "...", "calories": 600, "protein": 35, "fat": 20, "carbs": 65, "quantityDetails": "..."},
-              "dinner": {"name": "...", "calories": 500, "protein": 30, "fat": 15, "carbs": 55, "quantityDetails": "..."},
-              "snack": {"name": "...", "calories": 200, "protein": 10, "fat": 10, "carbs": 20, "quantityDetails": "..."}
-            },
-            {
-              "dayNumber": 2,
-              "breakfast": {"name": "...", "calories": 400, "protein": 20, "fat": 15, "carbs": 45, "quantityDetails": "..."},
-              "lunch": {"name": "...", "calories": 600, "protein": 35, "fat": 20, "carbs": 65, "quantityDetails": "..."},
-              "dinner": {"name": "...", "calories": 500, "protein": 30, "fat": 15, "carbs": 55, "quantityDetails": "..."},
-              "snack": {"name": "...", "calories": 200, "protein": 10, "fat": 10, "carbs": 20, "quantityDetails": "..."}
+              "breakfast": {"name": "", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "quantityDetails": ""},
+              "lunch": {"name": "", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "quantityDetails": ""},
+              "dinner": {"name": "", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "quantityDetails": ""},
+              "snack": {"name": "", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "quantityDetails": ""}
             }
-            // CONTINUE THIS EXACT SAME STRUCTURE FOR dayNumber 3 THROUGH 14.
           ]
         }
+        Now, generate the full JSON array containing all 14 days based on the format above. Do not skip any days.
         """.trimIndent()
     }
 
