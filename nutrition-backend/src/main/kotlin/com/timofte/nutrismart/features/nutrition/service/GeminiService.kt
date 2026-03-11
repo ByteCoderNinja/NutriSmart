@@ -86,7 +86,7 @@ class GeminiService(
         }
 
         return """
-        IMPORTANT: Return ONLY the raw JSON. Do not include any Markdown formatting like `json. Do not add any introductory text.
+        IMPORTANT: Return ONLY valid, raw JSON. Do not include any Markdown formatting like `json. Do not add any introductory text.
         Act as a professional nutritionist. Generate a 14-DAY meal plan (Day 1 to Day 14) for a user with the following profile:
         - Age: $age
         - Gender: ${user.gender}
@@ -100,44 +100,50 @@ class GeminiService(
         - Budget Constraint: ${user.maxDailyBudget} $currencySymbol / day
         - Calories: ${user.targetCalories} kcal/day
         
-        CRITICAL GENERATION RULES:
-        1. MANDATORY LENGTH: The `days` array MUST contain exactly 14 objects. You must output Day 1, Day 2, Day 3, Day 4, Day 5, Day 6, Day 7, Day 8, Day 9, Day 10, Day 11, Day 12, Day 13, and Day 14. Do NOT skip any days. Do NOT abbreviate.
-        2. MANDATORY MEALS PER DAY: EVERY single day object MUST contain exactly 4 meal objects: "breakfast", "lunch", "dinner", and "snack". Never skip a meal in any day.
+        CRITICAL JSON STRUCTURE RULES (READ CAREFULLY):
+        1. The root MUST be an object with exactly ONE key: "days".
+        2. "days" MUST be an array containing EXACTLY 14 objects.
+        3. EVERY single day object in the "days" array MUST have exactly 5 keys: "dayNumber", "breakfast", "lunch", "dinner", and "snack".
+        4. "breakfast", "lunch", "dinner", and "snack" MUST be single objects, NOT arrays. Do NOT group meals together. Do NOT put 14 lunches inside one day.
+        5. You MUST write out a full object for Day 1, Day 2, Day 3... all the way to Day 14.
         
-        IMPORTANT RULES FOR THE PLAN:
-        3. Smart Cooking Strategy: Use a "Cook Once, Eat Twice" strategy where possible to save time and money. 
-           - Example: Roast Chicken Dinner on Day 1 becomes Chicken Salad Lunch on Day 2.
-        4. Ingredients: Reuse perishable ingredients across multiple days to minimize food waste.
-        5. Variety: Ensure meals are not repetitive, but keep the shopping list practical.
-        6. AVERSIONS (CRITICAL): Do NOT include any ingredients listed in 'Explicitly Avoid These Foods' under any circumstances!
-        7. DIETARY REQUIREMENT (STRICT ADHERENCE REQUIRED): The user follows a $dietText diet.
-           - IF VEGAN: NO animal products (no meat, poultry, fish, seafood, dairy, eggs, honey).
+        NUTRITION & PLANNING RULES:
+        6. Smart Cooking Strategy: Use a "Cook Once, Eat Twice" strategy where possible. Example: Roast Chicken Dinner on Day 1 becomes Chicken Salad Lunch on Day 2.
+        7. Variety & Ingredients: Reuse perishable ingredients across multiple days to minimize waste. Ensure meals are not repetitive, but keep the shopping list practical.
+        8. AVERSIONS (CRITICAL): Do NOT include any ingredients listed in 'Explicitly Avoid These Foods'!
+        9. DIETARY REQUIREMENT (STRICT): The user follows a $dietText diet.
+           - IF VEGAN: NO animal products.
            - IF VEGETARIAN: NO meat, poultry, or fish.
-           - IF PESCO-VEGETARIAN: NO meat or poultry (fish/seafood allowed).
+           - IF PESCO-VEGETARIAN: NO meat or poultry (fish allowed).
            - IF KETO: High-fat, moderate-protein, extremely low-carb.
-           - IF PALEO: NO grains, NO legumes, NO dairy, NO processed sugars.
-        8. CONSISTENT MEAL CALORIES ACROSS ALL DAYS (CRITICAL): 
-           - Determine a fixed calorie target for each meal type so their sum equals exactly ${user.targetCalories} kcal.
-           - You MUST use these EXACT SAME calorie numbers for EVERY SINGLE DAY (Days 1 through 14).
-           - Example: If Day 1 Breakfast is 400 kcal, then Day 2 to Day 14 Breakfasts MUST ALSO be exactly 400 kcal. Do NOT vary calories for the same meal type.
+           - IF PALEO: NO grains, legumes, dairy, processed sugars.
+        10. CONSISTENT CALORIES (CRITICAL):
+           - Breakfast, Lunch, Dinner, and Snack must EACH have a fixed calorie target.
+           - Example: If Breakfast is 400 kcal on Day 1, it MUST be exactly 400 kcal on Days 2 through 14.
+           - The sum of (Breakfast + Lunch + Dinner + Snack) MUST exactly equal ${user.targetCalories} kcal EVERY SINGLE DAY.
         
         $unitInstructions
         
-        JSON STRUCTURE MUST BE EXACTLY THIS:
+        EXPECTED JSON FORMAT:
         {
           "days": [
             {
               "dayNumber": 1,
-              "breakfast": { "name": "...", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "quantityDetails": "..." },
-              "lunch": { "name": "...", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "quantityDetails": "..." },
-              "dinner": { "name": "...", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "quantityDetails": "..." },
-              "snack": { "name": "...", "calories": 0, "protein": 0, "fat": 0, "carbs": 0, "quantityDetails": "..." }
+              "breakfast": { "name": "Example 1", "calories": 400, "protein": 20, "fat": 15, "carbs": 45, "quantityDetails": "2 eggs" },
+              "lunch": { "name": "Example 2", "calories": 600, "protein": 35, "fat": 20, "carbs": 65, "quantityDetails": "150g chicken" },
+              "dinner": { "name": "Example 3", "calories": 500, "protein": 30, "fat": 15, "carbs": 55, "quantityDetails": "200g salmon" },
+              "snack": { "name": "Example 4", "calories": 200, "protein": 10, "fat": 10, "carbs": 20, "quantityDetails": "1 apple" }
             },
-            // You MUST continue outputting objects for dayNumber 2 through 14 in this exact same format.
+            {
+              "dayNumber": 2,
+              "breakfast": { "name": "Example 5", "calories": 400, "protein": 20, "fat": 15, "carbs": 45, "quantityDetails": "Oatmeal" },
+              "lunch": { "name": "Example 6", "calories": 600, "protein": 35, "fat": 20, "carbs": 65, "quantityDetails": "Leftover salmon" },
+              "dinner": { "name": "Example 7", "calories": 500, "protein": 30, "fat": 15, "carbs": 55, "quantityDetails": "Beef steak" },
+              "snack": { "name": "Example 8", "calories": 200, "protein": 10, "fat": 10, "carbs": 20, "quantityDetails": "Almonds" }
+            }
           ]
         }
-        "quantityDetails" should be descriptive (e.g., "2 eggs, 1 slice toast").
-        Before outputting the JSON, internally verify that you have generated exactly 14 day objects, each with 4 meals.
+        Generate ALL 14 objects in the "days" array following the exact strict structure shown for Day 1 and Day 2.
         """.trimIndent()
     }
 
