@@ -1,5 +1,6 @@
 package com.example.nutrismart.ui.screens.onboarding
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -10,7 +11,6 @@ import com.example.nutrismart.data.UserSession
 import com.example.nutrismart.data.model.ActivityLevel
 import com.example.nutrismart.data.model.Currency
 import com.example.nutrismart.data.model.DietaryPreference
-import com.example.nutrismart.data.model.DislikedFood
 import com.example.nutrismart.data.model.Gender
 import com.example.nutrismart.data.model.MedicalCondition
 import com.example.nutrismart.data.model.OnboardingRequest
@@ -21,6 +21,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.flow.*
 
 class OnboardingViewModel : ViewModel() {
 
@@ -41,13 +42,12 @@ class OnboardingViewModel : ViewModel() {
     var selectedDislikedFoods by mutableStateOf<Set<String>>(emptySet())
 
     var foodSearchQuery by mutableStateOf("")
+    var isSearchingFoods by mutableStateOf(false)
     var foodSuggestions = mutableStateListOf<String>()
-    private var searchJob: Job? = null
 
     var isLoading by mutableStateOf(false)
     var errorMessage by mutableStateOf<String?>(null)
     var isComplete by mutableStateOf(false)
-
     var loadingMessage by mutableStateOf("Saving profile...")
 
     private val messages = listOf(
@@ -86,30 +86,40 @@ class OnboardingViewModel : ViewModel() {
 
     fun onFoodSearchQueryChanged(newQuery: String) {
         foodSearchQuery = newQuery
-        searchJob?.cancel()
-        
-        if (newQuery.length < 1) {
+        if (newQuery.isBlank()) {
             foodSuggestions.clear()
             return
         }
 
+        searchFoods(newQuery)
+    }
+
+    private var searchJob: Job? = null
+    private fun searchFoods(query: String) {
+        searchJob?.cancel()
         searchJob = viewModelScope.launch {
-            delay(300)
+            delay(400)
+            isSearchingFoods = true
             try {
-                val response = RetrofitClient.api.searchFoods(newQuery)
+                val token = if (UserSession.token.isNotEmpty()) "Bearer ${UserSession.token}" else ""
+                Log.d("NutriSmart", "Searching for: $query")
+                val response = RetrofitClient.api.searchFoods(token, query)
+                
                 if (response.isSuccessful) {
                     val data = response.body()
-                    if (data != null) {
-                        foodSuggestions.clear()
-                        foodSuggestions.addAll(data)
-                    }
+                    Log.d("NutriSmart", "Found: ${data?.size} items")
+                    foodSuggestions.clear()
+                    data?.let { foodSuggestions.addAll(it) }
+                } else {
+                    Log.e("NutriSmart", "Search failed: ${response.code()}")
                 }
             } catch (e: Exception) {
-                println(e)
+                Log.e("NutriSmart", "Search error", e)
+            } finally {
+                isSearchingFoods = false
             }
         }
     }
-
 
     fun submitProfile() {
         if (height.isEmpty() || weight.isEmpty() || targetWeight.isEmpty() || budget.isEmpty()) {
@@ -172,7 +182,6 @@ class OnboardingViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val token = if (UserSession.token.isNotEmpty()) "Bearer ${UserSession.token}" else ""
-
                 val startResponse = RetrofitClient.api.startPlanGeneration(token, userId)
 
                 if (startResponse.isSuccessful) {
@@ -194,11 +203,7 @@ class OnboardingViewModel : ViewModel() {
             var index = 0
             while (isActive) {
                 loadingMessage = messages[index]
-
-                if (index < messages.size - 1) {
-                    index++
-                }
-
+                if (index < messages.size - 1) index++
                 delay(6000)
             }
         }
@@ -206,18 +211,14 @@ class OnboardingViewModel : ViewModel() {
 
     private suspend fun pollForStatus(userId: Long, messageJob: Job) {
         var isDone = false
-
         while (!isDone && viewModelScope.isActive) {
             delay(5000)
-
             try {
                 val token = if (UserSession.token.isNotEmpty()) "Bearer ${UserSession.token}" else ""
-
                 val statusResponse = RetrofitClient.api.checkGenerationStatus(token, userId)
 
                 if (statusResponse.isSuccessful) {
                     val status = statusResponse.body()?.get("status") ?: "UNKNOWN"
-
                     when (status) {
                         "COMPLETED" -> {
                             isDone = true
@@ -235,8 +236,7 @@ class OnboardingViewModel : ViewModel() {
                         }
                     }
                 }
-            } catch (e: Exception) {
-            }
+            } catch (e: Exception) {}
         }
     }
 }

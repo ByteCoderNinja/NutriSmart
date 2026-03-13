@@ -95,6 +95,8 @@ fun OnboardingScreen(
             }
         }
 
+        Spacer(modifier = Modifier.height(32.dp))
+
         Text(
             text = if (isEditMode) "Edit Your Plan" else "Build Your Plan",
             style = MaterialTheme.typography.headlineMedium,

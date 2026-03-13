@@ -23,6 +23,27 @@ fun PreferencesHealthSection(
     premiumShape: RoundedCornerShape,
     textFieldColors: TextFieldColors
 ) {
+    SectionHeader("Foods to Avoid")
+    Text(
+        text = "Search ingredients you dislike or are allergic to:",
+        style = MaterialTheme.typography.bodySmall,
+        color = Color.Gray,
+        modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp)
+    )
+
+    DislikedFoodsSelector(
+        searchQuery = viewModel.foodSearchQuery,
+        onSearchQueryChange = viewModel::onFoodSearchQueryChanged,
+        suggestions = viewModel.foodSuggestions,
+        selectedFoods = viewModel.selectedDislikedFoods,
+        onFoodToggled = { food ->
+            viewModel.toggleDislikedFood(food)
+        },
+        isLoading = viewModel.isSearchingFoods
+    )
+
+    Spacer(modifier = Modifier.height(32.dp))
+
     SectionHeader("Preferences & Health")
 
     MultiSelectDropdownPremium(
@@ -45,20 +66,5 @@ fun PreferencesHealthSection(
         itemLabel = { it.name.replace("_", " ").lowercase().replaceFirstChar { char -> char.uppercase() } },
         colors = textFieldColors,
         shape = premiumShape
-    )
-
-    Spacer(modifier = Modifier.height(24.dp))
-
-    SectionHeader("Foods to Avoid")
-    Text("Select ingredients you dislike or are allergic to:", style = MaterialTheme.typography.bodySmall, color = Color.Gray, modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp))
-
-    DislikedFoodsSelector(
-        searchQuery = viewModel.foodSearchQuery,
-        onSearchQueryChange = viewModel::onFoodSearchQueryChanged,
-        suggestions = viewModel.foodSuggestions,
-        selectedFoods = viewModel.selectedDislikedFoods,
-        onFoodToggled = { food ->
-            viewModel.toggleDislikedFood(food)
-        }
     )
 }

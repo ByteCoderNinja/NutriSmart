@@ -6,7 +6,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.example.nutrismart.R // Asigură-te că pui pachetul tău aici pentru R
+import com.example.nutrismart.R
 
 val Poppins = FontFamily(
     Font(R.font.poppins_regular, FontWeight.Normal),

@@ -48,7 +48,7 @@ class GeminiService(
         val currencySymbol = user.currency.symbol
 
         val avoidedFoodsText = if (user.dislikedFoods.isNotEmpty()) {
-            val foodsList = user.dislikedFoods.joinToString(", ") { it.name.replace("_", " ").lowercase() }
+            val foodsList = user.dislikedFoods.joinToString(", ") { it.lowercase() }
             "- Explicitly Avoid These Foods: $foodsList"
         } else {
             "- Explicitly Avoid These Foods: None"

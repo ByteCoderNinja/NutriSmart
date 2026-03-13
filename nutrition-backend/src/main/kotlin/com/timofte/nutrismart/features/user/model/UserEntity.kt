@@ -67,10 +67,10 @@ data class UserEntity(
     @Enumerated(EnumType.STRING)
     var currency: Currency = Currency.RON,
 
-    @ElementCollection(targetClass = DislikedFood::class)
+    @ElementCollection
     @CollectionTable(name = "user_disliked_foods", joinColumns = [JoinColumn(name = "user_id")])
-    @Enumerated(EnumType.STRING)
-    var dislikedFoods: Set<DislikedFood> = emptySet()
+    @Column(name = "food_name")
+    var dislikedFoods: Set<String> = emptySet()
 ) {
     @get:JsonProperty("isGoogleUser")
     val isGoogleUser: Boolean
