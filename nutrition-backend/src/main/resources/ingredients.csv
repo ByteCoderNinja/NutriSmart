@@ -1,0 +1,603 @@
+// MEAT & POULTRY
+Beef
+Ground Beef
+Steak
+Ribeye
+Sirloin
+Brisket
+Veal
+Pork
+Pork Chops
+Bacon
+Ham
+Prosciutto
+Pancetta
+Salami
+Pepperoni
+Sausage
+Chorizo
+Bratwurst
+Lamb
+Mutton
+Lamb Chops
+Venison
+Rabbit
+Wild Boar
+Chicken
+Chicken Breast
+Chicken Thighs
+Chicken Wings
+Turkey
+Ground Turkey
+Duck
+Goose
+Quail
+Pheasant
+Liver
+Chicken Liver
+Beef Liver
+Kidney
+Heart
+Tripe
+
+// FISH & SEAFOOD
+Fish
+Salmon
+Smoked Salmon
+Tuna
+Canned Tuna
+Ahi Tuna
+White Fish
+Trout
+Cod
+Black Cod
+Haddock
+Halibut
+Tilapia
+Sardine
+Mackerel
+Anchovy
+Sea Bass
+Snapper
+Mahi Mahi
+Swordfish
+Catfish
+Flounder
+Sole
+Seafood
+Shrimp
+Prawns
+Squid
+Calamari
+Mussels
+Crab
+King Crab
+Snow Crab
+Lobster
+Crawfish
+Oyster
+Clam
+Scallop
+Octopus
+Caviar
+Roe
+
+// DAIRY & ALTERNATIVES
+Milk
+Whole Milk
+Skim Milk
+Buttermilk
+Almond Milk
+Oat Milk
+Soy Milk
+Coconut Milk
+Rice Milk
+Macadamia Milk
+Cashew Milk
+Yogurt
+Greek Yogurt
+Kefir
+Skyr
+Butter
+Ghee
+Margarine
+Cream
+Sour Cream
+Cream Cheese
+Heavy Cream
+Whipping Cream
+Clotted Cream
+Cheese
+Cottage Cheese
+Ricotta
+Mozzarella
+Fresh Mozzarella
+Cheddar
+Sharp Cheddar
+Parmesan
+Pecorino Romano
+Gouda
+Smoked Gouda
+Brie
+Camembert
+Feta
+Blue Cheese
+Roquefort
+Gorgonzola
+Goat Cheese
+Chevre
+Provolone
+Swiss Cheese
+Gruyere
+Emmental
+Halloumi
+Paneer
+Havarti
+Monterey Jack
+Pepper Jack
+
+// EGGS
+Eggs
+Egg Whites
+Egg Yolks
+Duck Eggs
+Quail Eggs
+
+// VEGETABLES
+Spinach
+Baby Spinach
+Broccoli
+Broccoli Rabe
+Broccolini
+Cauliflower
+Cabbage
+Red Cabbage
+Napa Cabbage
+Savoy Cabbage
+Bok Choy
+Brussels Sprouts
+Mushrooms
+White Button Mushroom
+Cremini Mushroom
+Portobello Mushroom
+Shiitake Mushroom
+Oyster Mushroom
+Enoki Mushroom
+Maitake Mushroom
+Porcini
+Onions
+Red Onion
+White Onion
+Yellow Onion
+Sweet Onion
+Shallot
+Leek
+Green Onion
+Scallion
+Garlic
+Garlic Scapes
+Tomatoes
+Cherry Tomatoes
+Grape Tomatoes
+Roma Tomatoes
+Sun-Dried Tomatoes
+Eggplant
+Zucchini
+Yellow Squash
+Bell Peppers
+Red Bell Pepper
+Green Bell Pepper
+Yellow Bell Pepper
+Jalapeno
+Chili Pepper
+Habanero
+Serrano Pepper
+Poblano Pepper
+Chipotle
+Olives
+Black Olives
+Kalamata Olives
+Green Olives
+Carrots
+Baby Carrots
+Celery
+Celeriac
+Asparagus
+Peas
+Green Peas
+Snow Peas
+Snap Peas
+Corn
+Sweet Corn
+Baby Corn
+Potatoes
+Russet Potato
+Red Potato
+Yukon Gold Potato
+Sweet Potatoes
+Yams
+Nettles
+Kale
+Lacinato Kale
+Arugula
+Lettuce
+Romaine Lettuce
+Iceberg Lettuce
+Butter Lettuce
+Radicchio
+Endive
+Escarole
+Swiss Chard
+Collard Greens
+Mustard Greens
+Beet Greens
+Watercress
+Radish
+Daikon Radish
+Beetroot
+Turnip
+Parsnip
+Rutabaga
+Pumpkin
+Butternut Squash
+Acorn Squash
+Spaghetti Squash
+Kabocha Squash
+Artichoke
+Artichoke Hearts
+Green Beans
+French Beans
+Wax Beans
+Okra
+Fennel
+Bamboo Shoots
+Water Chestnuts
+Hearts of Palm
+Plantain
+Yuca
+Cassava
+
+// FRUITS
+Apples
+Granny Smith Apple
+Fuji Apple
+Gala Apple
+Honeycrisp Apple
+Bananas
+Citrus Fruits
+Orange
+Blood Orange
+Lemon
+Lime
+Grapefruit
+Tangerine
+Clementine
+Mandarin
+Berries
+Strawberry
+Blueberry
+Raspberry
+Blackberry
+Cranberry
+Boysenberry
+Gooseberry
+Mulberry
+Melons
+Watermelon
+Cantaloupe
+Honeydew
+Grapes
+Red Grapes
+Green Grapes
+Concord Grapes
+Cherry
+Peach
+Plum
+Apricot
+Nectarine
+Pear
+Bartlett Pear
+Bosc Pear
+Asian Pear
+Pineapple
+Mango
+Papaya
+Guava
+Kiwi
+Fig
+Date
+Medjool Date
+Pomegranate
+Passion Fruit
+Dragon Fruit
+Lychee
+Persimmon
+Starfruit
+Avocado
+Coconut
+Shredded Coconut
+Raisins
+Sultanas
+Currants
+Prunes
+Dried Apricots
+Dried Figs
+Dried Cranberries
+
+// LEGUMES & SOY
+Beans
+Black Beans
+Kidney Beans
+Pinto Beans
+Navy Beans
+Cannellini Beans
+Great Northern Beans
+Lima Beans
+Fava Beans
+Mung Beans
+Adzuki Beans
+Lentils
+Green Lentils
+Red Lentils
+Brown Lentils
+Black Lentils
+Chickpeas
+Garbanzo Beans
+Soybeans
+Edamame
+Soy
+Tofu
+Silken Tofu
+Firm Tofu
+Tempeh
+Seitan
+Miso
+
+// NUTS & SEEDS
+Nuts
+Peanuts
+Almonds
+Walnuts
+Pecans
+Cashews
+Pistachios
+Macadamia Nuts
+Brazil Nuts
+Pine Nuts
+Hazelnuts
+Chestnuts
+Peanut Butter
+Almond Butter
+Cashew Butter
+Sunflower Seed Butter
+Tahini
+Chia Seeds
+Flax Seeds
+Hemp Seeds
+Sunflower Seeds
+Pumpkin Seeds
+Pepitas
+Sesame Seeds
+Black Sesame Seeds
+Poppy Seeds
+
+// GRAINS, PASTA & BREAD
+Quinoa
+Red Quinoa
+Black Quinoa
+Brown Rice
+White Rice
+Basmati Rice
+Jasmine Rice
+Wild Rice
+Arborio Rice
+Sushi Rice
+Oats
+Rolled Oats
+Steel Cut Oats
+Quick Oats
+Buckwheat
+Buckwheat Groats
+Barley
+Pearl Barley
+Rye
+Wheat
+Wheat Berries
+Millet
+Bulgur
+Couscous
+Farro
+Spelt
+Amaranth
+Teff
+Sorghum
+Flour
+All-Purpose Flour
+Whole Wheat Flour
+Bread Flour
+Cake Flour
+Almond Flour
+Coconut Flour
+Cornmeal
+Polenta
+Tapioca
+Arrowroot
+Spaghetti
+Macaroni
+Penne
+Fusilli
+Linguine
+Fettuccine
+Rigatoni
+Farfalle
+Orzo
+Noodles
+Rice Noodles
+Soba Noodles
+Udon Noodles
+Ramen Noodles
+Glass Noodles
+Egg Noodles
+Bread
+Whole Wheat Bread
+White Bread
+Sourdough Bread
+Rye Bread
+Pumpernickel
+Baguette
+Ciabatta
+Bagel
+Croissant
+English Muffin
+Tortilla
+Corn Tortilla
+Flour Tortilla
+Pita Bread
+Naan
+Pizza Dough
+
+// HERBS, SPICES & CONDIMENTS
+Cilantro
+Dill
+Parsley
+Mint
+Basil
+Thai Basil
+Oregano
+Thyme
+Rosemary
+Sage
+Bay Leaves
+Tarragon
+Chives
+Lemongrass
+Marjoram
+Culantro
+Mustard
+Dijon Mustard
+Whole Grain Mustard
+Yellow Mustard
+Mayonnaise
+Ketchup
+BBQ Sauce
+Hot Sauce
+Sriracha
+Tabasco
+Soy Sauce
+Tamari
+Teriyaki Sauce
+Hoisin Sauce
+Oyster Sauce
+Fish Sauce
+Worcestershire Sauce
+Sauerkraut
+Pickles
+Capers
+Relish
+Kimchi
+Ginger
+Fresh Ginger
+Turmeric
+Fresh Turmeric
+Cinnamon
+Cinnamon Sticks
+Nutmeg
+Cumin
+Coriander
+Paprika
+Smoked Paprika
+Chili Powder
+Cayenne Pepper
+Garlic Powder
+Onion Powder
+Cardamom
+Cloves
+Allspice
+Star Anise
+Fennel Seeds
+Caraway Seeds
+Mustard Seeds
+Fenugreek
+Saffron
+Curry Powder
+Garam Masala
+Chinese Five Spice
+Za'atar
+Salt
+Sea Salt
+Kosher Salt
+Pink Himalayan Salt
+Black Pepper
+White Pepper
+Vanilla Extract
+Vanilla Bean
+Vinegar
+White Vinegar
+Balsamic Vinegar
+Apple Cider Vinegar
+Red Wine Vinegar
+White Wine Vinegar
+Rice Vinegar
+Malt Vinegar
+
+// OILS & FATS
+Olive Oil
+Extra Virgin Olive Oil
+Coconut Oil
+Sunflower Oil
+Canola Oil
+Avocado Oil
+Sesame Oil
+Toasted Sesame Oil
+Peanut Oil
+Corn Oil
+Vegetable Oil
+Safflower Oil
+Grapeseed Oil
+Walnut Oil
+Macadamia Oil
+Lard
+Tallow
+Duck Fat
+Schmaltz
+
+// SWEETENERS & MISCELLANEOUS
+Honey
+Raw Honey
+Maple Syrup
+Stevia
+Agave Nectar
+Sugar
+White Sugar
+Brown Sugar
+Cane Sugar
+Powdered Sugar
+Coconut Sugar
+Turbinado Sugar
+Molasses
+Corn Syrup
+Dark Chocolate
+Milk Chocolate
+White Chocolate
+Cocoa Powder
+Cacao Nibs
+Chocolate Chips
+Protein Powder
+Whey Protein
+Casein Protein
+Vegan Protein
+Pea Protein
+Soy Protein
+Collagen Peptides
+Nutritional Yeast
+Agar Agar
+Gelatin
+Baking Soda
+Baking Powder
+Yeast
+Active Dry Yeast
+Matcha
+Maca Powder
+Spirulina
+Acai Powder
+Goji Berries
