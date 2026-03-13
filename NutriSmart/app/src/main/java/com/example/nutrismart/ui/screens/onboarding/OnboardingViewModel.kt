@@ -38,7 +38,11 @@ class OnboardingViewModel : ViewModel() {
 
     var selectedDietaryPreferences = mutableStateListOf<DietaryPreference>()
     var selectedMedicalConditions = mutableStateListOf<MedicalCondition>()
-    var selectedDislikedFoods by mutableStateOf<Set<DislikedFood>>(emptySet())
+    var selectedDislikedFoods by mutableStateOf<Set<String>>(emptySet())
+
+    var foodSearchQuery by mutableStateOf("")
+    var foodSuggestions = mutableStateListOf<String>()
+    private var searchJob: Job? = null
 
     var isLoading by mutableStateOf(false)
     var errorMessage by mutableStateOf<String?>(null)
@@ -70,15 +74,42 @@ class OnboardingViewModel : ViewModel() {
         }
     }
 
-    fun toggleDislikedFood(food: DislikedFood, isSelected: Boolean) {
+    fun toggleDislikedFood(food: String) {
         val currentSet = selectedDislikedFoods.toMutableSet()
-        if (isSelected) {
-            currentSet.add(food)
-        } else {
+        if (currentSet.contains(food)) {
             currentSet.remove(food)
+        } else {
+            currentSet.add(food)
         }
         selectedDislikedFoods = currentSet
     }
+
+    fun onFoodSearchQueryChanged(newQuery: String) {
+        foodSearchQuery = newQuery
+        searchJob?.cancel()
+        
+        if (newQuery.length < 1) {
+            foodSuggestions.clear()
+            return
+        }
+
+        searchJob = viewModelScope.launch {
+            delay(300)
+            try {
+                val response = RetrofitClient.api.searchFoods(newQuery)
+                if (response.isSuccessful) {
+                    val data = response.body()
+                    if (data != null) {
+                        foodSuggestions.clear()
+                        foodSuggestions.addAll(data)
+                    }
+                }
+            } catch (e: Exception) {
+                println(e)
+            }
+        }
+    }
+
 
     fun submitProfile() {
         if (height.isEmpty() || weight.isEmpty() || targetWeight.isEmpty() || budget.isEmpty()) {

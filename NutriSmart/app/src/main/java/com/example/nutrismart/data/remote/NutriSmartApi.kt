@@ -148,4 +148,7 @@ interface NutriSmartApi {
 
     @POST("auth/reset-password")
     suspend fun resetPassword(@Body request: Map<String, String>): Response<Void>
-}
+
+    @GET("api/foods/search")
+    suspend fun searchFoods(@Query("query") query: String): Response<List<String>>
+    }

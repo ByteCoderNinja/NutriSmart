@@ -53,9 +53,12 @@ fun PreferencesHealthSection(
     Text("Select ingredients you dislike or are allergic to:", style = MaterialTheme.typography.bodySmall, color = Color.Gray, modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp))
 
     DislikedFoodsSelector(
+        searchQuery = viewModel.foodSearchQuery,
+        onSearchQueryChange = viewModel::onFoodSearchQueryChanged,
+        suggestions = viewModel.foodSuggestions,
         selectedFoods = viewModel.selectedDislikedFoods,
-        onFoodToggled = { food, isSelected ->
-            viewModel.toggleDislikedFood(food, isSelected)
+        onFoodToggled = { food ->
+            viewModel.toggleDislikedFood(food)
         }
     )
 }

@@ -36,7 +36,7 @@ data class OnboardingRequest(
     val maxDailyBudget: Double,
     val dietaryPreferences: List<DietaryPreference>,
     val medicalConditions: List<MedicalCondition>,
-    val dislikedFoods: List<DislikedFood>,
+    val dislikedFoods: List<String>,
     val isImperial: Boolean = false,
     val currency: Currency = Currency.RON
 )
