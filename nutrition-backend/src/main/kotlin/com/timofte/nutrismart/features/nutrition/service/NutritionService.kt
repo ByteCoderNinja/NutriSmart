@@ -163,29 +163,40 @@ class NutritionService(
     }
 
     fun getMealPlan(userId: Long, date: LocalDate): MealPlan? {
-        val exactPlan =  mealPlanRepository.findByUserIdAndDate(userId, date)
-
+        val exactPlan = mealPlanRepository.findByUserIdAndDate(userId, date)
         if (exactPlan != null) return exactPlan
 
         val allPlans = mealPlanRepository.findByUserId(userId).sortedBy { it.date }
-
         if (allPlans.isEmpty()) return null
 
         val firstPlanDate = allPlans.first().date
-        val numberOfPlans = allPlans.size
-
         val daysDiff = ChronoUnit.DAYS.between(firstPlanDate, date)
 
         if (daysDiff < 0) return allPlans.first()
 
-        val cycleIndex = (daysDiff % numberOfPlans).toInt()
-        val cycledPlan = allPlans[cycleIndex]
+        val breakfasts = allPlans.mapNotNull { it.breakfast }
+        val lunches = allPlans.mapNotNull { it.lunch }
+        val dinners = allPlans.mapNotNull { it.dinner }
+        val snacks = allPlans.mapNotNull { it.snack }
 
-        return cycledPlan.copy(
-            id = 0,
+        val breakfast = if (breakfasts.isNotEmpty()) breakfasts[(daysDiff % breakfasts.size).toInt()] else null
+        val lunch = if (lunches.isNotEmpty()) lunches[(daysDiff % lunches.size).toInt()] else null
+        val dinner = if (dinners.isNotEmpty()) dinners[(daysDiff % dinners.size).toInt()] else null
+        val snack = if (snacks.isNotEmpty()) snacks[(daysDiff % snacks.size).toInt()] else null
+
+        val compositePlan = MealPlan(
+            userId = userId,
             date = date,
+            breakfast = breakfast,
+            lunch = lunch,
+            dinner = dinner,
+            snack = snack,
             isCompleted = false
         )
+
+        recalculateTotals(compositePlan)
+
+        return compositePlan
     }
 
     @Transactional
