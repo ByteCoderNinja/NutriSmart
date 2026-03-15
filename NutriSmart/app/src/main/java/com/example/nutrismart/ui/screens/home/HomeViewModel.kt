@@ -36,7 +36,9 @@ class HomeViewModel(private val sessionManager: SessionManager) : ViewModel() {
             _uiState.update { it.copy(isLoading = true) }
             try {
                 val authHeader = "Bearer ${UserSession.token}"
-                val planResponse = RetrofitClient.api.getTodayPlan(authHeader, currentUserId)
+                val localDate = java.time.LocalDate.now().toString()
+                
+                val planResponse = RetrofitClient.api.getDailyPlan(authHeader, currentUserId, localDate)
                 val shoppingListResponse = RetrofitClient.api.getShoppingList(authHeader, currentUserId)
                 val userResponse = RetrofitClient.api.getUser(authHeader, currentUserId)
 
@@ -52,7 +54,12 @@ class HomeViewModel(private val sessionManager: SessionManager) : ViewModel() {
 
                 if (planResponse.isSuccessful) {
                     val plan = planResponse.body()
-                    _uiState.update { it.copy(breakfast = plan?.breakfast, lunch = plan?.lunch, dinner = plan?.dinner, snack = plan?.snack) }
+                    _uiState.update { it.copy(
+                        breakfast = plan?.breakfast, 
+                        lunch = plan?.lunch, 
+                        dinner = plan?.dinner, 
+                        snack = plan?.snack
+                    ) }
                 }
 
                 if (shoppingListResponse.isSuccessful) {

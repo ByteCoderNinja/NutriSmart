@@ -56,7 +56,11 @@ import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.permission.HealthPermission
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.health.connect.client.PermissionController
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.nutrismart.data.SessionManager
 import com.example.nutrismart.data.UserSession
@@ -73,6 +77,22 @@ import java.time.ZoneId
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
     val uiState by viewModel.uiState.collectAsState()
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                if (UserSession.currentUserId != -1L) {
+                    viewModel.fetchTodayData()
+                }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
     var selectedMealForDetails by remember { mutableStateOf<Pair<String, MealDto>?>(null) }
     var mealTypeForSwap by remember { mutableStateOf<String?>(null) }
     var showShoppingListBottomSheet by remember { mutableStateOf(false) }
