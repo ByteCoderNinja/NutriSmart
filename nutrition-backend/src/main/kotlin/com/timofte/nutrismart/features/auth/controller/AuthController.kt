@@ -34,6 +34,18 @@ class AuthController(
         return ResponseEntity.ok(authService.login(request))
     }
 
+    @PostMapping("/resend-code")
+    fun resendCode(@RequestParam email: String): ResponseEntity<ApiResponse<String>> {
+        authService.resendVerificationCode(email)
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                message = "New verification code sent to email",
+                data = null
+            )
+        )
+    }
+
     @PostMapping("/google")
     fun googleLogin(@RequestBody request: GoogleLoginRequest): ResponseEntity<AuthResponse> {
         return ResponseEntity.ok(authService.googleLogin(request))

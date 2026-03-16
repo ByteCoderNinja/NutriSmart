@@ -46,7 +46,6 @@ class EmailService(
             }
         } catch (e: Exception) {
             println("ERROR: Failed to send email via HTTP. Exception: ${e.message}")
-            println("DEBUG: Verification code for $toEmail is: $code")
         }
     }
 }

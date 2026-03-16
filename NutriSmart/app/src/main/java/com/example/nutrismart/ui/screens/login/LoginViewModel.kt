@@ -20,6 +20,7 @@ class LoginViewModel : ViewModel() {
     var errorMessage by mutableStateOf<String?>(null)
     var loginSuccess by mutableStateOf(false)
     var isNewUser by mutableStateOf(false)
+    var isVerified by mutableStateOf(true)
 
     fun onEmailChange(newEmail: String) {
         email = newEmail
@@ -44,18 +45,17 @@ class LoginViewModel : ViewModel() {
 
                 if (response.isSuccessful) {
                     val authData = response.body()
-                    println("Login success! Token: ${authData?.token}")
-
                     if (authData != null) {
                         UserSession.currentUserId = authData.userId
                         UserSession.token = authData.token
 
                         sessionManager.saveAuthToken(authData.token)
                         sessionManager.saveUserId(authData.userId)
-
                         sessionManager.saveProfileComplete(authData.isProfileComplete)
+                        sessionManager.saveIsVerified(authData.isVerified)
 
                         isNewUser = !authData.isProfileComplete
+                        isVerified = authData.isVerified
                     }
 
                     loginSuccess = true
@@ -83,18 +83,17 @@ class LoginViewModel : ViewModel() {
 
                 if (response.isSuccessful) {
                     val authData = response.body()
-                    println("LOG SERVER GOOGLE: Token=${authData?.token}, UserID=${authData?.userId}, IsProfileComplete=${authData?.isProfileComplete}")
-
                     if (authData != null) {
                         UserSession.currentUserId = authData.userId
                         UserSession.token = authData.token
 
                         sessionManager.saveAuthToken(authData.token)
                         sessionManager.saveUserId(authData.userId)
-
                         sessionManager.saveProfileComplete(authData.isProfileComplete)
+                        sessionManager.saveIsVerified(authData.isVerified)
 
                         isNewUser = !authData.isProfileComplete
+                        isVerified = authData.isVerified
                         loginSuccess = true
                         sessionManager.saveIsGoogleUser(true)
                     }

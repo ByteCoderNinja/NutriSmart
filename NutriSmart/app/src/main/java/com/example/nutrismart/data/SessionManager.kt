@@ -83,6 +83,14 @@ class SessionManager(context: Context) {
         return prefs.getBoolean("IS_PROFILE_COMPLETE", false)
     }
 
+    fun saveIsVerified(isVerified: Boolean) {
+        prefs.edit { putBoolean("IS_VERIFIED", isVerified) }
+    }
+
+    fun isVerified(): Boolean {
+        return prefs.getBoolean("IS_VERIFIED", false)
+    }
+
     fun saveIsGoogleUser(isGoogle: Boolean) {
         prefs.edit { putBoolean("IS_GOOGLE_USER", isGoogle) }
     }

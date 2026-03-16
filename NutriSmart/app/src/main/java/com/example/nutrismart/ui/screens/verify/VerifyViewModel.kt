@@ -13,30 +13,52 @@ import kotlinx.coroutines.launch
 class VerifyViewModel : ViewModel() {
     var code by mutableStateOf("")
     var isLoading by mutableStateOf(false)
+    var isResending by mutableStateOf(false)
     var errorMessage by mutableStateOf<String?>(null)
+    var successMessage by mutableStateOf<String?>(null)
     var verificationSuccess by mutableStateOf(false)
 
     fun verify(email: String) {
         isLoading = true
         errorMessage = null
+        successMessage = null
         viewModelScope.launch {
             try {
                 val request = VerifyRequest(email, code)
                 val response = RetrofitClient.api.verify(request)
 
                 if (response.isSuccessful && response.body() != null) {
-                    val token = response.body()!!.token
                     val authResponse = response.body()!!
-                    UserSession.token = token
+                    UserSession.token = authResponse.token
                     UserSession.currentUserId = authResponse.userId
                     verificationSuccess = true
                 } else {
-                    errorMessage = "Invalid code"
+                    errorMessage = "Invalid or expired code"
                 }
             } catch (e: Exception) {
                 errorMessage = "Error: ${e.message}"
             } finally {
                 isLoading = false
+            }
+        }
+    }
+
+    fun resendCode(email: String) {
+        isResending = true
+        errorMessage = null
+        successMessage = null
+        viewModelScope.launch {
+            try {
+                val response = RetrofitClient.api.resendCode(email)
+                if (response.isSuccessful) {
+                    successMessage = "A new code has been sent to your email"
+                } else {
+                    errorMessage = "Failed to resend code. Try again later."
+                }
+            } catch (e: Exception) {
+                errorMessage = "Error: ${e.message}"
+            } finally {
+                isResending = false
             }
         }
     }

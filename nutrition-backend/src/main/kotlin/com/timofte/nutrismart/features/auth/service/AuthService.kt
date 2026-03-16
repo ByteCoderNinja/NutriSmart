@@ -75,11 +75,23 @@ class AuthService(
         val user = userRepository.findByEmail(request.email)
             ?: throw RuntimeException("User not found")
 
-        if (!user.isVerified) {
-            throw RuntimeException("Account is not verified. Please check your email.")
+        return generateAuthResponse(user)
+    }
+
+    fun resendVerificationCode(email: String) {
+        val user = userRepository.findByEmail(email)
+            ?: throw RuntimeException("User not found")
+
+        if (user.isVerified) {
+            throw RuntimeException("Account is already verified")
         }
 
-        return generateAuthResponse(user)
+        val code = String.format("%06d", Random().nextInt(999999))
+        user.verificationCode = code
+        user.verificationCodeExpiresAt = LocalDateTime.now().plusMinutes(15)
+        userRepository.save(user)
+
+        emailService.sendVerificationCode(user.email, code)
     }
 
     fun googleLogin(request: GoogleLoginRequest): AuthResponse {
@@ -113,7 +125,7 @@ class AuthService(
             .build()
 
         val token = jwtUtils.generateToken(userDetails)
-        return AuthResponse(token, user.id, user.isProfileComplete)
+        return AuthResponse(token, user.id, user.isProfileComplete, user.isVerified)
     }
 
     fun processForgotPassword(email: String) {

@@ -32,6 +32,7 @@ fun NutriSmartApp() {
     val savedToken = sessionManager.fetchAuthToken()
     val savedUserId = sessionManager.fetchUserId()
     val isProfileComplete = sessionManager.isProfileComplete()
+    val isVerified = sessionManager.isVerified()
 
     if (!savedToken.isNullOrEmpty()) {
         UserSession.token = savedToken
@@ -40,16 +41,21 @@ fun NutriSmartApp() {
 
     val startDestination = when {
         savedToken.isNullOrEmpty() -> "login"
-        isProfileComplete -> "main_screen"
-        else -> "onboarding"
+        !isVerified -> "verify_initial"
+        !isProfileComplete -> "onboarding"
+        else -> "main_screen"
     }
 
     NavHost(navController = navController, startDestination = startDestination) {
 
         composable("login") {
             LoginScreen(
-                onLoginSuccess = { profileComplete ->
-                    val destination = if (profileComplete) "main_screen" else "onboarding"
+                onLoginSuccess = { email, profileComplete, verified ->
+                    val destination = when {
+                        !verified -> "verify/$email"
+                        !profileComplete -> "onboarding"
+                        else -> "main_screen"
+                    }
                     navController.navigate(destination) {
                         popUpTo("login") { inclusive = true }
                     }
@@ -57,6 +63,12 @@ fun NutriSmartApp() {
                 onNavigateToRegister = { navController.navigate("register") },
                 onNavigateToForgotPassword = { navController.navigate("forgot_password") }
             )
+        }
+
+        composable("verify_initial") {
+            navController.navigate("login") {
+                popUpTo(0) { inclusive = true }
+            }
         }
 
         composable("register") {
@@ -81,10 +93,13 @@ fun NutriSmartApp() {
             VerifyScreen(
                 email = email,
                 onVerificationSuccess = {
+                    sessionManager.saveIsVerified(true)
                     if (isEdit) {
                         navController.popBackStack()
                     } else {
-                        navController.navigate("onboarding") {
+                        val isComplete = sessionManager.isProfileComplete()
+                        val destination = if (isComplete) "main_screen" else "onboarding"
+                        navController.navigate(destination) {
                             popUpTo("login") { inclusive = true }
                         }
                     }

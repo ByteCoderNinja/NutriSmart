@@ -55,6 +55,9 @@ interface NutriSmartApi {
     @POST("auth/verify")
     suspend fun verify(@Body request: VerifyRequest): Response<AuthResponse>
 
+    @POST("auth/resend-code")
+    suspend fun resendCode(@Query("email") email: String): Response<Void>
+
     @POST("users/onboarding")
     suspend fun completeProfile(
         @Header("Authorization") token: String,

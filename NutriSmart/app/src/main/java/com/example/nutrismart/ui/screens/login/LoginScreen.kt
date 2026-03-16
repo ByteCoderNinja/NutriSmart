@@ -28,7 +28,7 @@ import com.example.nutrismart.ui.auth.rememberGoogleSignInLauncher
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = viewModel(),
-    onLoginSuccess: (Boolean) -> Unit,
+    onLoginSuccess: (String, Boolean, Boolean) -> Unit,
     onNavigateToRegister: () -> Unit,
     onNavigateToForgotPassword: () -> Unit
 ) {
@@ -46,7 +46,7 @@ fun LoginScreen(
 
     LaunchedEffect(viewModel.loginSuccess) {
         if (viewModel.loginSuccess) {
-            onLoginSuccess(!viewModel.isNewUser)
+            onLoginSuccess(viewModel.email, viewModel.isNewUser.not(), viewModel.isVerified)
             viewModel.resetNavigation()
         }
     }

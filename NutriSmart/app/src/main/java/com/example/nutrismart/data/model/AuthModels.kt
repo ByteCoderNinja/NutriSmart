@@ -19,7 +19,8 @@ data class VerifyRequest(
 data class AuthResponse(
     val token: String,
     val userId: Long,
-    val isProfileComplete: Boolean
+    val isProfileComplete: Boolean,
+    val isVerified: Boolean
 )
 
 data class GoogleLoginRequest(
