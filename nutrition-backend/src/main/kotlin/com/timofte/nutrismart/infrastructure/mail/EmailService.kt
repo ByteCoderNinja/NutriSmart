@@ -17,9 +17,16 @@ class EmailService(
 
     @Async
     fun sendVerificationCode(toEmail: String, code: String) {
+        if (apiKey.isNullOrBlank() || apiKey.startsWith("\$")) {
+            println("ERROR: BREVO_API_KEY is not set or not resolved! Current value starts with: ${apiKey?.take(3)}")
+            println("DEBUG: Verification code for $toEmail is: $code")
+            return
+        }
+
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
         headers.set("api-key", apiKey)
+        headers.set("x-sib-api-key", apiKey)
 
         val body = mapOf(
             "sender" to mapOf("name" to "NutriSmart", "email" to "nutrismart.app.dev@gmail.com"),
