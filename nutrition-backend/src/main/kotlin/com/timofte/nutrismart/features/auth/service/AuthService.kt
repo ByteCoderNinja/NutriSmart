@@ -129,7 +129,8 @@ class AuthService(
     }
 
     fun processForgotPassword(email: String) {
-        val user = userRepository.findByEmail(email) ?: return
+        val user = userRepository.findByEmail(email) 
+            ?: throw RuntimeException("User with this email does not exist.")
 
         val resetCode = String.format("%06d", Random().nextInt(999999))
 

@@ -15,10 +15,22 @@ class ForgotPasswordViewModel : ViewModel() {
 
     var emailSentSuccess by mutableStateOf(false)
     var passwordResetSuccess by mutableStateOf(false)
+    var isResending by mutableStateOf(false)
+    var resendSuccess by mutableStateOf(false)
+
+    private fun isEmailValid(email: String): Boolean {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
+    private fun isPasswordStrong(password: String): Boolean {
+        val hasLetter = password.any { it.isLetter() }
+        val hasDigit = password.any { it.isDigit() }
+        return password.length >= 6 && hasLetter && hasDigit
+    }
 
     fun sendForgotPasswordEmail(email: String) {
-        if (email.isBlank()) {
-            errorMessage = "Please enter your email."
+        if (!isEmailValid(email)) {
+            errorMessage = "Please enter a valid email address."
             return
         }
 
@@ -32,7 +44,7 @@ class ForgotPasswordViewModel : ViewModel() {
                 if (response.isSuccessful) {
                     emailSentSuccess = true
                 } else {
-                    errorMessage = "Failed to send code. Is the email correct?"
+                    errorMessage = "Email not found or error sending code."
                 }
             } catch (e: Exception) {
                 errorMessage = "Network error: ${e.localizedMessage}"
@@ -42,13 +54,34 @@ class ForgotPasswordViewModel : ViewModel() {
         }
     }
 
+    fun resendForgotPasswordEmail(email: String) {
+        viewModelScope.launch {
+            isResending = true
+            errorMessage = null
+            resendSuccess = false
+            try {
+                val request = mapOf("email" to email)
+                val response = RetrofitClient.api.forgotPassword(request)
+                if (response.isSuccessful) {
+                    resendSuccess = true
+                } else {
+                    errorMessage = "Failed to resend code."
+                }
+            } catch (e: Exception) {
+                errorMessage = "Network error: ${e.localizedMessage}"
+            } finally {
+                isResending = false
+            }
+        }
+    }
+
     fun resetPassword(email: String, code: String, newPassword: String) {
         if (code.length != 6) {
             errorMessage = "Code must be 6 digits."
             return
         }
-        if (newPassword.length < 6) {
-            errorMessage = "Password must be at least 6 characters."
+        if (!isPasswordStrong(newPassword)) {
+            errorMessage = "Password must be at least 6 characters long and contain both letters and numbers."
             return
         }
 
@@ -62,7 +95,7 @@ class ForgotPasswordViewModel : ViewModel() {
                 if (response.isSuccessful) {
                     passwordResetSuccess = true
                 } else {
-                    errorMessage = "Failed: Invalid code or password is the same."
+                    errorMessage = "Invalid code or password match failed."
                 }
             } catch (e: Exception) {
                 errorMessage = "Network error: ${e.localizedMessage}"

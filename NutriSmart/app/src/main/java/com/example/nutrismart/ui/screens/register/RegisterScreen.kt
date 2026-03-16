@@ -56,7 +56,7 @@ fun RegisterScreen(
         OutlinedTextField(
             value = viewModel.password,
             onValueChange = { viewModel.password = it },
-            label = { Text("Password") },
+            label = { Text("Password (min. 6 chars, letters & numbers)") },
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
         )
@@ -67,8 +67,20 @@ fun RegisterScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        fun isPasswordStrong(password: String): Boolean {
+            val hasLetter = password.any { it.isLetter() }
+            val hasDigit = password.any { it.isDigit() }
+            return password.length >= 6 && hasLetter && hasDigit
+        }
+
         Button(
-            onClick = { viewModel.register() },
+            onClick = { 
+                if (!isPasswordStrong(viewModel.password)) {
+                    viewModel.errorMessage = "Password must be at least 6 characters long and contain both letters and numbers."
+                } else {
+                    viewModel.register()
+                }
+            },
             modifier = Modifier.fillMaxWidth(),
             enabled = !viewModel.isLoading
         ) {

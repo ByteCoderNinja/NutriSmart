@@ -99,14 +99,20 @@ fun EditPasswordScreen(
 
             val isFormValid = currentPassword.isNotBlank() && newPassword.isNotBlank() && confirmPassword.isNotBlank()
 
+            fun isPasswordStrong(password: String): Boolean {
+                val hasLetter = password.any { it.isLetter() }
+                val hasDigit = password.any { it.isDigit() }
+                return password.length >= 6 && hasLetter && hasDigit
+            }
+
             Button(
                 onClick = {
                     if (newPassword != confirmPassword) {
                         localError = "New passwords do not match!"
                         return@Button
                     }
-                    if (newPassword.length < 6) {
-                        localError = "Password must be at least 6 characters long."
+                    if (!isPasswordStrong(newPassword)) {
+                        localError = "Password must be at least 6 characters long and contain both letters and numbers."
                         return@Button
                     }
 

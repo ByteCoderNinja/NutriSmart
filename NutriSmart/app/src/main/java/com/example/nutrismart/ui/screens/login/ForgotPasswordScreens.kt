@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -14,6 +15,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -150,7 +152,7 @@ fun ResetPasswordScreen(
             OutlinedTextField(
                 value = newPassword,
                 onValueChange = { newPassword = it },
-                label = { Text("New Password") },
+                label = { Text("New Password (min 6 chars, letters & numbers)") },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
@@ -173,6 +175,10 @@ fun ResetPasswordScreen(
                 Text(viewModel.errorMessage!!, color = Color.Red, modifier = Modifier.padding(bottom = 16.dp))
             }
 
+            if (viewModel.resendSuccess) {
+                Text("Code resent successfully!", color = Color(0xFF4CAF50), modifier = Modifier.padding(bottom = 16.dp))
+            }
+
             Button(
                 onClick = {
                     if (newPassword == confirmPassword) {
@@ -182,12 +188,25 @@ fun ResetPasswordScreen(
                     }
                 },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
-                enabled = !viewModel.isLoading
+                enabled = !viewModel.isLoading && !viewModel.isResending
             ) {
                 if (viewModel.isLoading) {
                     CircularProgressIndicator(color = Color.White)
                 } else {
                     Text("Reset Password")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            androidx.compose.material3.TextButton(
+                onClick = { viewModel.resendForgotPasswordEmail(email) },
+                enabled = !viewModel.isLoading && !viewModel.isResending
+            ) {
+                if (viewModel.isResending) {
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+                } else {
+                    Text("Didn't receive a code? Resend")
                 }
             }
         }
