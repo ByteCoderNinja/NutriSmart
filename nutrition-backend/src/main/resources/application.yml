@@ -27,7 +27,7 @@ spring:
 
 brevo:
   api:
-    key: \${BREVO_API_KEY}
+    key: ${BREVO_API_KEY}
 
 gemini:
   api:
