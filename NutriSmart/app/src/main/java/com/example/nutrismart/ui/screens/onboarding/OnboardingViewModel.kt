@@ -21,7 +21,6 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import kotlinx.coroutines.flow.*
 
 class OnboardingViewModel : ViewModel() {
 
@@ -169,8 +168,47 @@ class OnboardingViewModel : ViewModel() {
     }
 
     fun submitProfile() {
-        if (height.isEmpty() || weight.isEmpty() || targetWeight.isEmpty() || budget.isEmpty()) {
-            errorMessage = "Please fill in all numeric fields."
+        val hValue = height.replace(',', '.').toDoubleOrNull()
+        val wValue = weight.replace(',', '.').toDoubleOrNull()
+        val twValue = targetWeight.replace(',', '.').toDoubleOrNull()
+        val bValue = budget.replace(',', '.').toDoubleOrNull()
+
+        if (hValue == null || wValue == null || twValue == null || bValue == null) {
+            errorMessage = "Please fill in all numeric fields correctly."
+            return
+        }
+
+        if (birthDate.isAfter(LocalDate.now())) {
+            errorMessage = "Birth date cannot be in the future."
+            return
+        }
+        val age = java.time.Period.between(birthDate, LocalDate.now()).years
+        if (age < 14) {
+            errorMessage = "You must be at least 14 years old to use this app."
+            return
+        }
+
+        val minHeight = if (isImperial) 3.3 else 100.0
+        val maxHeight = if (isImperial) 9.8 else 300.0
+        if (hValue !in minHeight..maxHeight) {
+            errorMessage = "Height must be between $minHeight and $maxHeight ${if (isImperial) "ft" else "cm"}."
+            return
+        }
+
+        val minWeight = if (isImperial) 33.0 else 15.0
+        val maxWeight = if (isImperial) 661.0 else 300.0
+        if (wValue !in minWeight..maxWeight) {
+            errorMessage = "Weight must be between $minWeight and $maxWeight ${if (isImperial) "lbs" else "kg"}."
+            return
+        }
+        if (twValue !in minWeight..maxWeight) {
+            errorMessage = "Target weight must be between $minWeight and $maxWeight ${if (isImperial) "lbs" else "kg"}."
+            return
+        }
+
+        val minBudget = if (currency == Currency.RON) 20.0 else 10.0
+        if (bValue < minBudget) {
+            errorMessage = "Minimum daily budget is $minBudget ${currency.name}."
             return
         }
 
@@ -185,11 +223,11 @@ class OnboardingViewModel : ViewModel() {
                 val request = OnboardingRequest(
                     dateOfBirth = dateString,
                     gender = gender,
-                    height = height.replace(',', '.').toDoubleOrNull() ?: 0.0,
-                    weight = weight.replace(',', '.').toDoubleOrNull() ?: 0.0,
-                    targetWeight = targetWeight.replace(',', '.').toDoubleOrNull() ?: 0.0,
+                    height = hValue,
+                    weight = wValue,
+                    targetWeight = twValue,
                     activityLevel = activityLevel,
-                    maxDailyBudget = budget.replace(',', '.').toDoubleOrNull() ?: 0.0,
+                    maxDailyBudget = bValue,
                     dietaryPreferences = selectedDietaryPreferences.toList(),
                     medicalConditions = selectedMedicalConditions.toList(),
                     dislikedFoods = selectedDislikedFoods.toList(),
@@ -283,7 +321,9 @@ class OnboardingViewModel : ViewModel() {
                         }
                     }
                 }
-            } catch (e: Exception) {}
+            } catch (e: Exception) {
+                println(e)
+            }
         }
     }
 }

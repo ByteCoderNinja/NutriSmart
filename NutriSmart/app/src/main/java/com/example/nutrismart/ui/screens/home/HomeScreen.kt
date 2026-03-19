@@ -277,6 +277,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
                     state = uiState,
                     hasPermissions = hasHealthPermissions,
                     isImperial = uiState.isImperial,
+                    isHealthConnectAvailable = healthConnectManager.isAvailable,
                     onAddWaterClick = { viewModel.addWater() },
                     onRemoveWaterClick = { viewModel.removeWater() },
                     onStepsClick = {

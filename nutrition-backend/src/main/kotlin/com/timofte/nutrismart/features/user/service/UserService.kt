@@ -19,8 +19,40 @@ class UserService(
     private val passwordEncoder: PasswordEncoder
 ) {
 
+    private fun validateOnboardingRequest(request: OnboardingRequest) {
+        if (request.dateOfBirth.isAfter(LocalDate.now())) {
+            throw IllegalArgumentException("Birth date cannot be in the future")
+        }
+        val age = Period.between(request.dateOfBirth, LocalDate.now()).years
+        if (age < 14) {
+            throw IllegalArgumentException("User must be at least 14 years old")
+        }
+
+        val minHeight = if (request.isImperial) 3.3 else 100.0
+        val maxHeight = if (request.isImperial) 9.8 else 300.0
+        if (request.height !in minHeight..maxHeight) {
+            throw IllegalArgumentException("Height must be between $minHeight and $maxHeight")
+        }
+
+        val minWeight = if (request.isImperial) 33.0 else 15.0
+        val maxWeight = if (request.isImperial) 661.0 else 300.0
+        if (request.weight !in minWeight..maxWeight) {
+            throw IllegalArgumentException("Weight must be between $minWeight and $maxWeight")
+        }
+        if (request.targetWeight !in minWeight..maxWeight) {
+            throw IllegalArgumentException("Target weight must be between $minWeight and $maxWeight")
+        }
+
+        val minBudget = if (request.currency == Currency.RON) 20.0 else 10.0
+        if (request.maxDailyBudget < minBudget) {
+            throw IllegalArgumentException("Minimum daily budget is $minBudget ${request.currency}")
+        }
+    }
+
     @Transactional
     fun completeUserProfile(email: String, request: OnboardingRequest): UserEntity {
+        validateOnboardingRequest(request)
+        
         val user = userRepository.findByEmail(email)
             ?: throw RuntimeException("User not found for email: $email")
 

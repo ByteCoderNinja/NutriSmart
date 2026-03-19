@@ -49,6 +49,7 @@ fun MainStatsCard(
     state: HomeUiState,
     hasPermissions: Boolean,
     isImperial: Boolean,
+    isHealthConnectAvailable: Boolean = true,
     onAddWaterClick: () -> Unit,
     onRemoveWaterClick: () -> Unit,
     onStepsClick: () -> Unit,
@@ -74,17 +75,21 @@ fun MainStatsCard(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { onStepsClick() }
+                    .clickable(enabled = isHealthConnectAvailable) { onStepsClick() }
                     .padding(vertical = 8.dp)
             ) {
                 Icon(Icons.AutoMirrored.Filled.DirectionsWalk, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
                 Spacer(modifier = Modifier.width(8.dp))
                 Column {
                     Text("Steps", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    if (hasPermissions) {
-                        Text("${state.steps} / ${state.stepsGoal}", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    if (isHealthConnectAvailable) {
+                        if (hasPermissions) {
+                            Text("${state.steps} / ${state.stepsGoal}", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                        } else {
+                            Text("Tap to connect Health", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
+                        }
                     } else {
-                        Text("Tap to connect Health", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
+                        Text("Health Connect not supported", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = Color.Gray)
                     }
                 }
             }

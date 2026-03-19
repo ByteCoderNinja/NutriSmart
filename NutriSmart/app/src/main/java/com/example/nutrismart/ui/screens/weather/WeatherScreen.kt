@@ -23,6 +23,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import android.content.Context
+import android.location.Location
+import android.location.LocationManager
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.nutrismart.ui.screens.home.HomeViewModel
@@ -41,16 +44,45 @@ fun WeatherScreen(
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
     var locationPermissionGranted by remember { mutableStateOf(false) }
 
+    fun fetchLocation() {
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            if (location != null) {
+                weatherViewModel.fetchRealWeather(location.latitude, location.longitude)
+            } else {
+                val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                val providers = locationManager.getProviders(true)
+                var bestLocation: Location? = null
+                for (provider in providers) {
+                    val loc = locationManager.getLastKnownLocation(provider)
+                    if (loc != null) {
+                        if (bestLocation == null || loc.accuracy < bestLocation.accuracy) {
+                            bestLocation = loc
+                        }
+                    }
+                }
+                bestLocation?.let {
+                    weatherViewModel.fetchRealWeather(it.latitude, it.longitude)
+                } ?: run {
+                    println("Could not find location even with LocationManager")
+                }
+            }
+        }.addOnFailureListener {
+            val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            val loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+                ?: locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+            
+            loc?.let {
+                weatherViewModel.fetchRealWeather(it.latitude, it.longitude)
+            }
+        }
+    }
+
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         locationPermissionGranted = isGranted
         if (isGranted) {
-            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                location?.let {
-                    weatherViewModel.fetchRealWeather(it.latitude, it.longitude)
-                }
-            }
+            fetchLocation()
         }
     }
 
@@ -58,11 +90,7 @@ fun WeatherScreen(
         val permissionCheckResult = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
         if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
             locationPermissionGranted = true
-            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                location?.let {
-                    weatherViewModel.fetchRealWeather(it.latitude, it.longitude)
-                }
-            }
+            fetchLocation()
         } else {
             permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
