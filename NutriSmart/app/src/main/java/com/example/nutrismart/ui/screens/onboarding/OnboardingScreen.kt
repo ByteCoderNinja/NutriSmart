@@ -30,9 +30,17 @@ fun OnboardingScreen(
 ) {
     val scrollState = rememberScrollState()
     var showDatePicker by remember { mutableStateOf(false) }
-    val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = viewModel.birthDate.atStartOfDay(ZoneId.of("UTC")).toInstant().toEpochMilli()
-    )
+    val datePickerState = key(viewModel.birthDate) {
+        rememberDatePickerState(
+            initialSelectedDateMillis = viewModel.birthDate.atStartOfDay(ZoneId.of("UTC")).toInstant().toEpochMilli()
+        )
+    }
+
+    LaunchedEffect(Unit) {
+        if (isEditMode) {
+            viewModel.loadUserData()
+        }
+    }
 
     LaunchedEffect(viewModel.isComplete) {
         if (viewModel.isComplete) {

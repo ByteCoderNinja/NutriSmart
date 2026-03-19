@@ -47,7 +47,8 @@ fun MainScreen(
     navController: NavHostController = rememberNavController(),
     onNavigateToLogin: () -> Unit,
     onNavigateToEditPlan: () -> Unit,
-    onNavigateToVerifyEmail: (String) -> Unit
+    onNavigateToVerifyEmail: (String) -> Unit,
+    onNavigateToForgotPassword: () -> Unit
 ) {
     val items = listOf(
         BottomNavItem.Home,
@@ -162,7 +163,12 @@ fun MainScreen(
             composable("edit_password_screen") {
                 EditPasswordScreen(
                     viewModel = sharedProfileViewModel,
-                    onBackClick = { navController.popBackStack() }
+                    onBackClick = { navController.popBackStack() },
+                    onNavigateToForgotPassword = {
+                        sharedProfileViewModel.logout {
+                            onNavigateToForgotPassword()
+                        }
+                    }
                 )
             }
         }

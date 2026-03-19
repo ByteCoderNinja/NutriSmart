@@ -163,6 +163,9 @@ fun NutriSmartApp() {
                 },
                 onNavigateToVerifyEmail = { email ->
                     navController.navigate("verify/$email?isEdit=true")
+                },
+                onNavigateToForgotPassword = {
+                    navController.navigate("forgot_password")
                 }
             )
         }

@@ -43,8 +43,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import java.time.LocalDate
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -68,7 +70,6 @@ import com.example.nutrismart.data.health.HealthConnectManager
 import com.example.nutrismart.data.remote.MealDto
 import com.example.nutrismart.ui.screens.home.components.*
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
@@ -99,6 +100,8 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
     var showBonusSnackSheet by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
+    val todayDate = remember { LocalDate.now().toString() }
+    var lastToastDate by rememberSaveable { mutableStateOf("") }
 
     val sessionManager = remember { SessionManager(context) }
     val wakeUpTimeStr = sessionManager.getWakeUpTime()
@@ -142,8 +145,9 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
     }
 
     LaunchedEffect(uiState.waterConsumedMl) {
-        if (uiState.waterConsumedMl > 0 && uiState.waterConsumedMl == uiState.waterGoalMl) {
+        if (uiState.waterConsumedMl > 0 && uiState.waterConsumedMl >= uiState.waterGoalMl && lastToastDate != todayDate) {
             Toast.makeText(context, "Congratulations! You've reached your daily water goal! 💧", Toast.LENGTH_SHORT).show()
+            lastToastDate = todayDate
         }
     }
 

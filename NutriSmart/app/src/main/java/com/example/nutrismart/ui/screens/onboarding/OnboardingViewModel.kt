@@ -50,6 +50,53 @@ class OnboardingViewModel : ViewModel() {
     var isComplete by mutableStateOf(false)
     var loadingMessage by mutableStateOf("Saving profile...")
 
+    fun loadUserData() {
+        val userId = UserSession.currentUserId
+        if (userId == -1L) return
+
+        isLoading = true
+        loadingMessage = "Loading your details..."
+
+        viewModelScope.launch {
+            try {
+                val token = if (UserSession.token.isNotEmpty()) "Bearer ${UserSession.token}" else ""
+                val response = RetrofitClient.api.getUser(token, userId)
+
+                if (response.isSuccessful) {
+                    response.body()?.let { user ->
+                        user.dateOfBirth?.let {
+                            runCatching { birthDate = LocalDate.parse(it) }
+                        }
+                        user.gender?.let { gender = it }
+                        user.height?.let { height = it.toString() }
+                        user.weight?.let { weight = it.toString() }
+                        user.targetWeight?.let { targetWeight = it.toString() }
+                        user.activityLevel?.let { activityLevel = it }
+                        user.maxDailyBudget?.let { budget = it.toString() }
+                        user.currency?.let { currency = it }
+                        isImperial = user.isImperial
+
+                        user.dietaryPreferences?.let {
+                            selectedDietaryPreferences.clear()
+                            selectedDietaryPreferences.addAll(it)
+                        }
+                        user.medicalConditions?.let {
+                            selectedMedicalConditions.clear()
+                            selectedMedicalConditions.addAll(it)
+                        }
+                        user.dislikedFoods?.let {
+                            selectedDislikedFoods = it.toSet()
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("NutriSmart", "Error loading user data", e)
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
     private val messages = listOf(
         "Analyzing your profile...",
         "Calculating target calories...",
