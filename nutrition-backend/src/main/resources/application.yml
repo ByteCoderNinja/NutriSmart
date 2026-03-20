@@ -39,4 +39,4 @@ jwt:
 
 google:
   client:
-    id: PLACEHOLDER_ID
+    id: ${WEB_CLIENT_ID}
