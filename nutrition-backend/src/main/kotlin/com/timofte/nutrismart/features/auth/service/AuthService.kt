@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.util.Random
+import com.timofte.nutrismart.common.exception.*
 
 @Service
 class AuthService(
@@ -25,7 +26,7 @@ class AuthService(
 
     fun register(request: RegisterRequest) {
         if (userRepository.findByEmail(request.email) != null) {
-            throw RuntimeException("Email already exists: ${request.email}")
+            throw ConflictException("Email already exists: ${request.email}")
         }
 
         val code = String.format("%06d", Random().nextInt(999999))
@@ -47,13 +48,14 @@ class AuthService(
 
     fun verifyEmail(request: VerifyRequest): AuthResponse {
         val user = userRepository.findByEmail(request.email)
-            ?: throw RuntimeException("User not found")
+            ?: throw ResourceNotFoundException("User not found")
 
         if (user.isVerified) {
             return generateAuthResponse(user)
         }
 
         if (user.verificationCode == request.code &&
+            user.verificationCodeExpiresAt != null &&
             user.verificationCodeExpiresAt!!.isAfter(LocalDateTime.now())) {
 
             user.isVerified = true
@@ -63,27 +65,31 @@ class AuthService(
 
             return generateAuthResponse(user)
         } else {
-            throw RuntimeException("Invalid or expired verification code")
+            throw BadRequestException("Invalid or expired verification code")
         }
     }
 
     fun login(request: LoginRequest): AuthResponse {
-        authenticationManager.authenticate(
-            UsernamePasswordAuthenticationToken(request.email, request.password),
-        )
+        try {
+            authenticationManager.authenticate(
+                UsernamePasswordAuthenticationToken(request.email, request.password),
+            )
+        } catch (e: Exception) {
+            throw UnauthorizedException("Invalid email or password")
+        }
 
         val user = userRepository.findByEmail(request.email)
-            ?: throw RuntimeException("User not found")
+            ?: throw ResourceNotFoundException("User not found")
 
         return generateAuthResponse(user)
     }
 
     fun resendVerificationCode(email: String) {
         val user = userRepository.findByEmail(email)
-            ?: throw RuntimeException("User not found")
+            ?: throw ResourceNotFoundException("User not found")
 
         if (user.isVerified) {
-            throw RuntimeException("Account is already verified")
+            throw BadRequestException("Account is already verified")
         }
 
         val code = String.format("%06d", Random().nextInt(999999))
@@ -96,7 +102,7 @@ class AuthService(
 
     fun googleLogin(request: GoogleLoginRequest): AuthResponse {
         val payload = googleAuthService.verifyToken(request.token)
-            ?: throw RuntimeException("Invalid Google ID Token")
+            ?: throw UnauthorizedException("Invalid Google ID Token")
 
         val email = payload.email
         val name = payload["name"] as String? ?: payload.email.split("@")[0]
@@ -130,7 +136,7 @@ class AuthService(
 
     fun processForgotPassword(email: String) {
         val user = userRepository.findByEmail(email) 
-            ?: throw RuntimeException("User with this email does not exist.")
+            ?: throw ResourceNotFoundException("User with this email does not exist.")
 
         val resetCode = String.format("%06d", Random().nextInt(999999))
 
@@ -143,16 +149,16 @@ class AuthService(
 
     fun resetUserPassword(request: ResetPasswordRequest) {
         val user = userRepository.findByEmail(request.email)
-            ?: throw IllegalArgumentException("User not found")
+            ?: throw ResourceNotFoundException("User not found")
 
         if (user.verificationCode != request.code ||
             user.verificationCodeExpiresAt == null ||
             user.verificationCodeExpiresAt!!.isBefore(LocalDateTime.now())) {
-            throw RuntimeException("Invalid or expired verification code")
+            throw BadRequestException("Invalid or expired verification code")
         }
 
         if (passwordEncoder.matches(request.newPassword, user.passwordHash)) {
-            throw RuntimeException("New password cannot be the same as the old password")
+            throw BadRequestException("New password cannot be the same as the old password")
         }
 
         user.passwordHash = passwordEncoder.encode(request.newPassword)

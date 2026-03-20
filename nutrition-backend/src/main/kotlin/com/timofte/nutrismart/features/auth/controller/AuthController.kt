@@ -13,7 +13,7 @@ class AuthController(
 ) {
 
     @PostMapping("/register")
-    fun register(@RequestBody request: RegisterRequest): ResponseEntity<ApiResponse<String>> {
+    fun register(@RequestBody request: RegisterRequest): ResponseEntity<ApiResponse<Nothing>> {
         authService.register(request)
         return ResponseEntity.ok(
             ApiResponse(
@@ -35,7 +35,7 @@ class AuthController(
     }
 
     @PostMapping("/resend-code")
-    fun resendCode(@RequestParam email: String): ResponseEntity<ApiResponse<String>> {
+    fun resendCode(@RequestParam email: String): ResponseEntity<ApiResponse<Nothing>> {
         authService.resendVerificationCode(email)
         return ResponseEntity.ok(
             ApiResponse(
@@ -52,7 +52,7 @@ class AuthController(
     }
 
     @PostMapping("/forgot-password")
-    fun forgotPassword(@RequestBody request: ForgotPasswordRequest): ResponseEntity<ApiResponse<String>> {
+    fun forgotPassword(@RequestBody request: ForgotPasswordRequest): ResponseEntity<ApiResponse<Nothing>> {
         authService.processForgotPassword(request.email)
         return ResponseEntity.ok(
             ApiResponse(
@@ -64,12 +64,14 @@ class AuthController(
     }
 
     @PostMapping("/reset-password")
-    fun resetPassword(@RequestBody request: ResetPasswordRequest): ResponseEntity<ApiResponse<String>> {
-        try {
-            authService.resetUserPassword(request)
-            return ResponseEntity.ok(ApiResponse(success = true, message = "Password successfully reset.", data = null))
-        } catch (e: Exception) {
-            return ResponseEntity.badRequest().body(ApiResponse(success = false, message = e.message ?: "Error", data = null))
-        }
+    fun resetPassword(@RequestBody request: ResetPasswordRequest): ResponseEntity<ApiResponse<Nothing>> {
+        authService.resetUserPassword(request)
+        return ResponseEntity.ok(
+            ApiResponse(
+                success = true,
+                message = "Password successfully reset.",
+                data = null
+            )
+        )
     }
 }

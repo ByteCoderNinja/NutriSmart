@@ -17,9 +17,17 @@ fun EditUsernameScreen(
     onBackClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    var newUsername by remember { mutableStateOf(uiState.user?.username ?: "") }
+    var newUsername by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
     val context = LocalContext.current
+
+    LaunchedEffect(uiState.user) {
+        uiState.user?.username?.let {
+            if (newUsername.isEmpty()) {
+                newUsername = it
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -36,12 +44,17 @@ fun EditUsernameScreen(
         Column(
             modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp)
         ) {
+            if (uiState.isLoading && uiState.user == null) {
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            }
+
             OutlinedTextField(
                 value = newUsername,
                 onValueChange = { newUsername = it },
-                label = { Text("New Username") },
+                label = { Text("Username") },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
+                enabled = !isLoading
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -65,12 +78,12 @@ fun EditUsernameScreen(
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !isLoading && newUsername != uiState.user?.username
+                enabled = !isLoading && newUsername.isNotBlank() && newUsername != uiState.user?.username
             ) {
                 if (isLoading) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
                 } else {
-                    Text("Save")
+                    Text("Save Changes")
                 }
             }
         }

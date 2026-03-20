@@ -28,8 +28,16 @@ fun EditEmailScreen(
         return
     }
 
-    var newEmail by remember { mutableStateOf(uiState.user?.email ?: "") }
+    var newEmail by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
+
+    LaunchedEffect(uiState.user) {
+        uiState.user?.email?.let {
+            if (newEmail.isEmpty()) {
+                newEmail = it
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -46,12 +54,17 @@ fun EditEmailScreen(
         Column(
             modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp)
         ) {
+            if (uiState.isLoading && uiState.user == null) {
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            }
+
             OutlinedTextField(
                 value = newEmail,
                 onValueChange = { newEmail = it },
                 label = { Text("New Email Address") },
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
+                enabled = !isLoading
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -79,7 +92,7 @@ fun EditEmailScreen(
                 if (isLoading) {
                     CircularProgressIndicator(modifier = Modifier.size(24.dp), color = MaterialTheme.colorScheme.onPrimary)
                 } else {
-                    Text("Next: Verify Email")
+                    Text("Verify & Save")
                 }
             }
         }
