@@ -7,10 +7,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nutrismart.data.UserSession
 import com.example.nutrismart.data.model.VerifyRequest
-import com.example.nutrismart.data.remote.RetrofitClient
+import com.example.nutrismart.data.repository.AuthRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class VerifyViewModel : ViewModel() {
+@HiltViewModel
+class VerifyViewModel @Inject constructor(
+    private val authRepository: AuthRepository
+) : ViewModel() {
     var code by mutableStateOf("")
     var isLoading by mutableStateOf(false)
     var isResending by mutableStateOf(false)
@@ -25,12 +30,13 @@ class VerifyViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val request = VerifyRequest(email, code)
-                val response = RetrofitClient.api.verify(request)
+                val response = authRepository.verify(request)
 
                 if (response.isSuccessful && response.body() != null) {
                     val authResponse = response.body()!!
                     UserSession.token = authResponse.token
                     UserSession.currentUserId = authResponse.userId
+                    authRepository.saveAuthData(authResponse)
                     verificationSuccess = true
                 } else {
                     errorMessage = "Invalid or expired code"
@@ -49,7 +55,7 @@ class VerifyViewModel : ViewModel() {
         successMessage = null
         viewModelScope.launch {
             try {
-                val response = RetrofitClient.api.resendCode(email)
+                val response = authRepository.resendCode(email)
                 if (response.isSuccessful) {
                     successMessage = "A new code has been sent to your email"
                 } else {

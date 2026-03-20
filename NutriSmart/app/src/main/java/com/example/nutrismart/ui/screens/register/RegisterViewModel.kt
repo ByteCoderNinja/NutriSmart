@@ -6,10 +6,15 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nutrismart.data.model.RegisterRequest
-import com.example.nutrismart.data.remote.RetrofitClient
+import com.example.nutrismart.data.repository.AuthRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RegisterViewModel : ViewModel() {
+@HiltViewModel
+class RegisterViewModel @Inject constructor(
+    private val authRepository: AuthRepository
+) : ViewModel() {
     var email by mutableStateOf("")
     var username by mutableStateOf("")
     var password by mutableStateOf("")
@@ -24,7 +29,7 @@ class RegisterViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val request = RegisterRequest(email, password, username)
-                val response = RetrofitClient.api.register(request)
+                val response = authRepository.register(request)
                 if (response.isSuccessful) {
                     navigateToVerify = true
                 } else {

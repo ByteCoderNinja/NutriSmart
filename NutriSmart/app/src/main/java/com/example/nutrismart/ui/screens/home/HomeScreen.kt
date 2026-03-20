@@ -6,17 +6,7 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,59 +14,40 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import java.time.LocalDate
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.health.connect.client.HealthConnectClient
+import androidx.health.connect.client.PermissionController
+import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.ExerciseSessionRecord
 import androidx.health.connect.client.records.StepsRecord
 import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
-import androidx.health.connect.client.permission.HealthPermission
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.health.connect.client.PermissionController
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.nutrismart.data.SessionManager
 import com.example.nutrismart.data.UserSession
 import com.example.nutrismart.data.health.HealthConnectManager
 import com.example.nutrismart.data.remote.MealDto
 import com.example.nutrismart.ui.screens.home.components.*
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
+fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
     val uiState by viewModel.uiState.collectAsState()
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -102,10 +73,6 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
     val context = LocalContext.current
     val todayDate = remember { LocalDate.now().toString() }
     var lastToastDate by rememberSaveable { mutableStateOf("") }
-
-    val sessionManager = remember { SessionManager(context) }
-    val wakeUpTimeStr = sessionManager.getWakeUpTime()
-    val userWakeUpTime = remember(wakeUpTimeStr) { LocalTime.parse(wakeUpTimeStr) }
 
     val healthConnectManager = remember { HealthConnectManager(context) }
     val scope = rememberCoroutineScope()
@@ -170,11 +137,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
         }
     }
 
-    LaunchedEffect(Unit) {
-        if (uiState.breakfast == null && UserSession.currentUserId != -1L) {
-            viewModel.fetchTodayData()
-        }
-    }
+    val userWakeUpTime = uiState.wakeUpTime
 
     val breakfastRange = getRecommendedTimeRange(userWakeUpTime, "Breakfast")
     val lunchRange = getRecommendedTimeRange(userWakeUpTime, "Lunch")

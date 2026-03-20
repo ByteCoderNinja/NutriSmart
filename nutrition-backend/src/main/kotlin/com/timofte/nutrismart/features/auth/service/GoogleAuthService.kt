@@ -10,7 +10,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken
 
 @Service
 class GoogleAuthService(
-    @Value("\${WEB_CLIENT_ID}") private val webClientId: String
+    @Value("\${google.client.id}") private val webClientId: String
 ) {
     private val verifier = GoogleIdTokenVerifier.Builder(NetHttpTransport(), GsonFactory.getDefaultInstance())
         .setAudience(Collections.singletonList(webClientId))

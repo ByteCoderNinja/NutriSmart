@@ -37,23 +37,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.nutrismart.data.SessionManager
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
-fun FastingScreen() {
+fun FastingScreen(
+    viewModel: FastingViewModel = hiltViewModel()
+) {
     val context = LocalContext.current
-
-    val viewModel: FastingViewModel = viewModel(
-        factory = viewModelFactory {
-            initializer {
-                FastingViewModel(SessionManager(context))
-            }
-        }
-    )
-
     val uiState by viewModel.uiState.collectAsState()
 
     val permissionLauncher = rememberLauncherForActivityResult(

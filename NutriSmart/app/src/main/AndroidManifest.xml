@@ -20,6 +20,7 @@
     </queries>
 
     <application
+        android:name=".NutriSmartApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -35,7 +36,7 @@
         <receiver android:name=".notifications.EatingReminder" android:exported="false" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.screens.main.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.NutriSmart">
@@ -53,7 +54,7 @@
             android:name="ViewPermissionUsageActivity"
             android:exported="true"
             android:permission="android.permission.START_VIEW_PERMISSION_USAGE"
-            android:targetActivity=".MainActivity">
+            android:targetActivity=".ui.screens.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW_PERMISSION_USAGE" />
                 <category android:name="android.intent.category.HEALTH_PERMISSIONS" />

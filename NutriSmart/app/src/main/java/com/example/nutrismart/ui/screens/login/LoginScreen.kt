@@ -11,36 +11,31 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.nutrismart.R
-import com.example.nutrismart.data.SessionManager
 import com.example.nutrismart.ui.auth.rememberGoogleSignInLauncher
 
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel = viewModel(),
+    viewModel: LoginViewModel = hiltViewModel(),
     onLoginSuccess: (String, Boolean, Boolean) -> Unit,
     onNavigateToRegister: () -> Unit,
     onNavigateToForgotPassword: () -> Unit
 ) {
-    val context = LocalContext.current
-    val sessionManager = remember { SessionManager(context) }
     val scrollState = rememberScrollState()
 
     val launchGoogleSignIn = rememberGoogleSignInLauncher(
         onSuccess = { idToken ->
-            viewModel.loginWithGoogle(idToken, sessionManager)
+            viewModel.loginWithGoogle(idToken)
         },
         onError = { errorMessage ->
             viewModel.errorMessage = errorMessage
@@ -141,7 +136,9 @@ fun LoginScreen(
                 text = viewModel.errorMessage!!,
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(top = 8.dp, start = 16.dp).fillMaxWidth(),
+                modifier = Modifier
+                    .padding(top = 8.dp, start = 16.dp)
+                    .fillMaxWidth(),
                 fontWeight = FontWeight.Medium
             )
         }
@@ -149,7 +146,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         Button(
-            onClick = { viewModel.login(sessionManager) },
+            onClick = { viewModel.login() },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),

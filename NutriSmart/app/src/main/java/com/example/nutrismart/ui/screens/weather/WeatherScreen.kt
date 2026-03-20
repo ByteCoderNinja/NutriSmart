@@ -31,10 +31,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.nutrismart.ui.screens.home.HomeViewModel
 import com.google.android.gms.location.LocationServices
 
+import androidx.hilt.navigation.compose.hiltViewModel
+
 @SuppressLint("MissingPermission")
 @Composable
 fun WeatherScreen(
-    weatherViewModel: WeatherViewModel = viewModel(),
+    weatherViewModel: WeatherViewModel = hiltViewModel(),
     homeViewModel: HomeViewModel
 ) {
     val uiState by weatherViewModel.uiState.collectAsState()

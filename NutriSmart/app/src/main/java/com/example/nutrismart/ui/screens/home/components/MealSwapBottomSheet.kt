@@ -17,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -35,7 +36,7 @@ fun MealSwapBottomSheet(
     onDismiss: () -> Unit,
     onSelected: (Long) -> Unit
 ) {
-    val sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = false)
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
 
     LaunchedEffect(isLoading) {
         if (!isLoading) {

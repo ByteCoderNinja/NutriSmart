@@ -20,10 +20,12 @@ import com.example.nutrismart.ui.screens.onboarding.components.*
 import java.time.Instant
 import java.time.ZoneId
 
+import androidx.hilt.navigation.compose.hiltViewModel
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OnboardingScreen(
-    viewModel: OnboardingViewModel = viewModel(),
+    viewModel: OnboardingViewModel = hiltViewModel(),
     isEditMode: Boolean = false,
     onBackClick: () -> Unit = {},
     onProfileComplete: () -> Unit

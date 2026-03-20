@@ -10,11 +10,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun RegisterScreen(
-    viewModel: RegisterViewModel = viewModel(),
+    viewModel: RegisterViewModel = hiltViewModel(),
     onRegisterSuccess: (String) -> Unit,
     onNavigateToLogin: () -> Unit
 ) {

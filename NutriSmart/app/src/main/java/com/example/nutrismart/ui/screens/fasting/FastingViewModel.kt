@@ -8,8 +8,9 @@ import android.content.Intent
 import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.nutrismart.data.SessionManager
+import com.example.nutrismart.data.repository.FastingRepository
 import com.example.nutrismart.notifications.FastingNotificationReceiver
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 data class FastingState(
     val isFasting: Boolean = false,
@@ -27,8 +29,9 @@ data class FastingState(
     val timeRemainingString: String = "00:00:00"
 )
 
-class FastingViewModel(
-    private val sessionManager: SessionManager
+@HiltViewModel
+class FastingViewModel @Inject constructor(
+    private val fastingRepository: FastingRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(FastingState())
     val uiState: StateFlow<FastingState> = _uiState.asStateFlow()
@@ -39,32 +42,32 @@ class FastingViewModel(
     }
 
     private fun restoreFastingState() {
-        val isActive = sessionManager.isFastingActive()
+        val isActive = fastingRepository.isFastingActive()
         if (isActive) {
-            val endTime = sessionManager.getFastingEndTime()
+            val endTime = fastingRepository.getFastingEndTime()
             if (System.currentTimeMillis() >= endTime) {
                 _uiState.update {
                     it.copy(
                         isFasting = false,
                         progress = 1f,
                         timeRemainingString = "00:00:00",
-                        selectedDurationHours = sessionManager.getFastingDurationHours()
+                        selectedDurationHours = fastingRepository.getFastingDurationHours()
                     )
                 }
-                sessionManager.clearFastingState()
+                fastingRepository.clearFastingState()
             } else {
                 _uiState.update {
                     it.copy(
                         isFasting = true,
-                        startTimeInMillis = sessionManager.getFastingStartTime(),
+                        startTimeInMillis = fastingRepository.getFastingStartTime(),
                         endTimeInMillis = endTime,
-                        selectedDurationHours = sessionManager.getFastingDurationHours()
+                        selectedDurationHours = fastingRepository.getFastingDurationHours()
                     )
                 }
             }
         } else {
             _uiState.update {
-                it.copy(selectedDurationHours = sessionManager.getFastingDurationHours())
+                it.copy(selectedDurationHours = fastingRepository.getFastingDurationHours())
             }
         }
     }
@@ -81,7 +84,7 @@ class FastingViewModel(
         if (currentState.isFasting) {
             _uiState.update { it.copy(isFasting = false, progress = 0f, timeRemainingString = "00:00:00") }
             cancelNotification(context)
-            sessionManager.clearFastingState()
+            fastingRepository.clearFastingState()
         } else {
             val durationMillis = currentState.selectedDurationHours * 60 * 60 * 1000L
             val startTime = System.currentTimeMillis()
@@ -95,7 +98,7 @@ class FastingViewModel(
                 )
             }
             scheduleNotification(context, endTime)
-            sessionManager.saveFastingState(true, startTime, endTime, currentState.selectedDurationHours)
+            fastingRepository.saveFastingState(true, startTime, endTime, currentState.selectedDurationHours)
         }
     }
 

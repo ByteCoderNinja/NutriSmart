@@ -5,14 +5,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.nutrismart.data.SessionManager
 import com.example.nutrismart.data.UserSession
 import com.example.nutrismart.data.model.AuthRequest
 import com.example.nutrismart.data.model.GoogleLoginRequest
-import com.example.nutrismart.data.remote.RetrofitClient
+import com.example.nutrismart.data.repository.AuthRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class LoginViewModel : ViewModel() {
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    private val authRepository: AuthRepository
+) : ViewModel() {
 
     var email by mutableStateOf("")
     var password by mutableStateOf("")
@@ -34,32 +38,27 @@ class LoginViewModel : ViewModel() {
         loginSuccess = false
     }
 
-    fun login(sessionManager: SessionManager) {
+    fun login() {
         isLoading = true
         errorMessage = null
 
         viewModelScope.launch {
             try {
                 val request = AuthRequest(email, password)
-                val response = RetrofitClient.api.login(request)
+                val response = authRepository.login(request)
 
                 if (response.isSuccessful) {
-                    val authData = response.body()
-                    if (authData != null) {
+                    response.body()?.let { authData ->
                         UserSession.currentUserId = authData.userId
                         UserSession.token = authData.token
 
-                        sessionManager.saveAuthToken(authData.token)
-                        sessionManager.saveUserId(authData.userId)
-                        sessionManager.saveProfileComplete(authData.isProfileComplete)
-                        sessionManager.saveIsVerified(authData.isVerified)
+                        authRepository.saveAuthData(authData)
+                        authRepository.saveIsGoogleUser(false)
 
                         isNewUser = !authData.isProfileComplete
                         isVerified = authData.isVerified
+                        loginSuccess = true
                     }
-
-                    loginSuccess = true
-                    sessionManager.saveIsGoogleUser(false)
                 } else {
                     errorMessage = "Login failed: Check data."
                 }
@@ -72,30 +71,26 @@ class LoginViewModel : ViewModel() {
         }
     }
 
-    fun loginWithGoogle(idToken: String, sessionManager: SessionManager) {
+    fun loginWithGoogle(idToken: String) {
         isLoading = true
         errorMessage = null
 
         viewModelScope.launch {
             try {
                 val request = GoogleLoginRequest(idToken)
-                val response = RetrofitClient.api.googleLogin(request)
+                val response = authRepository.googleLogin(request)
 
                 if (response.isSuccessful) {
-                    val authData = response.body()
-                    if (authData != null) {
+                    response.body()?.let { authData ->
                         UserSession.currentUserId = authData.userId
                         UserSession.token = authData.token
 
-                        sessionManager.saveAuthToken(authData.token)
-                        sessionManager.saveUserId(authData.userId)
-                        sessionManager.saveProfileComplete(authData.isProfileComplete)
-                        sessionManager.saveIsVerified(authData.isVerified)
+                        authRepository.saveAuthData(authData)
+                        authRepository.saveIsGoogleUser(true)
 
                         isNewUser = !authData.isProfileComplete
                         isVerified = authData.isVerified
                         loginSuccess = true
-                        sessionManager.saveIsGoogleUser(true)
                     }
                 } else {
                     errorMessage = "Google login failed: ${response.code()}"

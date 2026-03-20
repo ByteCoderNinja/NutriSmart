@@ -14,15 +14,20 @@ import com.example.nutrismart.data.model.DietaryPreference
 import com.example.nutrismart.data.model.Gender
 import com.example.nutrismart.data.model.MedicalCondition
 import com.example.nutrismart.data.model.OnboardingRequest
-import com.example.nutrismart.data.remote.RetrofitClient
+import com.example.nutrismart.data.repository.UserRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import javax.inject.Inject
 
-class OnboardingViewModel : ViewModel() {
+@HiltViewModel
+class OnboardingViewModel @Inject constructor(
+    private val userRepository: UserRepository
+) : ViewModel() {
 
     var birthDate by mutableStateOf(LocalDate.now().minusYears(18))
     var gender by mutableStateOf(Gender.MALE)
@@ -49,8 +54,10 @@ class OnboardingViewModel : ViewModel() {
     var isComplete by mutableStateOf(false)
     var loadingMessage by mutableStateOf("Saving profile...")
 
+    private val token: String get() = UserSession.token ?: ""
+    private val userId: Long get() = UserSession.currentUserId
+
     fun loadUserData() {
-        val userId = UserSession.currentUserId
         if (userId == -1L) return
 
         isLoading = true
@@ -58,8 +65,7 @@ class OnboardingViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val token = if (UserSession.token.isNotEmpty()) "Bearer ${UserSession.token}" else ""
-                val response = RetrofitClient.api.getUser(token, userId)
+                val response = userRepository.getUser(token, userId)
 
                 if (response.isSuccessful) {
                     response.body()?.let { user ->
@@ -147,9 +153,8 @@ class OnboardingViewModel : ViewModel() {
             delay(400)
             isSearchingFoods = true
             try {
-                val token = if (UserSession.token.isNotEmpty()) "Bearer ${UserSession.token}" else ""
                 Log.d("NutriSmart", "Searching for: $query")
-                val response = RetrofitClient.api.searchFoods(token, query)
+                val response = userRepository.searchFoods(token, query)
                 
                 if (response.isSuccessful) {
                     val data = response.body()
@@ -235,11 +240,9 @@ class OnboardingViewModel : ViewModel() {
                     currency = currency
                 )
 
-                val token = if (UserSession.token.isNotEmpty()) "Bearer ${UserSession.token}" else ""
-                val response = RetrofitClient.api.completeProfile(token, request)
+                val response = userRepository.completeProfile(token, request)
 
                 if (response.isSuccessful) {
-                    val userId = UserSession.currentUserId
                     if (userId == -1L) {
                         errorMessage = "Error: User ID not found in session."
                         isLoading = false
@@ -266,8 +269,7 @@ class OnboardingViewModel : ViewModel() {
     private fun startPlanGeneration(userId: Long) {
         viewModelScope.launch {
             try {
-                val token = if (UserSession.token.isNotEmpty()) "Bearer ${UserSession.token}" else ""
-                val startResponse = RetrofitClient.api.startPlanGeneration(token, userId)
+                val startResponse = userRepository.startPlanGeneration(token, userId)
 
                 if (startResponse.isSuccessful) {
                     val messageJob = launchMessageRotation()
@@ -299,8 +301,7 @@ class OnboardingViewModel : ViewModel() {
         while (!isDone && viewModelScope.isActive) {
             delay(5000)
             try {
-                val token = if (UserSession.token.isNotEmpty()) "Bearer ${UserSession.token}" else ""
-                val statusResponse = RetrofitClient.api.checkGenerationStatus(token, userId)
+                val statusResponse = userRepository.checkGenerationStatus(token, userId)
 
                 if (statusResponse.isSuccessful) {
                     val status = statusResponse.body()?.get("status") ?: "UNKNOWN"

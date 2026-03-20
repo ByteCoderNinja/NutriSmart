@@ -41,3 +41,16 @@ enum class MedicalCondition {
 enum class Currency {
     RON, EUR, USD, GBP
 }
+
+enum class MealType(val value: String) {
+    BREAKFAST("BREAKFAST"),
+    LUNCH("LUNCH"),
+    DINNER("DINNER"),
+    SNACK("SNACK");
+
+    companion object {
+        fun fromString(type: String): MealType? {
+            return entries.find { it.value.equals(type, ignoreCase = true) }
+        }
+    }
+}

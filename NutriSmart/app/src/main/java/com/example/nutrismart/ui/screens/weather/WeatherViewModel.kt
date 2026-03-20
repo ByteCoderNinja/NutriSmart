@@ -4,13 +4,15 @@ import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.nutrismart.data.remote.WeatherRetrofit
+import com.example.nutrismart.data.repository.WeatherRepository
 import com.example.nutrismart.notifications.WeatherNotificationReceiver
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 data class WeatherUiState(
     val isLoading: Boolean = true,
@@ -21,7 +23,10 @@ data class WeatherUiState(
     val recommendations: List<String> = emptyList()
 )
 
-class WeatherViewModel : ViewModel() {
+@HiltViewModel
+class WeatherViewModel @Inject constructor(
+    private val weatherRepository: WeatherRepository
+) : ViewModel() {
     private val _uiState = MutableStateFlow(WeatherUiState())
     val uiState: StateFlow<WeatherUiState> = _uiState.asStateFlow()
 
@@ -29,7 +34,7 @@ class WeatherViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
-                val response = WeatherRetrofit.api.getCurrentWeather(lat, lon)
+                val response = weatherRepository.getCurrentWeather(lat, lon)
 
                 if (response.isSuccessful) {
                     val body = response.body()

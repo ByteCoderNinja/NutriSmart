@@ -13,26 +13,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.nutrismart.data.SessionManager
 import com.example.nutrismart.ui.screens.fasting.FastingScreen
 import com.example.nutrismart.ui.screens.home.HomeScreen
 import com.example.nutrismart.ui.screens.home.HomeViewModel
-import com.example.nutrismart.ui.screens.profile.EditAccountSelectionScreen
-import com.example.nutrismart.ui.screens.profile.EditEmailScreen
-import com.example.nutrismart.ui.screens.profile.EditPasswordScreen
-import com.example.nutrismart.ui.screens.profile.EditUsernameScreen
-import com.example.nutrismart.ui.screens.profile.ProfileScreen
-import com.example.nutrismart.ui.screens.profile.ProfileViewModel
-import com.example.nutrismart.ui.screens.profile.SettingsScreen
+import com.example.nutrismart.ui.screens.profile.*
 import com.example.nutrismart.ui.screens.weather.WeatherScreen
 
 sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
@@ -55,24 +45,6 @@ fun MainScreen(
         BottomNavItem.Fasting,
         BottomNavItem.Weather,
         BottomNavItem.Profile
-    )
-
-    val context = LocalContext.current
-    val sessionManager = remember { SessionManager(context) }
-
-    val sharedHomeViewModel: HomeViewModel = viewModel(
-        factory = viewModelFactory {
-            initializer {
-                HomeViewModel(SessionManager(context))
-            }
-        }
-    )
-    val sharedProfileViewModel: ProfileViewModel = viewModel(
-        factory = viewModelFactory {
-            initializer {
-                ProfileViewModel(sessionManager)
-            }
-        }
     )
 
     Scaffold(
@@ -108,24 +80,29 @@ fun MainScreen(
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(BottomNavItem.Home.route) {
-                HomeScreen(viewModel = sharedHomeViewModel)
+                val homeViewModel: HomeViewModel = hiltViewModel()
+                HomeScreen(viewModel = homeViewModel)
             }
             composable(BottomNavItem.Fasting.route) {
                 FastingScreen()
             }
             composable(BottomNavItem.Weather.route) {
-                WeatherScreen(homeViewModel = sharedHomeViewModel)
+                // Weather might also need hiltViewModel later
+                val homeViewModel: HomeViewModel = hiltViewModel()
+                WeatherScreen(homeViewModel = homeViewModel)
             }
             composable(BottomNavItem.Profile.route) {
+                val profileViewModel: ProfileViewModel = hiltViewModel()
                 ProfileScreen(
-                    viewModel = sharedProfileViewModel,
+                    viewModel = profileViewModel,
                     onNavigateToSettings = { navController.navigate("settings_screen") }
                 )
             }
 
             composable("settings_screen") {
+                val profileViewModel: ProfileViewModel = hiltViewModel()
                 SettingsScreen(
-                    viewModel = sharedProfileViewModel,
+                    viewModel = profileViewModel,
                     onBackClick = { navController.popBackStack() },
                     onNavigateToEditAccount = { navController.navigate("edit_account_screen") },
                     onNavigateToEditPlan = onNavigateToEditPlan,
@@ -134,8 +111,9 @@ fun MainScreen(
             }
 
             composable("edit_account_screen") {
+                val profileViewModel: ProfileViewModel = hiltViewModel()
                 EditAccountSelectionScreen(
-                    viewModel = sharedProfileViewModel,
+                    viewModel = profileViewModel,
                     onBackClick = { navController.popBackStack() },
                     onEditUsernameClick = { navController.navigate("edit_username_screen") },
                     onEditEmailClick = { navController.navigate("edit_email_screen") },
@@ -144,15 +122,17 @@ fun MainScreen(
             }
 
             composable("edit_username_screen") {
+                val profileViewModel: ProfileViewModel = hiltViewModel()
                 EditUsernameScreen(
-                    viewModel = sharedProfileViewModel,
+                    viewModel = profileViewModel,
                     onBackClick = { navController.popBackStack() }
                 )
             }
 
             composable("edit_email_screen") {
+                val profileViewModel: ProfileViewModel = hiltViewModel()
                 EditEmailScreen(
-                    viewModel = sharedProfileViewModel,
+                    viewModel = profileViewModel,
                     onBackClick = { navController.popBackStack() },
                     onNavigateToVerify = { email ->
                         onNavigateToVerifyEmail(email)
@@ -161,23 +141,17 @@ fun MainScreen(
             }
 
             composable("edit_password_screen") {
+                val profileViewModel: ProfileViewModel = hiltViewModel()
                 EditPasswordScreen(
-                    viewModel = sharedProfileViewModel,
+                    viewModel = profileViewModel,
                     onBackClick = { navController.popBackStack() },
                     onNavigateToForgotPassword = {
-                        sharedProfileViewModel.logout {
+                        profileViewModel.logout {
                             onNavigateToForgotPassword()
                         }
                     }
                 )
             }
         }
-    }
-}
-
-@Composable
-fun PlaceholderScreen(title: String) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(title, style = MaterialTheme.typography.titleLarge)
     }
 }

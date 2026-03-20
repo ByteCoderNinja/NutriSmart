@@ -1,48 +1,48 @@
 package com.example.nutrismart.ui.screens.profile
 
-import android.widget.Toast
+import android.app.TimePickerDialog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.nutrismart.data.UserSession
-import com.example.nutrismart.data.SessionManager
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-
-import com.example.nutrismart.ui.screens.profile.components.SettingsItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    viewModel: ProfileViewModel = viewModel(),
+    viewModel: ProfileViewModel,
     onBackClick: () -> Unit,
     onNavigateToEditAccount: () -> Unit,
     onNavigateToEditPlan: () -> Unit,
     onNavigateToLogin: () -> Unit
 ) {
     val context = LocalContext.current
-    val sessionManager = remember { SessionManager(context) }
-    var showDeleteDialog by remember { mutableStateOf(false) }
 
-    var wakeUpTime by remember {
-        mutableStateOf(LocalTime.parse(sessionManager.getWakeUpTime()))
+    var wakeUpTime by remember { 
+        mutableStateOf(LocalTime.parse(viewModel.getWakeUpTime())) 
     }
-    var showTimePicker by remember { mutableStateOf(false) }
-    val timePickerState = rememberTimePickerState(
-        initialHour = wakeUpTime.hour,
-        initialMinute = wakeUpTime.minute,
-        is24Hour = true
+
+    val timePickerDialog = TimePickerDialog(
+        context,
+        { _, hourOfDay, minute ->
+            val newTime = LocalTime.of(hourOfDay, minute)
+            wakeUpTime = newTime
+            viewModel.saveWakeUpTime(newTime.format(DateTimeFormatter.ofPattern("HH:mm")))
+        },
+        wakeUpTime.hour,
+        wakeUpTime.minute,
+        true
     )
 
     Scaffold(
@@ -56,85 +56,106 @@ fun SettingsScreen(
                 }
             )
         }
-    ) { paddingValues ->
+    ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(padding)
                 .padding(16.dp)
         ) {
-            SettingsItem(
-                title = "Wake Up Time",
-                value = wakeUpTime.format(DateTimeFormatter.ofPattern("HH:mm")),
-                onClick = { showTimePicker = true }
+            Text(
+                "Account Settings",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(bottom = 16.dp)
             )
 
-            SettingsItem("Edit account", onClick = onNavigateToEditAccount)
-            SettingsItem("Edit plan", onClick = onNavigateToEditPlan)
-            SettingsItem("Logout", onClick = {
-                viewModel.logout(onSuccess = onNavigateToLogin)
-                sessionManager.clearSession()
-                UserSession.clear()
-            })
             SettingsItem(
-                title = "Delete account",
-                textColor = MaterialTheme.colorScheme.error,
-                onClick = { showDeleteDialog = true }
+                title = "Edit Account Information",
+                subtitle = "Change username, email or password",
+                onClick = onNavigateToEditAccount
             )
+
+            SettingsItem(
+                title = "Edit Personal Plan",
+                subtitle = "Update physical data or goals",
+                onClick = onNavigateToEditPlan
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                "App Preferences",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { timePickerDialog.show() }
+                    .padding(vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    Icons.Default.Notifications,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Column {
+                    val formattedTime = wakeUpTime.format(DateTimeFormatter.ofPattern("HH:mm"))
+                    Text("Wake-up Time", fontWeight = FontWeight.SemiBold)
+                    Text(
+                        "Currently: $formattedTime (used for reminders)",
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Button(
+                onClick = {
+                    viewModel.logout {
+                        onNavigateToLogin()
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            ) {
+                Text("Logout", fontWeight = FontWeight.Bold)
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
+}
 
-    if (showTimePicker) {
-        AlertDialog(
-            onDismissRequest = { showTimePicker = false },
-            confirmButton = {
-                TextButton(onClick = {
-                    val newTime = LocalTime.of(timePickerState.hour, timePickerState.minute)
-                    wakeUpTime = newTime
-                    sessionManager.saveWakeUpTime(newTime.format(DateTimeFormatter.ofPattern("HH:mm")))
-                    showTimePicker = false
-                }) {
-                    Text("OK")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showTimePicker = false }) {
-                    Text("Cancel")
-                }
-            },
-            text = {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    TimePicker(state = timePickerState)
-                }
-            }
+@Composable
+fun SettingsItem(title: String, subtitle: String, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            Icons.Default.Settings,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(24.dp)
         )
-    }
-
-    if (showDeleteDialog) {
-        AlertDialog(
-            onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Delete Account") },
-            text = { Text("Are you sure you want to delete your account? This action cannot be undone.") },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        showDeleteDialog = false
-                        viewModel.deleteAccount(
-                            onSuccess = onNavigateToLogin,
-                            onError = {
-                                Toast.makeText(context, "Delete Account Error!", Toast.LENGTH_SHORT).show()
-                            }
-                        )
-                    }
-                ) {
-                    Text("Delete", color = MaterialTheme.colorScheme.error)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("Cancel")
-                }
-            }
-        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Column {
+            Text(title, fontWeight = FontWeight.SemiBold)
+            Text(subtitle, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
     }
 }

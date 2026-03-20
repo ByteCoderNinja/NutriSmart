@@ -2,15 +2,17 @@ package com.example.nutrismart.ui.screens.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.nutrismart.data.SessionManager
 import com.example.nutrismart.data.UserSession
 import com.example.nutrismart.data.model.UserDto
-import com.example.nutrismart.data.remote.RetrofitClient
+import com.example.nutrismart.data.repository.AuthRepository
+import com.example.nutrismart.data.repository.UserRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 data class ProfileUiState(
     val isLoading: Boolean = true,
@@ -19,9 +21,15 @@ data class ProfileUiState(
     val errorMessage: String? = null
 )
 
-class ProfileViewModel(private val sessionManager: SessionManager) : ViewModel() {
+@HiltViewModel
+class ProfileViewModel @Inject constructor(
+    private val userRepository: UserRepository,
+    private val authRepository: AuthRepository
+) : ViewModel() {
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
+    private val token: String get() = UserSession.token ?: ""
+    private val userId: Long get() = UserSession.currentUserId
 
     init {
         fetchUserData()
@@ -31,10 +39,7 @@ class ProfileViewModel(private val sessionManager: SessionManager) : ViewModel()
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
-                val userId = UserSession.currentUserId
-                val token = "Bearer ${UserSession.token}"
-
-                val response = RetrofitClient.api.getUser(token, userId)
+                val response = userRepository.getUser(token, userId)
                 if (response.isSuccessful) {
                     val user = response.body()
                     _uiState.update { it.copy(
@@ -54,12 +59,9 @@ class ProfileViewModel(private val sessionManager: SessionManager) : ViewModel()
     fun deleteAccount(onSuccess: () -> Unit, onError: () -> Unit) {
         viewModelScope.launch {
             try {
-                val userId = UserSession.currentUserId
-                val token = "Bearer ${UserSession.token}"
-
-                val response = RetrofitClient.api.deleteUser(token, userId)
+                val response = userRepository.deleteUser(token, userId)
                 if (response.isSuccessful) {
-                    UserSession.clear()
+                    authRepository.clearSession()
                     onSuccess()
                 } else {
                     onError()
@@ -72,33 +74,32 @@ class ProfileViewModel(private val sessionManager: SessionManager) : ViewModel()
 
     fun logout(onSuccess: () -> Unit) {
         UserSession.clear()
-        sessionManager.clearSession()
+        authRepository.clearSession()
         onSuccess()
+    }
+
+    fun getWakeUpTime(): String {
+        return authRepository.getWakeUpTime()
+    }
+
+    fun saveWakeUpTime(time: String) {
+        authRepository.saveWakeUpTime(time)
     }
 
     fun updateUsername(newUsername: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
         viewModelScope.launch {
             try {
-                val token = "Bearer ${UserSession.token}"
-
                 val request = com.example.nutrismart.data.model.UpdateUserRequest(username = newUsername)
-
-                val response = RetrofitClient.api.patchUser(
-                    token = token,
-                    userId = UserSession.currentUserId,
-                    request = request
-                )
+                val response = userRepository.patchUser(token, userId, request)
 
                 if (response.isSuccessful) {
                     _uiState.update { it.copy(user = response.body()) }
                     onSuccess()
                 } else {
-                    val errorCode = response.code()
-                    val errorBody = response.errorBody()?.string() ?: "Unknown server error"
-                    onError("Error $errorCode: $errorBody")
+                    onError("Error ${response.code()}: ${response.errorBody()?.string() ?: "Server error"}")
                 }
             } catch (e: Exception) {
-                onError(e.message ?: "Unknown error occurred")
+                onError(e.message ?: "Unknown error")
             }
         }
     }
@@ -106,25 +107,17 @@ class ProfileViewModel(private val sessionManager: SessionManager) : ViewModel()
     fun updateEmail(newEmail: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
         viewModelScope.launch {
             try {
-                val token = "Bearer ${UserSession.token}"
                 val request = com.example.nutrismart.data.model.UpdateUserRequest(email = newEmail)
-
-                val response = RetrofitClient.api.patchUser(
-                    token,
-                    UserSession.currentUserId,
-                    request
-                )
+                val response = userRepository.patchUser(token, userId, request)
 
                 if (response.isSuccessful) {
                     _uiState.update { it.copy(user = response.body()) }
                     onSuccess()
                 } else {
-                    val errorCode = response.code()
-                    val errorBody = response.errorBody()?.string() ?: "Unknown server error"
-                    onError("Error $errorCode: $errorBody")
+                    onError("Error ${response.code()}: ${response.errorBody()?.string() ?: "Server error"}")
                 }
             } catch (e: Exception) {
-                onError(e.message ?: "Unknown error occurred")
+                onError(e.message ?: "Unknown error")
             }
         }
     }
@@ -132,28 +125,24 @@ class ProfileViewModel(private val sessionManager: SessionManager) : ViewModel()
     fun updatePassword(currentPass: String, newPass: String, onSuccess: () -> Unit, onError: (String) -> Unit) {
         viewModelScope.launch {
             try {
-                val token = "Bearer ${UserSession.token}"
                 val request = com.example.nutrismart.data.model.UpdateUserRequest(
                     currentPassword = currentPass,
                     newPassword = newPass
                 )
-
-                val response = RetrofitClient.api.patchUser(token, UserSession.currentUserId, request)
+                val response = userRepository.patchUser(token, userId, request)
 
                 if (response.isSuccessful) {
                     onSuccess()
                 } else {
-                    val errorCode = response.code()
-                    val errorBody = response.errorBody()?.string() ?: "Unknown server error"
-                    onError("Error $errorCode: $errorBody")
+                    onError("Error ${response.code()}: ${response.errorBody()?.string() ?: "Server error"}")
                 }
             } catch (e: Exception) {
-                onError(e.message ?: "Unknown error occurred")
+                onError(e.message ?: "Unknown error")
             }
         }
     }
 
-    fun checkUserType(sessionManager: SessionManager): Boolean {
-        return sessionManager.isGoogleUser()
+    fun isGoogleUser(): Boolean {
+        return _uiState.value.isGoogleUser
     }
 }
