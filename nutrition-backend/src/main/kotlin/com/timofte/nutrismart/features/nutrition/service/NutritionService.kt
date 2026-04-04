@@ -196,7 +196,7 @@ class NutritionService(
 
         recalculateTotals(compositePlan)
 
-        return compositePlan
+        return mealPlanRepository.save(compositePlan)
     }
 
     @Transactional
