@@ -163,7 +163,7 @@ class NutritionService(
     }
 
     fun getMealPlan(userId: Long, date: LocalDate): MealPlan? {
-        val exactPlan = mealPlanRepository.findByUserIdAndDate(userId, date)
+        val exactPlan = mealPlanRepository.findFirstByUserIdAndDate(userId, date)
         if (exactPlan != null) return exactPlan
 
         val allPlans = mealPlanRepository.findByUserId(userId).sortedBy { it.date }

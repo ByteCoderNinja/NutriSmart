@@ -87,7 +87,6 @@ fun MainScreen(
                 FastingScreen()
             }
             composable(BottomNavItem.Weather.route) {
-                // Weather might also need hiltViewModel later
                 val homeViewModel: HomeViewModel = hiltViewModel()
                 WeatherScreen(homeViewModel = homeViewModel)
             }
