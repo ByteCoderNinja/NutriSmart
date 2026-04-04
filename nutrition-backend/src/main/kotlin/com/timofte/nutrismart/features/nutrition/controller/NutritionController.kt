@@ -73,10 +73,10 @@ class NutritionController(private val nutritionService: NutritionService) {
     fun swapMeal(
         @PathVariable userId: Long,
         @RequestParam mealType: String,
-        @RequestParam newMealId: Long
+        @RequestParam newMealId: Long,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) date: LocalDate
     ): ResponseEntity<MealPlan> {
-        val today = LocalDate.now()
-        val plan = nutritionService.getMealPlan(userId, today)
+        val plan = nutritionService.getMealPlan(userId, date)
             ?: return ResponseEntity.notFound().build()
         
         val typeEnum = MealType.valueOf(mealType.uppercase())
