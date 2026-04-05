@@ -24,8 +24,8 @@ class MealRepository @Inject constructor(
         return api.getMealAlternatives("Bearer $token", userId, type)
     }
 
-    suspend fun swapMeal(token: String, userId: Long, type: String, mealId: Long): Response<MealPlanDto> {
-        return api.swapMeal("Bearer $token", userId, type, mealId)
+    suspend fun swapMeal(token: String, userId: Long, type: String, mealId: Long, date: String): Response<MealPlanDto> {
+        return api.swapMeal("Bearer $token", userId, type, mealId, date)
     }
 
     suspend fun toggleMealConsumed(token: String, mealId: Long, consumed: Boolean): Response<MealDto> {

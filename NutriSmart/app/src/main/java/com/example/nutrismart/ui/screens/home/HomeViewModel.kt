@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.time.LocalTime
 import javax.inject.Inject
 import kotlin.math.roundToInt
@@ -107,7 +108,16 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val mealType = MealType.fromString(mealTypeStr) ?: return@launch
-                val response = mealRepository.swapMeal(token, currentUserId, mealType.value, newMealId)
+
+                val localDate = LocalDate.now().toString()
+
+                val response = mealRepository.swapMeal(
+                    token,
+                    currentUserId,
+                    mealType.value,
+                    newMealId,
+                    localDate
+                    )
 
                 if (response.isSuccessful) {
                     fetchTodayData()

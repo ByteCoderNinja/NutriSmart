@@ -114,7 +114,8 @@ interface NutriSmartApi {
         @Header("Authorization") token: String,
         @Path("userId") userId: Long,
         @Query("mealType") mealType: String,
-        @Query("newMealId") newMealId: Long
+        @Query("newMealId") newMealId: Long,
+        @Query("date") date: String
     ): Response<MealPlanDto>
 
     @GET("nutrition/plan")
