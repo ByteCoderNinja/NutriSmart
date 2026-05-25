@@ -1,0 +1,608 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		CB0B5F262FC3E59300F59864 /* NutriSmartIOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C6E82FBBBEE6006B4CC0 /* NutriSmartIOSApp.swift */; };
+		CB0B5F272FC3E5A400F59864 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB3B3E952FC3DB180029C5D7 /* RootView.swift */; };
+		CB0B5F282FC3E5B000F59864 /* AppRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB3B3E942FC3DA360029C5D7 /* AppRouter.swift */; };
+		CBCE95DB2FC3E67F007DC9BE /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB6AE3392FC3D1F7002A344B /* SessionManager.swift */; };
+		CBCE95DC2FC3E6A3007DC9BE /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7142FBBC272006B4CC0 /* LoginView.swift */; };
+		CBCE95DD2FC3E6A9007DC9BE /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7152FBBC272006B4CC0 /* LoginViewModel.swift */; };
+		CBCE95DE2FC3E726007DC9BE /* AuthRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7032FBBC264006B4CC0 /* AuthRepository.swift */; };
+		CBCE95DF2FC3E751007DC9BE /* NutriSmartApiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBA1ECAE2FBD1C7E002E6EAB /* NutriSmartApiService.swift */; };
+		CBCE95E02FC3E7E5007DC9BE /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7172FBBC272006B4CC0 /* MainView.swift */; };
+		CBCE95E12FC3E7E5007DC9BE /* OnboardingComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C70B2FBBC272006B4CC0 /* OnboardingComponents.swift */; };
+		CBCE95E22FC3E7E5007DC9BE /* FastingRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7042FBBC264006B4CC0 /* FastingRepository.swift */; };
+		CBCE95E32FC3E7E5007DC9BE /* HomeUiState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7102FBBC272006B4CC0 /* HomeUiState.swift */; };
+		CBCE95E42FC3E7E5007DC9BE /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7122FBBC272006B4CC0 /* HomeViewModel.swift */; };
+		CBCE95E52FC3E7E5007DC9BE /* AuthModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C6FE2FBBC264006B4CC0 /* AuthModels.swift */; };
+		CBCE95E62FC3E7E5007DC9BE /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7192FBBC272006B4CC0 /* OnboardingView.swift */; };
+		CBCE95E72FC3E7E5007DC9BE /* RegisterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7202FBBC272006B4CC0 /* RegisterViewModel.swift */; };
+		CBCE95E82FC3E7E5007DC9BE /* VerifyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7222FBBC272006B4CC0 /* VerifyView.swift */; };
+		CBCE95E92FC3E7E5007DC9BE /* UserRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7062FBBC264006B4CC0 /* UserRepository.swift */; };
+		CBCE95EA2FC3E7E5007DC9BE /* WeatherViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7262FBBC272006B4CC0 /* WeatherViewModel.swift */; };
+		CBCE95EB2FC3E7E5007DC9BE /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C71A2FBBC272006B4CC0 /* OnboardingViewModel.swift */; };
+		CBCE95EC2FC3E7E5007DC9BE /* UserDto.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7012FBBC264006B4CC0 /* UserDto.swift */; };
+		CBCE95ED2FC3E7E5007DC9BE /* VerifyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7232FBBC272006B4CC0 /* VerifyViewModel.swift */; };
+		CBCE95EE2FC3E7E5007DC9BE /* FastingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C70E2FBBC272006B4CC0 /* FastingViewModel.swift */; };
+		CBCE95EF2FC3E7E5007DC9BE /* WeatherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7252FBBC272006B4CC0 /* WeatherView.swift */; };
+		CBCE95F02FC3E7E5007DC9BE /* WeatherRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7082FBBC264006B4CC0 /* WeatherRepository.swift */; };
+		CBCE95F12FC3E7E5007DC9BE /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C71D2FBBC272006B4CC0 /* ProfileViewModel.swift */; };
+		CBCE95F22FC3E7E5007DC9BE /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C71C2FBBC272006B4CC0 /* ProfileView.swift */; };
+		CBCE95F32FC3E7E5007DC9BE /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C71F2FBBC272006B4CC0 /* RegisterView.swift */; };
+		CBCE95F42FC3E7E5007DC9BE /* UserSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB6AE33A2FC3D4B0002A344B /* UserSession.swift */; };
+		CBCE95F52FC3E7E5007DC9BE /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C6FF2FBBC264006B4CC0 /* Enums.swift */; };
+		CBCE95F62FC3E7E5007DC9BE /* MealRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7052FBBC264006B4CC0 /* MealRepository.swift */; };
+		CBCE95F72FC3E7E5007DC9BE /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7112FBBC272006B4CC0 /* HomeView.swift */; };
+		CBCE95F82FC3E7E5007DC9BE /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBA1ECAC2FBCD74D002E6EAB /* NetworkManager.swift */; };
+		CBCE95F92FC3E7E5007DC9BE /* WaterRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7072FBBC264006B4CC0 /* WaterRepository.swift */; };
+		CBCE95FA2FC3E7E5007DC9BE /* FastingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C70D2FBBC272006B4CC0 /* FastingView.swift */; };
+		CBCE95FB2FC3E7E5007DC9BE /* MealModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7002FBBC264006B4CC0 /* MealModels.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		CB3B3E942FC3DA360029C5D7 /* AppRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRouter.swift; sourceTree = "<group>"; };
+		CB3B3E952FC3DB180029C5D7 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		CB3B3E972FC3E3840029C5D7 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
+		CB6AE3392FC3D1F7002A344B /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
+		CB6AE33A2FC3D4B0002A344B /* UserSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSession.swift; sourceTree = "<group>"; };
+		CBA1ECAC2FBCD74D002E6EAB /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
+		CBA1ECAE2FBD1C7E002E6EAB /* NutriSmartApiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutriSmartApiService.swift; sourceTree = "<group>"; };
+		CBE3C6E82FBBBEE6006B4CC0 /* NutriSmartIOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutriSmartIOSApp.swift; sourceTree = "<group>"; };
+		CBE3C6FD2FBBC1FA006B4CC0 /* NutriSmartIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NutriSmartIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CBE3C6FE2FBBC264006B4CC0 /* AuthModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthModels.swift; sourceTree = "<group>"; };
+		CBE3C6FF2FBBC264006B4CC0 /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
+		CBE3C7002FBBC264006B4CC0 /* MealModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealModels.swift; sourceTree = "<group>"; };
+		CBE3C7012FBBC264006B4CC0 /* UserDto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDto.swift; sourceTree = "<group>"; };
+		CBE3C7032FBBC264006B4CC0 /* AuthRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthRepository.swift; sourceTree = "<group>"; };
+		CBE3C7042FBBC264006B4CC0 /* FastingRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FastingRepository.swift; sourceTree = "<group>"; };
+		CBE3C7052FBBC264006B4CC0 /* MealRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealRepository.swift; sourceTree = "<group>"; };
+		CBE3C7062FBBC264006B4CC0 /* UserRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRepository.swift; sourceTree = "<group>"; };
+		CBE3C7072FBBC264006B4CC0 /* WaterRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaterRepository.swift; sourceTree = "<group>"; };
+		CBE3C7082FBBC264006B4CC0 /* WeatherRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherRepository.swift; sourceTree = "<group>"; };
+		CBE3C70B2FBBC272006B4CC0 /* OnboardingComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingComponents.swift; sourceTree = "<group>"; };
+		CBE3C70D2FBBC272006B4CC0 /* FastingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FastingView.swift; sourceTree = "<group>"; };
+		CBE3C70E2FBBC272006B4CC0 /* FastingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FastingViewModel.swift; sourceTree = "<group>"; };
+		CBE3C7102FBBC272006B4CC0 /* HomeUiState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeUiState.swift; sourceTree = "<group>"; };
+		CBE3C7112FBBC272006B4CC0 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		CBE3C7122FBBC272006B4CC0 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
+		CBE3C7142FBBC272006B4CC0 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		CBE3C7152FBBC272006B4CC0 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
+		CBE3C7172FBBC272006B4CC0 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		CBE3C7192FBBC272006B4CC0 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		CBE3C71A2FBBC272006B4CC0 /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
+		CBE3C71C2FBBC272006B4CC0 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		CBE3C71D2FBBC272006B4CC0 /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
+		CBE3C71F2FBBC272006B4CC0 /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
+		CBE3C7202FBBC272006B4CC0 /* RegisterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewModel.swift; sourceTree = "<group>"; };
+		CBE3C7222FBBC272006B4CC0 /* VerifyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyView.swift; sourceTree = "<group>"; };
+		CBE3C7232FBBC272006B4CC0 /* VerifyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyViewModel.swift; sourceTree = "<group>"; };
+		CBE3C7252FBBC272006B4CC0 /* WeatherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherView.swift; sourceTree = "<group>"; };
+		CBE3C7262FBBC272006B4CC0 /* WeatherViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherViewModel.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		CB91B1622FB9C28D0099A9D0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		CB6AE33B2FC3D5C7002A344B /* di */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = di;
+			sourceTree = "<group>";
+		};
+		CB6AE33C2FC3D5D1002A344B /* notifications */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = notifications;
+			sourceTree = "<group>";
+		};
+		CB91B15C2FB9C28D0099A9D0 = {
+			isa = PBXGroup;
+			children = (
+				CB3B3E972FC3E3840029C5D7 /* Media.xcassets */,
+				CB3B3E952FC3DB180029C5D7 /* RootView.swift */,
+				CB3B3E942FC3DA360029C5D7 /* AppRouter.swift */,
+				CB6AE33C2FC3D5D1002A344B /* notifications */,
+				CB6AE33B2FC3D5C7002A344B /* di */,
+				CBE3C6E82FBBBEE6006B4CC0 /* NutriSmartIOSApp.swift */,
+				CBE3C6FD2FBBC1FA006B4CC0 /* NutriSmartIOS.app */,
+				CBE3C70A2FBBC264006B4CC0 /* data */,
+				CBE3C7292FBBC272006B4CC0 /* ui */,
+			);
+			sourceTree = "<group>";
+		};
+		CBA1ECAB2FBCD72D002E6EAB /* remote */ = {
+			isa = PBXGroup;
+			children = (
+				CBA1ECAE2FBD1C7E002E6EAB /* NutriSmartApiService.swift */,
+				CBA1ECAC2FBCD74D002E6EAB /* NetworkManager.swift */,
+			);
+			path = remote;
+			sourceTree = "<group>";
+		};
+		CBE3C7022FBBC264006B4CC0 /* model */ = {
+			isa = PBXGroup;
+			children = (
+				CBE3C6FE2FBBC264006B4CC0 /* AuthModels.swift */,
+				CBE3C6FF2FBBC264006B4CC0 /* Enums.swift */,
+				CBE3C7002FBBC264006B4CC0 /* MealModels.swift */,
+				CBE3C7012FBBC264006B4CC0 /* UserDto.swift */,
+			);
+			path = model;
+			sourceTree = "<group>";
+		};
+		CBE3C7092FBBC264006B4CC0 /* repository */ = {
+			isa = PBXGroup;
+			children = (
+				CBE3C7032FBBC264006B4CC0 /* AuthRepository.swift */,
+				CBE3C7042FBBC264006B4CC0 /* FastingRepository.swift */,
+				CBE3C7052FBBC264006B4CC0 /* MealRepository.swift */,
+				CBE3C7062FBBC264006B4CC0 /* UserRepository.swift */,
+				CBE3C7072FBBC264006B4CC0 /* WaterRepository.swift */,
+				CBE3C7082FBBC264006B4CC0 /* WeatherRepository.swift */,
+			);
+			path = repository;
+			sourceTree = "<group>";
+		};
+		CBE3C70A2FBBC264006B4CC0 /* data */ = {
+			isa = PBXGroup;
+			children = (
+				CB6AE33A2FC3D4B0002A344B /* UserSession.swift */,
+				CB6AE3392FC3D1F7002A344B /* SessionManager.swift */,
+				CBA1ECAB2FBCD72D002E6EAB /* remote */,
+				CBE3C7022FBBC264006B4CC0 /* model */,
+				CBE3C7092FBBC264006B4CC0 /* repository */,
+			);
+			path = data;
+			sourceTree = "<group>";
+		};
+		CBE3C70C2FBBC272006B4CC0 /* core_components */ = {
+			isa = PBXGroup;
+			children = (
+				CBE3C70B2FBBC272006B4CC0 /* OnboardingComponents.swift */,
+			);
+			path = core_components;
+			sourceTree = "<group>";
+		};
+		CBE3C70F2FBBC272006B4CC0 /* fasting */ = {
+			isa = PBXGroup;
+			children = (
+				CBE3C70D2FBBC272006B4CC0 /* FastingView.swift */,
+				CBE3C70E2FBBC272006B4CC0 /* FastingViewModel.swift */,
+			);
+			path = fasting;
+			sourceTree = "<group>";
+		};
+		CBE3C7132FBBC272006B4CC0 /* home */ = {
+			isa = PBXGroup;
+			children = (
+				CBE3C7102FBBC272006B4CC0 /* HomeUiState.swift */,
+				CBE3C7112FBBC272006B4CC0 /* HomeView.swift */,
+				CBE3C7122FBBC272006B4CC0 /* HomeViewModel.swift */,
+			);
+			path = home;
+			sourceTree = "<group>";
+		};
+		CBE3C7162FBBC272006B4CC0 /* login */ = {
+			isa = PBXGroup;
+			children = (
+				CBE3C7142FBBC272006B4CC0 /* LoginView.swift */,
+				CBE3C7152FBBC272006B4CC0 /* LoginViewModel.swift */,
+			);
+			path = login;
+			sourceTree = "<group>";
+		};
+		CBE3C7182FBBC272006B4CC0 /* main */ = {
+			isa = PBXGroup;
+			children = (
+				CBE3C7172FBBC272006B4CC0 /* MainView.swift */,
+			);
+			path = main;
+			sourceTree = "<group>";
+		};
+		CBE3C71B2FBBC272006B4CC0 /* onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				CBE3C7192FBBC272006B4CC0 /* OnboardingView.swift */,
+				CBE3C71A2FBBC272006B4CC0 /* OnboardingViewModel.swift */,
+			);
+			path = onboarding;
+			sourceTree = "<group>";
+		};
+		CBE3C71E2FBBC272006B4CC0 /* profile */ = {
+			isa = PBXGroup;
+			children = (
+				CBE3C71C2FBBC272006B4CC0 /* ProfileView.swift */,
+				CBE3C71D2FBBC272006B4CC0 /* ProfileViewModel.swift */,
+			);
+			path = profile;
+			sourceTree = "<group>";
+		};
+		CBE3C7212FBBC272006B4CC0 /* register */ = {
+			isa = PBXGroup;
+			children = (
+				CBE3C71F2FBBC272006B4CC0 /* RegisterView.swift */,
+				CBE3C7202FBBC272006B4CC0 /* RegisterViewModel.swift */,
+			);
+			path = register;
+			sourceTree = "<group>";
+		};
+		CBE3C7242FBBC272006B4CC0 /* verify */ = {
+			isa = PBXGroup;
+			children = (
+				CBE3C7222FBBC272006B4CC0 /* VerifyView.swift */,
+				CBE3C7232FBBC272006B4CC0 /* VerifyViewModel.swift */,
+			);
+			path = verify;
+			sourceTree = "<group>";
+		};
+		CBE3C7272FBBC272006B4CC0 /* weather */ = {
+			isa = PBXGroup;
+			children = (
+				CBE3C7252FBBC272006B4CC0 /* WeatherView.swift */,
+				CBE3C7262FBBC272006B4CC0 /* WeatherViewModel.swift */,
+			);
+			path = weather;
+			sourceTree = "<group>";
+		};
+		CBE3C7282FBBC272006B4CC0 /* screens */ = {
+			isa = PBXGroup;
+			children = (
+				CBE3C70F2FBBC272006B4CC0 /* fasting */,
+				CBE3C7132FBBC272006B4CC0 /* home */,
+				CBE3C7162FBBC272006B4CC0 /* login */,
+				CBE3C7182FBBC272006B4CC0 /* main */,
+				CBE3C71B2FBBC272006B4CC0 /* onboarding */,
+				CBE3C71E2FBBC272006B4CC0 /* profile */,
+				CBE3C7212FBBC272006B4CC0 /* register */,
+				CBE3C7242FBBC272006B4CC0 /* verify */,
+				CBE3C7272FBBC272006B4CC0 /* weather */,
+			);
+			path = screens;
+			sourceTree = "<group>";
+		};
+		CBE3C7292FBBC272006B4CC0 /* ui */ = {
+			isa = PBXGroup;
+			children = (
+				CBE3C70C2FBBC272006B4CC0 /* core_components */,
+				CBE3C7282FBBC272006B4CC0 /* screens */,
+			);
+			path = ui;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		CB91B1642FB9C28D0099A9D0 /* NutriSmartIOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CB91B1702FB9C28E0099A9D0 /* Build configuration list for PBXNativeTarget "NutriSmartIOS" */;
+			buildPhases = (
+				CB91B1612FB9C28D0099A9D0 /* Sources */,
+				CB91B1622FB9C28D0099A9D0 /* Frameworks */,
+				CB91B1632FB9C28D0099A9D0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NutriSmartIOS;
+			packageProductDependencies = (
+			);
+			productName = NutriSmartIOS;
+			productReference = CBE3C6FD2FBBC1FA006B4CC0 /* NutriSmartIOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		CB91B15D2FB9C28D0099A9D0 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2650;
+				LastUpgradeCheck = 2650;
+				TargetAttributes = {
+					CB91B1642FB9C28D0099A9D0 = {
+						CreatedOnToolsVersion = 26.5;
+					};
+				};
+			};
+			buildConfigurationList = CB91B1602FB9C28D0099A9D0 /* Build configuration list for PBXProject "NutriSmartIOS" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = CB91B15C2FB9C28D0099A9D0;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = CB91B15C2FB9C28D0099A9D0;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				CB91B1642FB9C28D0099A9D0 /* NutriSmartIOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		CB91B1632FB9C28D0099A9D0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		CB91B1612FB9C28D0099A9D0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CBCE95E02FC3E7E5007DC9BE /* MainView.swift in Sources */,
+				CBCE95E12FC3E7E5007DC9BE /* OnboardingComponents.swift in Sources */,
+				CBCE95E22FC3E7E5007DC9BE /* FastingRepository.swift in Sources */,
+				CBCE95E32FC3E7E5007DC9BE /* HomeUiState.swift in Sources */,
+				CBCE95E42FC3E7E5007DC9BE /* HomeViewModel.swift in Sources */,
+				CBCE95E52FC3E7E5007DC9BE /* AuthModels.swift in Sources */,
+				CBCE95E62FC3E7E5007DC9BE /* OnboardingView.swift in Sources */,
+				CBCE95E72FC3E7E5007DC9BE /* RegisterViewModel.swift in Sources */,
+				CBCE95E82FC3E7E5007DC9BE /* VerifyView.swift in Sources */,
+				CBCE95E92FC3E7E5007DC9BE /* UserRepository.swift in Sources */,
+				CBCE95EA2FC3E7E5007DC9BE /* WeatherViewModel.swift in Sources */,
+				CBCE95EB2FC3E7E5007DC9BE /* OnboardingViewModel.swift in Sources */,
+				CBCE95EC2FC3E7E5007DC9BE /* UserDto.swift in Sources */,
+				CBCE95ED2FC3E7E5007DC9BE /* VerifyViewModel.swift in Sources */,
+				CBCE95EE2FC3E7E5007DC9BE /* FastingViewModel.swift in Sources */,
+				CBCE95EF2FC3E7E5007DC9BE /* WeatherView.swift in Sources */,
+				CBCE95F02FC3E7E5007DC9BE /* WeatherRepository.swift in Sources */,
+				CBCE95F12FC3E7E5007DC9BE /* ProfileViewModel.swift in Sources */,
+				CBCE95F22FC3E7E5007DC9BE /* ProfileView.swift in Sources */,
+				CBCE95F32FC3E7E5007DC9BE /* RegisterView.swift in Sources */,
+				CBCE95F42FC3E7E5007DC9BE /* UserSession.swift in Sources */,
+				CBCE95F52FC3E7E5007DC9BE /* Enums.swift in Sources */,
+				CBCE95F62FC3E7E5007DC9BE /* MealRepository.swift in Sources */,
+				CBCE95F72FC3E7E5007DC9BE /* HomeView.swift in Sources */,
+				CBCE95F82FC3E7E5007DC9BE /* NetworkManager.swift in Sources */,
+				CBCE95F92FC3E7E5007DC9BE /* WaterRepository.swift in Sources */,
+				CBCE95FA2FC3E7E5007DC9BE /* FastingView.swift in Sources */,
+				CBCE95FB2FC3E7E5007DC9BE /* MealModels.swift in Sources */,
+				CB0B5F272FC3E5A400F59864 /* RootView.swift in Sources */,
+				CBCE95DF2FC3E751007DC9BE /* NutriSmartApiService.swift in Sources */,
+				CB0B5F262FC3E59300F59864 /* NutriSmartIOSApp.swift in Sources */,
+				CBCE95DD2FC3E6A9007DC9BE /* LoginViewModel.swift in Sources */,
+				CBCE95DB2FC3E67F007DC9BE /* SessionManager.swift in Sources */,
+				CBCE95DE2FC3E726007DC9BE /* AuthRepository.swift in Sources */,
+				CBCE95DC2FC3E6A3007DC9BE /* LoginView.swift in Sources */,
+				CB0B5F282FC3E5B000F59864 /* AppRouter.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		CB91B16E2FB9C28E0099A9D0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		CB91B16F2FB9C28E0099A9D0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		CB91B1712FB9C28E0099A9D0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.timofte.NutriSmartIOS;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		CB91B1722FB9C28E0099A9D0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.timofte.NutriSmartIOS;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		CB91B1602FB9C28D0099A9D0 /* Build configuration list for PBXProject "NutriSmartIOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CB91B16E2FB9C28E0099A9D0 /* Debug */,
+				CB91B16F2FB9C28E0099A9D0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CB91B1702FB9C28E0099A9D0 /* Build configuration list for PBXNativeTarget "NutriSmartIOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CB91B1712FB9C28E0099A9D0 /* Debug */,
+				CB91B1722FB9C28E0099A9D0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = CB91B15D2FB9C28D0099A9D0 /* Project object */;
+}
