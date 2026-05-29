@@ -15,6 +15,10 @@ class MealRepository {
     
     private init() {}
     
+    func getTodayPlan(token: String, userId: Int) async throws -> MealPlanDto {
+        return try await api.getTodayPlan(token: token, userId: userId)
+    }
+
     func getDailyPlan(token: String, userId: Int, date: String) async throws -> MealPlanDto {
         return try await api.getDailyPlan(token: token, userId: userId, date: date)
     }

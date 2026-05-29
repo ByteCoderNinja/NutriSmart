@@ -6,6 +6,7 @@
 import Foundation
 
 @Observable
+@MainActor
 class RegisterViewModel {
     var email = ""
     var username = ""
@@ -22,15 +23,14 @@ class RegisterViewModel {
         errorMessage = nil
         
         let request = RegisterRequest(email: email, password: password, username: username)
-        authRepository.register(request: request) { [weak self] result in
-            DispatchQueue.main.async {
-                self?.isLoading = false
-                switch result {
-                case .success(_):
-                    self?.navigateToVerify = true
-                case .failure(let error):
-                    self?.errorMessage = "Registration failed. Email might be in use."
-                }
+        Task {
+            do {
+                _ = try await authRepository.register(request: request)
+                self.navigateToVerify = true
+                self.isLoading = false
+            } catch {
+                self.errorMessage = "Registration failed. Email might be in use."
+                self.isLoading = false
             }
         }
     }

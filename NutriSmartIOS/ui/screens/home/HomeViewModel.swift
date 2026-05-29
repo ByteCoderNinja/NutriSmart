@@ -8,6 +8,7 @@ import SwiftUI
 import Combine
 
 @Observable
+@MainActor
 class HomeViewModel {
     var uiState = HomeUiState()
     
@@ -41,45 +42,46 @@ class HomeViewModel {
         uiState.isLoading = true
         
         let userId = currentUserId
+        let token = SessionManager.shared.fetchAuthToken() ?? ""
         
-        userRepository.getUser(userId: userId) { [weak self] result in
-            DispatchQueue.main.async {
-                if case .success(let user) = result {
-                    self?.uiState.weight = user.weight ?? 0.0
-                    self?.uiState.isImperial = user.isImperial
-                }
+        Task {
+            do {
+                let user = try await userRepository.getUser(token: token, userId: userId)
+                uiState.weight = user.weight ?? 0.0
+                uiState.isImperial = user.isImperial
+            } catch {
+                print("Error fetching user: \(error)")
             }
-        }
-        
-        mealRepository.getTodayPlan(userId: userId) { [weak self] result in
-            DispatchQueue.main.async {
-                self?.uiState.isLoading = false
-                if case .success(let plan) = result {
-                    self?.uiState.breakfast = plan.breakfast
-                    self?.uiState.lunch = plan.lunch
-                    self?.uiState.dinner = plan.dinner
-                    self?.uiState.snack = plan.snack
-                }
+            
+            do {
+                let plan = try await mealRepository.getTodayPlan(token: token, userId: userId)
+                uiState.breakfast = plan.breakfast
+                uiState.lunch = plan.lunch
+                uiState.dinner = plan.dinner
+                uiState.snack = plan.snack
+            } catch {
+                print("Error fetching meal plan: \(error)")
             }
-        }
-        
-        NutriSmartService.shared.getShoppingList(userId: userId) { [weak self] result in
-            DispatchQueue.main.async {
-                if case .success(let list) = result {
-                    self?.uiState.shoppingList = list
-                }
+            
+            do {
+                let list = try await mealRepository.getShoppingList(token: token, userId: userId)
+                uiState.shoppingList = list
+            } catch {
+                print("Error fetching shopping list: \(error)")
             }
+            
+            uiState.isLoading = false
         }
     }
     
     func addWater() {
         uiState.waterConsumedMl += uiState.glassSizeMl
-        waterRepository.saveWaterIntake(uiState.waterConsumedMl)
+        waterRepository.saveWaterIntake(water: uiState.waterConsumedMl)
     }
     
     func removeWater() {
         uiState.waterConsumedMl = max(0, uiState.waterConsumedMl - uiState.glassSizeMl)
-        waterRepository.saveWaterIntake(uiState.waterConsumedMl)
+        waterRepository.saveWaterIntake(water: uiState.waterConsumedMl)
     }
     
     func toggleMeal(mealId: Int, type: MealType, consumed: Bool) {
@@ -90,7 +92,10 @@ class HomeViewModel {
         case .SNACK: uiState.snack = uiState.snack.map { var m = $0; m.consumed = consumed; return m }
         }
         
-        mealRepository.toggleMealConsumed(mealId: mealId, consumed: consumed) { _ in }
+        let token = SessionManager.shared.fetchAuthToken() ?? ""
+        Task {
+            try? await mealRepository.toggleMealConsumed(token: token, mealId: mealId, consumed: consumed)
+        }
     }
     
     func adjustWeight(delta: Double) {
@@ -103,12 +108,13 @@ class HomeViewModel {
             try? await Task.sleep(nanoseconds: 1_500 * 1_000_000)
             if Task.isCancelled { return }
             
+            let token = SessionManager.shared.fetchAuthToken() ?? ""
             let request = UpdateUserRequest(
                 username: nil, weight: roundedWeight, height: nil, targetWeight: nil,
                 activityLevel: nil, maxDailyBudget: nil, dietaryPreferences: nil,
                 medicalConditions: nil, dislikedFoods: nil, stepGoal: nil, isImperial: nil, currency: nil
             )
-            userRepository.patchUser(userId: currentUserId, request: request) { _ in }
+            try? await userRepository.patchUser(token: token, userId: currentUserId, request: request)
         }
     }
 }

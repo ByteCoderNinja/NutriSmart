@@ -43,6 +43,9 @@
 		CBCE95F92FC3E7E5007DC9BE /* WaterRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7072FBBC264006B4CC0 /* WaterRepository.swift */; };
 		CBCE95FA2FC3E7E5007DC9BE /* FastingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C70D2FBBC272006B4CC0 /* FastingView.swift */; };
 		CBCE95FB2FC3E7E5007DC9BE /* MealModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7002FBBC264006B4CC0 /* MealModels.swift */; };
+		CBCE95FD2FC903B5007DC9BE /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBCE95FC2FC903AC007DC9BE /* Theme.swift */; };
+		CBCE95FF2FC907B0007DC9BE /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBCE95FE2FC907A3007DC9BE /* Typography.swift */; };
+		CBCE96002FC920C7007DC9BE /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CB3B3E972FC3E3840029C5D7 /* Media.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -53,6 +56,8 @@
 		CB6AE33A2FC3D4B0002A344B /* UserSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSession.swift; sourceTree = "<group>"; };
 		CBA1ECAC2FBCD74D002E6EAB /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		CBA1ECAE2FBD1C7E002E6EAB /* NutriSmartApiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutriSmartApiService.swift; sourceTree = "<group>"; };
+		CBCE95FC2FC903AC007DC9BE /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		CBCE95FE2FC907A3007DC9BE /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
 		CBE3C6E82FBBBEE6006B4CC0 /* NutriSmartIOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutriSmartIOSApp.swift; sourceTree = "<group>"; };
 		CBE3C6FD2FBBC1FA006B4CC0 /* NutriSmartIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NutriSmartIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CBE3C6FE2FBBC264006B4CC0 /* AuthModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthModels.swift; sourceTree = "<group>"; };
@@ -114,6 +119,8 @@
 		CB91B15C2FB9C28D0099A9D0 = {
 			isa = PBXGroup;
 			children = (
+				CBCE95FE2FC907A3007DC9BE /* Typography.swift */,
+				CBCE95FC2FC903AC007DC9BE /* Theme.swift */,
 				CB3B3E972FC3E3840029C5D7 /* Media.xcassets */,
 				CB3B3E952FC3DB180029C5D7 /* RootView.swift */,
 				CB3B3E942FC3DA360029C5D7 /* AppRouter.swift */,
@@ -346,6 +353,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CBCE96002FC920C7007DC9BE /* Media.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -381,8 +389,10 @@
 				CBCE95F62FC3E7E5007DC9BE /* MealRepository.swift in Sources */,
 				CBCE95F72FC3E7E5007DC9BE /* HomeView.swift in Sources */,
 				CBCE95F82FC3E7E5007DC9BE /* NetworkManager.swift in Sources */,
+				CBCE95FD2FC903B5007DC9BE /* Theme.swift in Sources */,
 				CBCE95F92FC3E7E5007DC9BE /* WaterRepository.swift in Sources */,
 				CBCE95FA2FC3E7E5007DC9BE /* FastingView.swift in Sources */,
+				CBCE95FF2FC907B0007DC9BE /* Typography.swift in Sources */,
 				CBCE95FB2FC3E7E5007DC9BE /* MealModels.swift in Sources */,
 				CB0B5F272FC3E5A400F59864 /* RootView.swift in Sources */,
 				CBCE95DF2FC3E751007DC9BE /* NutriSmartApiService.swift in Sources */,

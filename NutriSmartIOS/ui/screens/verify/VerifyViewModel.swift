@@ -6,6 +6,7 @@
 import Foundation
 
 @Observable
+@MainActor
 class VerifyViewModel {
     var code = ""
     var isLoading = false
@@ -22,16 +23,15 @@ class VerifyViewModel {
         successMessage = nil
         
         let request = VerifyRequest(email: email, code: code)
-        authRepository.verify(request: request) { [weak self] result in
-            DispatchQueue.main.async {
-                self?.isLoading = false
-                switch result {
-                case .success(let authResponse):
-                    self?.authRepository.saveAuthData(authData: authResponse)
-                    self?.verificationSuccess = true
-                case .failure(_):
-                    self?.errorMessage = "Invalid or expired code"
-                }
+        Task {
+            do {
+                let authResponse = try await authRepository.verify(request: request)
+                authRepository.saveAuthData(authData: authResponse)
+                self.verificationSuccess = true
+                self.isLoading = false
+            } catch {
+                self.errorMessage = "Invalid or expired code"
+                self.isLoading = false
             }
         }
     }
@@ -41,15 +41,14 @@ class VerifyViewModel {
         errorMessage = nil
         successMessage = nil
         
-        authRepository.resendCode(email: email) { [weak self] result in
-            DispatchQueue.main.async {
-                self?.isResending = false
-                switch result {
-                case .success(_):
-                    self?.successMessage = "A new code has been sent to your email"
-                case .failure(_):
-                    self?.errorMessage = "Failed to resend code. Try again later."
-                }
+        Task {
+            do {
+                _ = try await authRepository.resendCode(email: email)
+                self.successMessage = "A new code has been sent to your email"
+                self.isResending = false
+            } catch {
+                self.errorMessage = "Failed to resend code. Try again later."
+                self.isResending = false
             }
         }
     }

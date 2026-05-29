@@ -25,15 +25,15 @@ struct RootView: View {
                                 router.switchRoot(to: .main)
                             }
                         },
-                        onNavigateToRegister: { router.authPath.append(.register) },
-                        onNavigateToForgotPassword: { router.authPath.append(.forgotPassword) }
+                        onNavigateToRegister: { router.authPath.append(AuthRoute.register) },
+                        onNavigateToForgotPassword: { router.authPath.append(AuthRoute.forgotPassword) }
                     )
                     .navigationDestination(for: AuthRoute.self) { route in
                         switch route {
                         case .register:
                             RegisterView(
                                 onRegisterSuccess: { email in
-                                    router.authPath.append(.verify(email: email, isEdit: false))
+                                    router.authPath.append(AuthRoute.verify(email: email, isEdit: false))
                                 },
                                 onNavigateToLogin: { router.authPath.removeLast() }
                             )
@@ -54,6 +54,8 @@ struct RootView: View {
                         case .resetPassword(let email):
                             // TODO: Replace with ResetPasswordView when ready
                             Text("Reset Password Screen: \(email)")
+                        default:
+                            Text("Route not implemented yet")
                         }
                     }
                 }

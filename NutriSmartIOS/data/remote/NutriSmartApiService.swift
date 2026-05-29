@@ -92,7 +92,7 @@ class NutriSmartApiService {
             token: token
         )
     }
-§
+
     func startPlanGeneration(token: String, userId: Int) async throws -> [String: String] {
         return try await NetworkManager.shared.request(
             endpoint: "nutrition/generate/\(userId)",
@@ -171,5 +171,28 @@ class NutriSmartApiService {
             method: "GET",
             token: token
         )
+    }
+}
+
+class WeatherService {
+    static let shared = WeatherService()
+    private init() {}
+    
+    private let apiKey = "01f8332dadd916b12dc66396063092c2"
+    private let baseURL = "https://api.openweathermap.org/data/2.5/"
+    
+    func getCurrentWeather(lat: Double, lon: Double) async throws -> WeatherResponse {
+        let urlString = "\(baseURL)weather?lat=\(lat)&lon=\(lon)&units=metric&appid=\(apiKey)"
+        guard let url = URL(string: urlString) else {
+            throw NetworkError.invalidURL
+        }
+        
+        let (data, response) = try await URLSession.shared.data(for: URLRequest(url: url))
+        
+        guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+            throw NetworkError.serverError("Weather API error: \((response as? HTTPURLResponse)?.statusCode ?? 0)")
+        }
+        
+        return try JSONDecoder().decode(WeatherResponse.self, from: data)
     }
 }

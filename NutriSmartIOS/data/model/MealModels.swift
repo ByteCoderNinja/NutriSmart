@@ -13,7 +13,7 @@ struct MealDto: Codable, Identifiable {
     let fat: Int
     let carbs: Int
     let quantityDetails: String?
-    let consumed: Bool
+    var consumed: Bool
 }
 
 struct MealPlanDto: Codable {

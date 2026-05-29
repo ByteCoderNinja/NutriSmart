@@ -7,16 +7,17 @@ import Foundation
 import SwiftUI
 import Combine
 
+@Observable
 @MainActor
 class LoginViewModel {
-    @Published var email = ""
-    @Published var password = ""
-    @Published var isLoading = false
-    @Published var errorMessage: String? = nil
+    var email = ""
+    var password = ""
+    var isLoading = false
+    var errorMessage: String? = nil
     
-    @Published var loginSuccess = false
-    @Published var isNewUser = false
-    @Published var isVerified = true
+    var loginSuccess = false
+    var isNewUser = false
+    var isVerified = true
     
     private let authRepository = AuthRepository.shared
     

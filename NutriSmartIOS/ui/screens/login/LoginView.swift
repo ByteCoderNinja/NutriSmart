@@ -6,7 +6,7 @@
 import SwiftUI
 
 struct LoginView: View {
-    @StateObject private var viewModel = LoginViewModel()
+    @State private var viewModel = LoginViewModel()
     
     var onLoginSuccess: (String, Bool, Bool) -> Void
     var onNavigateToRegister: () -> Void
@@ -18,9 +18,7 @@ struct LoginView: View {
                 Spacer().frame(height: 60)
                 
                 VStack(spacing: 8) {
-                    // Dacă ai o imagine "ic_nutrismart_logo" în Assets, o poți folosi aici.
-                    // Momentan am pus un placeholder.
-                    Image(systemName: "ic_nutrismart_logo.png")
+                    Image("ic_nutrismart_logo")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 100, height: 100)
@@ -110,7 +108,7 @@ struct LoginView: View {
                     print("Google Sign In tapped")
                 }) {
                     HStack(spacing: 12) {
-                        Image(systemName: "g.circle.fill") // Placeholder pt logo Google
+                        Image("ic_google_logo")
                             .resizable()
                             .frame(width: 22, height: 22)
                         
@@ -121,7 +119,7 @@ struct LoginView: View {
                     .frame(maxWidth: .infinity)
                     .frame(height: 56)
                     .background(Color(UIColor.systemBackground))
-                    .foregroundColor(Color(UIColor.label)) // Negru în light mode, alb în dark mode
+                    .foregroundColor(Color(UIColor.label))
                     .cornerRadius(24)
                     .overlay(
                         RoundedRectangle(cornerRadius: 24)

@@ -1,0 +1,12 @@
+{
+  "model": {
+    "name": "pro"
+  },
+  "ui": {
+    "useBackgroundColor": false,
+    "terminalBuffer": true
+  },
+  "experimental": {
+    "autoMemory": false
+  }
+}

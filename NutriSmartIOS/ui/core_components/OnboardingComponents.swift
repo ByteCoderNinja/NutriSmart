@@ -38,7 +38,7 @@ struct SelectionRow<T: Hashable>: View {
                             .font(.system(size: 14, weight: .semibold))
                             .padding(.vertical, 12)
                             .frame(maxWidth: .infinity)
-                            .background(isSelected ? Color.nutriGreen.opacity(0.15) : Color(hex: "F1F4F1"))
+                            .background(isSelected ? Color.nutriGreen.opacity(0.15) : Color(hex: 0xF1F4F1))
                             .foregroundColor(isSelected ? .nutriGreen : .primary)
                             .cornerRadius(12)
                             .overlay(
@@ -78,7 +78,7 @@ struct MultiSelectPicker<T: Hashable & CaseIterable>: View where T.AllCases: Ran
                             .font(.system(size: 14))
                             .padding(.horizontal, 16)
                             .padding(.vertical, 8)
-                            .background(isSelected ? Color.nutriGreen : Color(hex: "F1F4F1"))
+                            .background(isSelected ? Color.nutriGreen : Color(hex: 0xF1F4F1))
                             .foregroundColor(isSelected ? .white : .primary)
                             .cornerRadius(20)
                     }
@@ -129,5 +129,34 @@ struct FlowLayout: Layout {
             x += size.width + spacing
             maxHeight = max(maxHeight, size.height)
         }
+    }
+}
+
+struct CustomTextField: View {
+    @Binding var value: String
+    let placeholder: String
+    var keyboardType: UIKeyboardType = .default
+    
+    var body: some View {
+        TextField(placeholder, text: $value)
+            .keyboardType(keyboardType)
+            .autocapitalization(.none)
+            .padding()
+            .background(Color(UIColor.secondarySystemBackground))
+            .cornerRadius(16)
+            .font(NutriSmartTypography.bodyLarge)
+    }
+}
+
+struct CustomSecureField: View {
+    @Binding var value: String
+    let placeholder: String
+    
+    var body: some View {
+        SecureField(placeholder, text: $value)
+            .padding()
+            .background(Color(UIColor.secondarySystemBackground))
+            .cornerRadius(16)
+            .font(NutriSmartTypography.bodyLarge)
     }
 }

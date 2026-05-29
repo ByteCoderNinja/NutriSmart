@@ -46,3 +46,19 @@ struct OnboardingRequest: Codable {
     var isImperial: Bool = false
     var currency: Currency = .RON
 }
+
+struct WeatherResponse: Codable {
+    let main: MainData
+    let weather: [WeatherData]
+    let name: String
+}
+
+struct MainData: Codable {
+    let temp: Double
+    let humidity: Int
+}
+
+struct WeatherData: Codable {
+    let main: String
+    let description: String
+}

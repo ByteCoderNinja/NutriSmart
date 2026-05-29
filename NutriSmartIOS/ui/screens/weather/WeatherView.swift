@@ -29,7 +29,7 @@ struct WeatherView: View {
         .onChange(of: locationManager.location) { _, newLocation in if let loc = newLocation { viewModel.fetchRealWeather(lat: loc.coordinate.latitude, lon: loc.coordinate.longitude) } }
     }
     private var weatherIcon: String { let c = viewModel.uiState.condition.lowercased(); return c.contains("rain") ? "cloud.rain.fill" : (c.contains("cloud") ? "cloud.fill" : "sun.max.fill") }
-    private var weatherIconColor: Color { return viewModel.uiState.condition.lowercased().contains("rain") ? .white : Color(hex: "FFD54F") }
+    private var weatherIconColor: Color { return viewModel.uiState.condition.lowercased().contains("rain") ? .white : Color(hex: 0xFFD54F) }
 }
 
 struct WeatherDetailItem: View {
@@ -43,9 +43,15 @@ struct RecommendationCard: View {
 }
 
 @Observable
+@MainActor
 class LocationManager: NSObject, CLLocationManagerDelegate {
     private let manager = CLLocationManager(); var location: CLLocation?
     override init() { super.init(); manager.delegate = self }
     func requestLocation() { manager.requestWhenInUseAuthorization(); manager.startUpdatingLocation() }
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) { location = locations.last; manager.stopUpdatingLocation() }
+    nonisolated func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        Task { @MainActor in
+            self.location = locations.last
+            manager.stopUpdatingLocation()
+        }
+    }
 }

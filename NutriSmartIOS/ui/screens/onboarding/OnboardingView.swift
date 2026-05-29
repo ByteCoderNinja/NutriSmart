@@ -57,7 +57,7 @@ struct OnboardingView: View {
                     let isSelected = viewModel.gender == g
                     Button(action: { viewModel.gender = g }) {
                         Text(g.rawValue).font(.system(size: 16, weight: .semibold)).frame(maxWidth: .infinity).padding(.vertical, 16)
-                            .background(isSelected ? Color.nutriGreen.opacity(0.15) : Color(hex: "F1F4F1")).foregroundColor(isSelected ? .nutriGreen : .primary)
+                            .background(isSelected ? Color.nutriGreen.opacity(0.15) : Color(hex: 0xF1F4F1)).foregroundColor(isSelected ? .nutriGreen : .primary)
                             .cornerRadius(16).overlay(RoundedRectangle(cornerRadius: 16).stroke(isSelected ? Color.nutriGreen : Color.clear, lineWidth: 1))
                     }
                 }
@@ -66,7 +66,7 @@ struct OnboardingView: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) { Text("Date of Birth").font(.system(size: 12)).foregroundColor(.gray); Text(formatDate(viewModel.birthDate)).font(.system(size: 16)).foregroundColor(.primary) }
                     Spacer(); Image(systemName: "calendar").foregroundColor(.gray)
-                }.padding().background(Color(hex: "F1F4F1")).cornerRadius(16)
+                }.padding().background(Color(hex: 0xF1F4F1)).cornerRadius(16)
             }
             SelectionRow(title: "Unit System", options: ["Metric", "Imperial"], selectedIndex: Binding(get: { viewModel.isImperial ? 1 : 0 }, set: { viewModel.isImperial = $0 == 1 }), labelProvider: { $0 })
             HStack(spacing: 12) {
@@ -85,7 +85,7 @@ struct OnboardingView: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) { Text("Activity Level").font(.system(size: 12)).foregroundColor(.gray); Text(viewModel.activityLevel.label).font(.system(size: 16)).foregroundColor(.primary) }
                     Spacer(); Image(systemName: "chevron.down").foregroundColor(.gray)
-                }.padding().background(Color(hex: "F1F4F1")).cornerRadius(16)
+                }.padding().background(Color(hex: 0xF1F4F1)).cornerRadius(16)
             }
             VStack(alignment: .leading, spacing: 8) {
                 Text("Currency").font(.system(size: 14, weight: .medium)).foregroundColor(.gray)
@@ -95,7 +95,7 @@ struct OnboardingView: View {
                             let isSelected = viewModel.currency == c
                             Button(action: { viewModel.currency = c }) {
                                 Text(c.rawValue).font(.system(size: 14, weight: .semibold)).padding(.horizontal, 16).padding(.vertical, 10)
-                                    .background(isSelected ? Color.nutriGreen.opacity(0.15) : Color(hex: "F1F4F1")).foregroundColor(isSelected ? .nutriGreen : .primary)
+                                    .background(isSelected ? Color.nutriGreen.opacity(0.15) : Color(hex: 0xF1F4F1)).foregroundColor(isSelected ? .nutriGreen : .primary)
                                     .cornerRadius(12).overlay(RoundedRectangle(cornerRadius: 12).stroke(isSelected ? Color.nutriGreen : Color.clear, lineWidth: 1))
                             }
                         }
@@ -113,7 +113,7 @@ struct OnboardingView: View {
                 HStack {
                     TextField("Search food...", text: $viewModel.foodSearchQuery).onChange(of: viewModel.foodSearchQuery) { _, newValue in viewModel.onFoodSearchQueryChanged(newValue) }
                     if viewModel.isSearchingFoods { ProgressView().tint(.nutriGreen) }
-                }.padding().background(Color(hex: "F1F4F1")).cornerRadius(16)
+                }.padding().background(Color(hex: 0xF1F4F1)).cornerRadius(16)
                 if !viewModel.foodSuggestions.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack { ForEach(viewModel.foodSuggestions, id: \.self) { food in Button(action: { viewModel.toggleDislikedFood(food); viewModel.foodSearchQuery = "" }) { Text(food).padding(.horizontal, 12).padding(.vertical, 6).background(Color.nutriGreen.opacity(0.1)).cornerRadius(8) } } }

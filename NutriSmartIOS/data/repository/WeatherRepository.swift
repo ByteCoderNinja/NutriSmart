@@ -12,6 +12,6 @@ class WeatherRepository {
     private init() {}
     
     func getCurrentWeather(lat: Double, lon: Double) async throws -> WeatherResponse {
-        weatherService.getCurrentWeather(lat: lat, lon: lon, completion: completion)
+        return try await weatherService.getCurrentWeather(lat: lat, lon: lon)
     }
 }

@@ -15,6 +15,7 @@ enum AppRoot {
 }
 
 enum AuthRoute: Hashable {
+    case login
     case register
     case verify(email: String, isEdit: Bool)
     case forgotPassword
@@ -29,8 +30,8 @@ enum MainRoute: Hashable {
 
 class AppRouter: ObservableObject {
     @Published var currentRoot: AppRoot = .login
-    @Published var authPath = NavigationPath()
-    @Published var mainPath = NavigationPath()
+    @Published var authPath: [AuthRoute] = []
+    @Published var mainPath: [MainRoute] = []
     init() {
         determineStartDestination()
     }
@@ -52,8 +53,8 @@ class AppRouter: ObservableObject {
     }
     
     func switchRoot(to newRoot: AppRoot) {
-        withAnimation {
-            self.currentRoot = newRoot
-        }
+        authPath = []
+        mainPath = []
+        currentRoot = newRoot
     }
 }
