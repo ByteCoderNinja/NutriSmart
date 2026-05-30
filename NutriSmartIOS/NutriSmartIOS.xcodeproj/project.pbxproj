@@ -7,88 +7,122 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CB0B5F262FC3E59300F59864 /* NutriSmartIOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C6E82FBBBEE6006B4CC0 /* NutriSmartIOSApp.swift */; };
-		CB0B5F272FC3E5A400F59864 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB3B3E952FC3DB180029C5D7 /* RootView.swift */; };
-		CB0B5F282FC3E5B000F59864 /* AppRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB3B3E942FC3DA360029C5D7 /* AppRouter.swift */; };
-		CBCE95DB2FC3E67F007DC9BE /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB6AE3392FC3D1F7002A344B /* SessionManager.swift */; };
-		CBCE95DC2FC3E6A3007DC9BE /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7142FBBC272006B4CC0 /* LoginView.swift */; };
-		CBCE95DD2FC3E6A9007DC9BE /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7152FBBC272006B4CC0 /* LoginViewModel.swift */; };
-		CBCE95DE2FC3E726007DC9BE /* AuthRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7032FBBC264006B4CC0 /* AuthRepository.swift */; };
-		CBCE95DF2FC3E751007DC9BE /* NutriSmartApiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBA1ECAE2FBD1C7E002E6EAB /* NutriSmartApiService.swift */; };
-		CBCE95E02FC3E7E5007DC9BE /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7172FBBC272006B4CC0 /* MainView.swift */; };
-		CBCE95E12FC3E7E5007DC9BE /* OnboardingComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C70B2FBBC272006B4CC0 /* OnboardingComponents.swift */; };
-		CBCE95E22FC3E7E5007DC9BE /* FastingRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7042FBBC264006B4CC0 /* FastingRepository.swift */; };
-		CBCE95E32FC3E7E5007DC9BE /* HomeUiState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7102FBBC272006B4CC0 /* HomeUiState.swift */; };
-		CBCE95E42FC3E7E5007DC9BE /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7122FBBC272006B4CC0 /* HomeViewModel.swift */; };
-		CBCE95E52FC3E7E5007DC9BE /* AuthModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C6FE2FBBC264006B4CC0 /* AuthModels.swift */; };
-		CBCE95E62FC3E7E5007DC9BE /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7192FBBC272006B4CC0 /* OnboardingView.swift */; };
-		CBCE95E72FC3E7E5007DC9BE /* RegisterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7202FBBC272006B4CC0 /* RegisterViewModel.swift */; };
-		CBCE95E82FC3E7E5007DC9BE /* VerifyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7222FBBC272006B4CC0 /* VerifyView.swift */; };
-		CBCE95E92FC3E7E5007DC9BE /* UserRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7062FBBC264006B4CC0 /* UserRepository.swift */; };
-		CBCE95EA2FC3E7E5007DC9BE /* WeatherViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7262FBBC272006B4CC0 /* WeatherViewModel.swift */; };
-		CBCE95EB2FC3E7E5007DC9BE /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C71A2FBBC272006B4CC0 /* OnboardingViewModel.swift */; };
-		CBCE95EC2FC3E7E5007DC9BE /* UserDto.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7012FBBC264006B4CC0 /* UserDto.swift */; };
-		CBCE95ED2FC3E7E5007DC9BE /* VerifyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7232FBBC272006B4CC0 /* VerifyViewModel.swift */; };
-		CBCE95EE2FC3E7E5007DC9BE /* FastingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C70E2FBBC272006B4CC0 /* FastingViewModel.swift */; };
-		CBCE95EF2FC3E7E5007DC9BE /* WeatherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7252FBBC272006B4CC0 /* WeatherView.swift */; };
-		CBCE95F02FC3E7E5007DC9BE /* WeatherRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7082FBBC264006B4CC0 /* WeatherRepository.swift */; };
-		CBCE95F12FC3E7E5007DC9BE /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C71D2FBBC272006B4CC0 /* ProfileViewModel.swift */; };
-		CBCE95F22FC3E7E5007DC9BE /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C71C2FBBC272006B4CC0 /* ProfileView.swift */; };
-		CBCE95F32FC3E7E5007DC9BE /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C71F2FBBC272006B4CC0 /* RegisterView.swift */; };
-		CBCE95F42FC3E7E5007DC9BE /* UserSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB6AE33A2FC3D4B0002A344B /* UserSession.swift */; };
-		CBCE95F52FC3E7E5007DC9BE /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C6FF2FBBC264006B4CC0 /* Enums.swift */; };
-		CBCE95F62FC3E7E5007DC9BE /* MealRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7052FBBC264006B4CC0 /* MealRepository.swift */; };
-		CBCE95F72FC3E7E5007DC9BE /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7112FBBC272006B4CC0 /* HomeView.swift */; };
-		CBCE95F82FC3E7E5007DC9BE /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBA1ECAC2FBCD74D002E6EAB /* NetworkManager.swift */; };
-		CBCE95F92FC3E7E5007DC9BE /* WaterRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7072FBBC264006B4CC0 /* WaterRepository.swift */; };
-		CBCE95FA2FC3E7E5007DC9BE /* FastingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C70D2FBBC272006B4CC0 /* FastingView.swift */; };
-		CBCE95FB2FC3E7E5007DC9BE /* MealModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE3C7002FBBC264006B4CC0 /* MealModels.swift */; };
-		CBCE95FD2FC903B5007DC9BE /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBCE95FC2FC903AC007DC9BE /* Theme.swift */; };
-		CBCE95FF2FC907B0007DC9BE /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBCE95FE2FC907A3007DC9BE /* Typography.swift */; };
+		CB0812DA2FCA6378005B17D7 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = CB0812D92FCA6378005B17D7 /* GoogleSignIn */; };
+		CB0812DC2FCA6378005B17D7 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CB0812DB2FCA6378005B17D7 /* GoogleSignInSwift */; };
+		CBC3096A2FCA7322003A48ED /* UserSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC3092E2FCA7322003A48ED /* UserSession.swift */; };
+		CBC3096B2FCA7322003A48ED /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC3091C2FCA7322003A48ED /* HealthKitManager.swift */; };
+		CBC3096C2FCA7322003A48ED /* FastingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC3093E2FCA7322003A48ED /* FastingViewModel.swift */; };
+		CBC3096D2FCA7322003A48ED /* FastingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC3093D2FCA7322003A48ED /* FastingView.swift */; };
+		CBC3096E2FCA7322003A48ED /* VerifyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC3095D2FCA7322003A48ED /* VerifyView.swift */; };
+		CBC3096F2FCA7322003A48ED /* RegisterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC3095B2FCA7322003A48ED /* RegisterViewModel.swift */; };
+		CBC309702FCA7322003A48ED /* MealDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309462FCA7322003A48ED /* MealDetailView.swift */; };
+		CBC309712FCA7322003A48ED /* AppModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309302FCA7322003A48ED /* AppModule.swift */; };
+		CBC309722FCA7322003A48ED /* BonusSnackSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309422FCA7322003A48ED /* BonusSnackSelectorView.swift */; };
+		CBC309732FCA7322003A48ED /* UserDto.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309212FCA7322003A48ED /* UserDto.swift */; };
+		CBC309742FCA7322003A48ED /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309682FCA7322003A48ED /* RootView.swift */; };
+		CBC309752FCA7322003A48ED /* EatingReminder.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309352FCA7322003A48ED /* EatingReminder.swift */; };
+		CBC309762FCA7322003A48ED /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309502FCA7322003A48ED /* OnboardingViewModel.swift */; };
+		CBC309772FCA7322003A48ED /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309232FCA7322003A48ED /* NetworkManager.swift */; };
+		CBC309782FCA7322003A48ED /* ChangePasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309542FCA7322003A48ED /* ChangePasswordView.swift */; };
+		CBC309792FCA7322003A48ED /* NutriSmartIOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309672FCA7322003A48ED /* NutriSmartIOSApp.swift */; };
+		CBC3097A2FCA7322003A48ED /* ShoppingListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309482FCA7322003A48ED /* ShoppingListView.swift */; };
+		CBC3097B2FCA7322003A48ED /* FastingRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309272FCA7322003A48ED /* FastingRepository.swift */; };
+		CBC3097C2FCA7322003A48ED /* MealSwapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309472FCA7322003A48ED /* MealSwapView.swift */; };
+		CBC3097D2FCA7322003A48ED /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC3094A2FCA7322003A48ED /* LoginView.swift */; };
+		CBC3097E2FCA7322003A48ED /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC3092D2FCA7322003A48ED /* SessionManager.swift */; };
+		CBC3097F2FCA7322003A48ED /* EditProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309552FCA7322003A48ED /* EditProfileView.swift */; };
+		CBC309802FCA7322003A48ED /* WeatherViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309612FCA7322003A48ED /* WeatherViewModel.swift */; };
+		CBC309812FCA7322003A48ED /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC3094F2FCA7322003A48ED /* OnboardingView.swift */; };
+		CBC309822FCA7322003A48ED /* AuthModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC3091E2FCA7322003A48ED /* AuthModels.swift */; };
+		CBC309832FCA7322003A48ED /* GoogleSignInHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309392FCA7322003A48ED /* GoogleSignInHandler.swift */; };
+		CBC309842FCA7322003A48ED /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC3095A2FCA7322003A48ED /* RegisterView.swift */; };
+		CBC309852FCA7322003A48ED /* WeatherView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309602FCA7322003A48ED /* WeatherView.swift */; };
+		CBC309862FCA7322003A48ED /* AppRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309332FCA7322003A48ED /* AppRouter.swift */; };
+		CBC309872FCA7322003A48ED /* NutriSmartApiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309242FCA7322003A48ED /* NutriSmartApiService.swift */; };
+		CBC309882FCA7322003A48ED /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309572FCA7322003A48ED /* ProfileViewModel.swift */; };
+		CBC309892FCA7322003A48ED /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309562FCA7322003A48ED /* ProfileView.swift */; };
+		CBC3098A2FCA7322003A48ED /* MealModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309202FCA7322003A48ED /* MealModels.swift */; };
+		CBC3098B2FCA7322003A48ED /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309452FCA7322003A48ED /* HomeViewModel.swift */; };
+		CBC3098C2FCA7322003A48ED /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC3094D2FCA7322003A48ED /* MainView.swift */; };
+		CBC3098D2FCA7322003A48ED /* FastingNotificationReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309362FCA7322003A48ED /* FastingNotificationReceiver.swift */; };
+		CBC3098E2FCA7322003A48ED /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309442FCA7322003A48ED /* HomeView.swift */; };
+		CBC3098F2FCA7322003A48ED /* AuthRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309262FCA7322003A48ED /* AuthRepository.swift */; };
+		CBC309902FCA7322003A48ED /* WeatherRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC3092B2FCA7322003A48ED /* WeatherRepository.swift */; };
+		CBC309912FCA7322003A48ED /* WaterRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC3092A2FCA7322003A48ED /* WaterRepository.swift */; };
+		CBC309922FCA7322003A48ED /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309642FCA7322003A48ED /* Theme.swift */; };
+		CBC309932FCA7322003A48ED /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC3091F2FCA7322003A48ED /* Enums.swift */; };
+		CBC309942FCA7322003A48ED /* MealRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309282FCA7322003A48ED /* MealRepository.swift */; };
+		CBC309952FCA7322003A48ED /* ProfileComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309522FCA7322003A48ED /* ProfileComponents.swift */; };
+		CBC309962FCA7322003A48ED /* HomeUiState.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309432FCA7322003A48ED /* HomeUiState.swift */; };
+		CBC309972FCA7322003A48ED /* WeatherNotificationReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309372FCA7322003A48ED /* WeatherNotificationReceiver.swift */; };
+		CBC309982FCA7322003A48ED /* HomeComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309402FCA7322003A48ED /* HomeComponents.swift */; };
+		CBC309992FCA7322003A48ED /* OnboardingComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC3093B2FCA7322003A48ED /* OnboardingComponents.swift */; };
+		CBC3099A2FCA7322003A48ED /* VerifyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC3095E2FCA7322003A48ED /* VerifyViewModel.swift */; };
+		CBC3099B2FCA7322003A48ED /* UserRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309292FCA7322003A48ED /* UserRepository.swift */; };
+		CBC3099C2FCA7322003A48ED /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309652FCA7322003A48ED /* Typography.swift */; };
+		CBC3099D2FCA7322003A48ED /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC309582FCA7322003A48ED /* SettingsView.swift */; };
+		CBC3099E2FCA7322003A48ED /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBC3094B2FCA7322003A48ED /* LoginViewModel.swift */; };
+		CBC3099F2FCA7322003A48ED /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CBC309322FCA7322003A48ED /* Media.xcassets */; };
 		CBCE96002FC920C7007DC9BE /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CB3B3E972FC3E3840029C5D7 /* Media.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		CB3B3E942FC3DA360029C5D7 /* AppRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRouter.swift; sourceTree = "<group>"; };
-		CB3B3E952FC3DB180029C5D7 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		CB3B3E972FC3E3840029C5D7 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
-		CB6AE3392FC3D1F7002A344B /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
-		CB6AE33A2FC3D4B0002A344B /* UserSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSession.swift; sourceTree = "<group>"; };
-		CBA1ECAC2FBCD74D002E6EAB /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
-		CBA1ECAE2FBD1C7E002E6EAB /* NutriSmartApiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutriSmartApiService.swift; sourceTree = "<group>"; };
-		CBCE95FC2FC903AC007DC9BE /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
-		CBCE95FE2FC907A3007DC9BE /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
-		CBE3C6E82FBBBEE6006B4CC0 /* NutriSmartIOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutriSmartIOSApp.swift; sourceTree = "<group>"; };
+		CBC3091C2FCA7322003A48ED /* HealthKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitManager.swift; sourceTree = "<group>"; };
+		CBC3091E2FCA7322003A48ED /* AuthModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthModels.swift; sourceTree = "<group>"; };
+		CBC3091F2FCA7322003A48ED /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
+		CBC309202FCA7322003A48ED /* MealModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealModels.swift; sourceTree = "<group>"; };
+		CBC309212FCA7322003A48ED /* UserDto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDto.swift; sourceTree = "<group>"; };
+		CBC309232FCA7322003A48ED /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
+		CBC309242FCA7322003A48ED /* NutriSmartApiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutriSmartApiService.swift; sourceTree = "<group>"; };
+		CBC309262FCA7322003A48ED /* AuthRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthRepository.swift; sourceTree = "<group>"; };
+		CBC309272FCA7322003A48ED /* FastingRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FastingRepository.swift; sourceTree = "<group>"; };
+		CBC309282FCA7322003A48ED /* MealRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealRepository.swift; sourceTree = "<group>"; };
+		CBC309292FCA7322003A48ED /* UserRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRepository.swift; sourceTree = "<group>"; };
+		CBC3092A2FCA7322003A48ED /* WaterRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaterRepository.swift; sourceTree = "<group>"; };
+		CBC3092B2FCA7322003A48ED /* WeatherRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherRepository.swift; sourceTree = "<group>"; };
+		CBC3092D2FCA7322003A48ED /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
+		CBC3092E2FCA7322003A48ED /* UserSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSession.swift; sourceTree = "<group>"; };
+		CBC309302FCA7322003A48ED /* AppModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModule.swift; sourceTree = "<group>"; };
+		CBC309322FCA7322003A48ED /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
+		CBC309332FCA7322003A48ED /* AppRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRouter.swift; sourceTree = "<group>"; };
+		CBC309352FCA7322003A48ED /* EatingReminder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EatingReminder.swift; sourceTree = "<group>"; };
+		CBC309362FCA7322003A48ED /* FastingNotificationReceiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FastingNotificationReceiver.swift; sourceTree = "<group>"; };
+		CBC309372FCA7322003A48ED /* WeatherNotificationReceiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherNotificationReceiver.swift; sourceTree = "<group>"; };
+		CBC309392FCA7322003A48ED /* GoogleSignInHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleSignInHandler.swift; sourceTree = "<group>"; };
+		CBC3093B2FCA7322003A48ED /* OnboardingComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingComponents.swift; sourceTree = "<group>"; };
+		CBC3093D2FCA7322003A48ED /* FastingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FastingView.swift; sourceTree = "<group>"; };
+		CBC3093E2FCA7322003A48ED /* FastingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FastingViewModel.swift; sourceTree = "<group>"; };
+		CBC309402FCA7322003A48ED /* HomeComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeComponents.swift; sourceTree = "<group>"; };
+		CBC309422FCA7322003A48ED /* BonusSnackSelectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BonusSnackSelectorView.swift; sourceTree = "<group>"; };
+		CBC309432FCA7322003A48ED /* HomeUiState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeUiState.swift; sourceTree = "<group>"; };
+		CBC309442FCA7322003A48ED /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		CBC309452FCA7322003A48ED /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
+		CBC309462FCA7322003A48ED /* MealDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealDetailView.swift; sourceTree = "<group>"; };
+		CBC309472FCA7322003A48ED /* MealSwapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealSwapView.swift; sourceTree = "<group>"; };
+		CBC309482FCA7322003A48ED /* ShoppingListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingListView.swift; sourceTree = "<group>"; };
+		CBC3094A2FCA7322003A48ED /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		CBC3094B2FCA7322003A48ED /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
+		CBC3094D2FCA7322003A48ED /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		CBC3094F2FCA7322003A48ED /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		CBC309502FCA7322003A48ED /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
+		CBC309522FCA7322003A48ED /* ProfileComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileComponents.swift; sourceTree = "<group>"; };
+		CBC309542FCA7322003A48ED /* ChangePasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordView.swift; sourceTree = "<group>"; };
+		CBC309552FCA7322003A48ED /* EditProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileView.swift; sourceTree = "<group>"; };
+		CBC309562FCA7322003A48ED /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		CBC309572FCA7322003A48ED /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
+		CBC309582FCA7322003A48ED /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		CBC3095A2FCA7322003A48ED /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
+		CBC3095B2FCA7322003A48ED /* RegisterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewModel.swift; sourceTree = "<group>"; };
+		CBC3095D2FCA7322003A48ED /* VerifyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyView.swift; sourceTree = "<group>"; };
+		CBC3095E2FCA7322003A48ED /* VerifyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyViewModel.swift; sourceTree = "<group>"; };
+		CBC309602FCA7322003A48ED /* WeatherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherView.swift; sourceTree = "<group>"; };
+		CBC309612FCA7322003A48ED /* WeatherViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherViewModel.swift; sourceTree = "<group>"; };
+		CBC309642FCA7322003A48ED /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		CBC309652FCA7322003A48ED /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
+		CBC309672FCA7322003A48ED /* NutriSmartIOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NutriSmartIOSApp.swift; sourceTree = "<group>"; };
+		CBC309682FCA7322003A48ED /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		CBE3C6FD2FBBC1FA006B4CC0 /* NutriSmartIOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NutriSmartIOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		CBE3C6FE2FBBC264006B4CC0 /* AuthModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthModels.swift; sourceTree = "<group>"; };
-		CBE3C6FF2FBBC264006B4CC0 /* Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
-		CBE3C7002FBBC264006B4CC0 /* MealModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealModels.swift; sourceTree = "<group>"; };
-		CBE3C7012FBBC264006B4CC0 /* UserDto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDto.swift; sourceTree = "<group>"; };
-		CBE3C7032FBBC264006B4CC0 /* AuthRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthRepository.swift; sourceTree = "<group>"; };
-		CBE3C7042FBBC264006B4CC0 /* FastingRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FastingRepository.swift; sourceTree = "<group>"; };
-		CBE3C7052FBBC264006B4CC0 /* MealRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MealRepository.swift; sourceTree = "<group>"; };
-		CBE3C7062FBBC264006B4CC0 /* UserRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserRepository.swift; sourceTree = "<group>"; };
-		CBE3C7072FBBC264006B4CC0 /* WaterRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaterRepository.swift; sourceTree = "<group>"; };
-		CBE3C7082FBBC264006B4CC0 /* WeatherRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherRepository.swift; sourceTree = "<group>"; };
-		CBE3C70B2FBBC272006B4CC0 /* OnboardingComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingComponents.swift; sourceTree = "<group>"; };
-		CBE3C70D2FBBC272006B4CC0 /* FastingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FastingView.swift; sourceTree = "<group>"; };
-		CBE3C70E2FBBC272006B4CC0 /* FastingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FastingViewModel.swift; sourceTree = "<group>"; };
-		CBE3C7102FBBC272006B4CC0 /* HomeUiState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeUiState.swift; sourceTree = "<group>"; };
-		CBE3C7112FBBC272006B4CC0 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
-		CBE3C7122FBBC272006B4CC0 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
-		CBE3C7142FBBC272006B4CC0 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
-		CBE3C7152FBBC272006B4CC0 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
-		CBE3C7172FBBC272006B4CC0 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
-		CBE3C7192FBBC272006B4CC0 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
-		CBE3C71A2FBBC272006B4CC0 /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
-		CBE3C71C2FBBC272006B4CC0 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
-		CBE3C71D2FBBC272006B4CC0 /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
-		CBE3C71F2FBBC272006B4CC0 /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
-		CBE3C7202FBBC272006B4CC0 /* RegisterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewModel.swift; sourceTree = "<group>"; };
-		CBE3C7222FBBC272006B4CC0 /* VerifyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyView.swift; sourceTree = "<group>"; };
-		CBE3C7232FBBC272006B4CC0 /* VerifyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyViewModel.swift; sourceTree = "<group>"; };
-		CBE3C7252FBBC272006B4CC0 /* WeatherView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherView.swift; sourceTree = "<group>"; };
-		CBE3C7262FBBC272006B4CC0 /* WeatherViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,198 +130,264 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CB0812DA2FCA6378005B17D7 /* GoogleSignIn in Frameworks */,
+				CB0812DC2FCA6378005B17D7 /* GoogleSignInSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		CB6AE33B2FC3D5C7002A344B /* di */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = di;
-			sourceTree = "<group>";
-		};
-		CB6AE33C2FC3D5D1002A344B /* notifications */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = notifications;
-			sourceTree = "<group>";
-		};
 		CB91B15C2FB9C28D0099A9D0 = {
 			isa = PBXGroup;
 			children = (
-				CBCE95FE2FC907A3007DC9BE /* Typography.swift */,
-				CBCE95FC2FC903AC007DC9BE /* Theme.swift */,
 				CB3B3E972FC3E3840029C5D7 /* Media.xcassets */,
-				CB3B3E952FC3DB180029C5D7 /* RootView.swift */,
-				CB3B3E942FC3DA360029C5D7 /* AppRouter.swift */,
-				CB6AE33C2FC3D5D1002A344B /* notifications */,
-				CB6AE33B2FC3D5C7002A344B /* di */,
-				CBE3C6E82FBBBEE6006B4CC0 /* NutriSmartIOSApp.swift */,
 				CBE3C6FD2FBBC1FA006B4CC0 /* NutriSmartIOS.app */,
-				CBE3C70A2FBBC264006B4CC0 /* data */,
-				CBE3C7292FBBC272006B4CC0 /* ui */,
+				CBC3092F2FCA7322003A48ED /* data */,
+				CBC309312FCA7322003A48ED /* di */,
+				CBC309322FCA7322003A48ED /* Media.xcassets */,
+				CBC309342FCA7322003A48ED /* navigation */,
+				CBC309382FCA7322003A48ED /* notifications */,
+				CBC309692FCA7322003A48ED /* ui */,
 			);
 			sourceTree = "<group>";
 		};
-		CBA1ECAB2FBCD72D002E6EAB /* remote */ = {
+		CBC3091D2FCA7322003A48ED /* health */ = {
 			isa = PBXGroup;
 			children = (
-				CBA1ECAE2FBD1C7E002E6EAB /* NutriSmartApiService.swift */,
-				CBA1ECAC2FBCD74D002E6EAB /* NetworkManager.swift */,
+				CBC3091C2FCA7322003A48ED /* HealthKitManager.swift */,
 			);
-			path = remote;
+			path = health;
 			sourceTree = "<group>";
 		};
-		CBE3C7022FBBC264006B4CC0 /* model */ = {
+		CBC309222FCA7322003A48ED /* model */ = {
 			isa = PBXGroup;
 			children = (
-				CBE3C6FE2FBBC264006B4CC0 /* AuthModels.swift */,
-				CBE3C6FF2FBBC264006B4CC0 /* Enums.swift */,
-				CBE3C7002FBBC264006B4CC0 /* MealModels.swift */,
-				CBE3C7012FBBC264006B4CC0 /* UserDto.swift */,
+				CBC3091E2FCA7322003A48ED /* AuthModels.swift */,
+				CBC3091F2FCA7322003A48ED /* Enums.swift */,
+				CBC309202FCA7322003A48ED /* MealModels.swift */,
+				CBC309212FCA7322003A48ED /* UserDto.swift */,
 			);
 			path = model;
 			sourceTree = "<group>";
 		};
-		CBE3C7092FBBC264006B4CC0 /* repository */ = {
+		CBC309252FCA7322003A48ED /* remote */ = {
 			isa = PBXGroup;
 			children = (
-				CBE3C7032FBBC264006B4CC0 /* AuthRepository.swift */,
-				CBE3C7042FBBC264006B4CC0 /* FastingRepository.swift */,
-				CBE3C7052FBBC264006B4CC0 /* MealRepository.swift */,
-				CBE3C7062FBBC264006B4CC0 /* UserRepository.swift */,
-				CBE3C7072FBBC264006B4CC0 /* WaterRepository.swift */,
-				CBE3C7082FBBC264006B4CC0 /* WeatherRepository.swift */,
+				CBC309232FCA7322003A48ED /* NetworkManager.swift */,
+				CBC309242FCA7322003A48ED /* NutriSmartApiService.swift */,
+			);
+			path = remote;
+			sourceTree = "<group>";
+		};
+		CBC3092C2FCA7322003A48ED /* repository */ = {
+			isa = PBXGroup;
+			children = (
+				CBC309262FCA7322003A48ED /* AuthRepository.swift */,
+				CBC309272FCA7322003A48ED /* FastingRepository.swift */,
+				CBC309282FCA7322003A48ED /* MealRepository.swift */,
+				CBC309292FCA7322003A48ED /* UserRepository.swift */,
+				CBC3092A2FCA7322003A48ED /* WaterRepository.swift */,
+				CBC3092B2FCA7322003A48ED /* WeatherRepository.swift */,
 			);
 			path = repository;
 			sourceTree = "<group>";
 		};
-		CBE3C70A2FBBC264006B4CC0 /* data */ = {
+		CBC3092F2FCA7322003A48ED /* data */ = {
 			isa = PBXGroup;
 			children = (
-				CB6AE33A2FC3D4B0002A344B /* UserSession.swift */,
-				CB6AE3392FC3D1F7002A344B /* SessionManager.swift */,
-				CBA1ECAB2FBCD72D002E6EAB /* remote */,
-				CBE3C7022FBBC264006B4CC0 /* model */,
-				CBE3C7092FBBC264006B4CC0 /* repository */,
+				CBC3091D2FCA7322003A48ED /* health */,
+				CBC309222FCA7322003A48ED /* model */,
+				CBC309252FCA7322003A48ED /* remote */,
+				CBC3092C2FCA7322003A48ED /* repository */,
+				CBC3092D2FCA7322003A48ED /* SessionManager.swift */,
+				CBC3092E2FCA7322003A48ED /* UserSession.swift */,
 			);
 			path = data;
 			sourceTree = "<group>";
 		};
-		CBE3C70C2FBBC272006B4CC0 /* core_components */ = {
+		CBC309312FCA7322003A48ED /* di */ = {
 			isa = PBXGroup;
 			children = (
-				CBE3C70B2FBBC272006B4CC0 /* OnboardingComponents.swift */,
+				CBC309302FCA7322003A48ED /* AppModule.swift */,
+			);
+			path = di;
+			sourceTree = "<group>";
+		};
+		CBC309342FCA7322003A48ED /* navigation */ = {
+			isa = PBXGroup;
+			children = (
+				CBC309332FCA7322003A48ED /* AppRouter.swift */,
+			);
+			path = navigation;
+			sourceTree = "<group>";
+		};
+		CBC309382FCA7322003A48ED /* notifications */ = {
+			isa = PBXGroup;
+			children = (
+				CBC309352FCA7322003A48ED /* EatingReminder.swift */,
+				CBC309362FCA7322003A48ED /* FastingNotificationReceiver.swift */,
+				CBC309372FCA7322003A48ED /* WeatherNotificationReceiver.swift */,
+			);
+			path = notifications;
+			sourceTree = "<group>";
+		};
+		CBC3093A2FCA7322003A48ED /* auth */ = {
+			isa = PBXGroup;
+			children = (
+				CBC309392FCA7322003A48ED /* GoogleSignInHandler.swift */,
+			);
+			path = auth;
+			sourceTree = "<group>";
+		};
+		CBC3093C2FCA7322003A48ED /* core_components */ = {
+			isa = PBXGroup;
+			children = (
+				CBC3093B2FCA7322003A48ED /* OnboardingComponents.swift */,
 			);
 			path = core_components;
 			sourceTree = "<group>";
 		};
-		CBE3C70F2FBBC272006B4CC0 /* fasting */ = {
+		CBC3093F2FCA7322003A48ED /* fasting */ = {
 			isa = PBXGroup;
 			children = (
-				CBE3C70D2FBBC272006B4CC0 /* FastingView.swift */,
-				CBE3C70E2FBBC272006B4CC0 /* FastingViewModel.swift */,
+				CBC3093D2FCA7322003A48ED /* FastingView.swift */,
+				CBC3093E2FCA7322003A48ED /* FastingViewModel.swift */,
 			);
 			path = fasting;
 			sourceTree = "<group>";
 		};
-		CBE3C7132FBBC272006B4CC0 /* home */ = {
+		CBC309412FCA7322003A48ED /* components */ = {
 			isa = PBXGroup;
 			children = (
-				CBE3C7102FBBC272006B4CC0 /* HomeUiState.swift */,
-				CBE3C7112FBBC272006B4CC0 /* HomeView.swift */,
-				CBE3C7122FBBC272006B4CC0 /* HomeViewModel.swift */,
+				CBC309402FCA7322003A48ED /* HomeComponents.swift */,
+			);
+			path = components;
+			sourceTree = "<group>";
+		};
+		CBC309492FCA7322003A48ED /* home */ = {
+			isa = PBXGroup;
+			children = (
+				CBC309412FCA7322003A48ED /* components */,
+				CBC309422FCA7322003A48ED /* BonusSnackSelectorView.swift */,
+				CBC309432FCA7322003A48ED /* HomeUiState.swift */,
+				CBC309442FCA7322003A48ED /* HomeView.swift */,
+				CBC309452FCA7322003A48ED /* HomeViewModel.swift */,
+				CBC309462FCA7322003A48ED /* MealDetailView.swift */,
+				CBC309472FCA7322003A48ED /* MealSwapView.swift */,
+				CBC309482FCA7322003A48ED /* ShoppingListView.swift */,
 			);
 			path = home;
 			sourceTree = "<group>";
 		};
-		CBE3C7162FBBC272006B4CC0 /* login */ = {
+		CBC3094C2FCA7322003A48ED /* login */ = {
 			isa = PBXGroup;
 			children = (
-				CBE3C7142FBBC272006B4CC0 /* LoginView.swift */,
-				CBE3C7152FBBC272006B4CC0 /* LoginViewModel.swift */,
+				CBC3094A2FCA7322003A48ED /* LoginView.swift */,
+				CBC3094B2FCA7322003A48ED /* LoginViewModel.swift */,
 			);
 			path = login;
 			sourceTree = "<group>";
 		};
-		CBE3C7182FBBC272006B4CC0 /* main */ = {
+		CBC3094E2FCA7322003A48ED /* main */ = {
 			isa = PBXGroup;
 			children = (
-				CBE3C7172FBBC272006B4CC0 /* MainView.swift */,
+				CBC3094D2FCA7322003A48ED /* MainView.swift */,
 			);
 			path = main;
 			sourceTree = "<group>";
 		};
-		CBE3C71B2FBBC272006B4CC0 /* onboarding */ = {
+		CBC309512FCA7322003A48ED /* onboarding */ = {
 			isa = PBXGroup;
 			children = (
-				CBE3C7192FBBC272006B4CC0 /* OnboardingView.swift */,
-				CBE3C71A2FBBC272006B4CC0 /* OnboardingViewModel.swift */,
+				CBC3094F2FCA7322003A48ED /* OnboardingView.swift */,
+				CBC309502FCA7322003A48ED /* OnboardingViewModel.swift */,
 			);
 			path = onboarding;
 			sourceTree = "<group>";
 		};
-		CBE3C71E2FBBC272006B4CC0 /* profile */ = {
+		CBC309532FCA7322003A48ED /* components */ = {
 			isa = PBXGroup;
 			children = (
-				CBE3C71C2FBBC272006B4CC0 /* ProfileView.swift */,
-				CBE3C71D2FBBC272006B4CC0 /* ProfileViewModel.swift */,
+				CBC309522FCA7322003A48ED /* ProfileComponents.swift */,
+			);
+			path = components;
+			sourceTree = "<group>";
+		};
+		CBC309592FCA7322003A48ED /* profile */ = {
+			isa = PBXGroup;
+			children = (
+				CBC309532FCA7322003A48ED /* components */,
+				CBC309542FCA7322003A48ED /* ChangePasswordView.swift */,
+				CBC309552FCA7322003A48ED /* EditProfileView.swift */,
+				CBC309562FCA7322003A48ED /* ProfileView.swift */,
+				CBC309572FCA7322003A48ED /* ProfileViewModel.swift */,
+				CBC309582FCA7322003A48ED /* SettingsView.swift */,
 			);
 			path = profile;
 			sourceTree = "<group>";
 		};
-		CBE3C7212FBBC272006B4CC0 /* register */ = {
+		CBC3095C2FCA7322003A48ED /* register */ = {
 			isa = PBXGroup;
 			children = (
-				CBE3C71F2FBBC272006B4CC0 /* RegisterView.swift */,
-				CBE3C7202FBBC272006B4CC0 /* RegisterViewModel.swift */,
+				CBC3095A2FCA7322003A48ED /* RegisterView.swift */,
+				CBC3095B2FCA7322003A48ED /* RegisterViewModel.swift */,
 			);
 			path = register;
 			sourceTree = "<group>";
 		};
-		CBE3C7242FBBC272006B4CC0 /* verify */ = {
+		CBC3095F2FCA7322003A48ED /* verify */ = {
 			isa = PBXGroup;
 			children = (
-				CBE3C7222FBBC272006B4CC0 /* VerifyView.swift */,
-				CBE3C7232FBBC272006B4CC0 /* VerifyViewModel.swift */,
+				CBC3095D2FCA7322003A48ED /* VerifyView.swift */,
+				CBC3095E2FCA7322003A48ED /* VerifyViewModel.swift */,
 			);
 			path = verify;
 			sourceTree = "<group>";
 		};
-		CBE3C7272FBBC272006B4CC0 /* weather */ = {
+		CBC309622FCA7322003A48ED /* weather */ = {
 			isa = PBXGroup;
 			children = (
-				CBE3C7252FBBC272006B4CC0 /* WeatherView.swift */,
-				CBE3C7262FBBC272006B4CC0 /* WeatherViewModel.swift */,
+				CBC309602FCA7322003A48ED /* WeatherView.swift */,
+				CBC309612FCA7322003A48ED /* WeatherViewModel.swift */,
 			);
 			path = weather;
 			sourceTree = "<group>";
 		};
-		CBE3C7282FBBC272006B4CC0 /* screens */ = {
+		CBC309632FCA7322003A48ED /* screens */ = {
 			isa = PBXGroup;
 			children = (
-				CBE3C70F2FBBC272006B4CC0 /* fasting */,
-				CBE3C7132FBBC272006B4CC0 /* home */,
-				CBE3C7162FBBC272006B4CC0 /* login */,
-				CBE3C7182FBBC272006B4CC0 /* main */,
-				CBE3C71B2FBBC272006B4CC0 /* onboarding */,
-				CBE3C71E2FBBC272006B4CC0 /* profile */,
-				CBE3C7212FBBC272006B4CC0 /* register */,
-				CBE3C7242FBBC272006B4CC0 /* verify */,
-				CBE3C7272FBBC272006B4CC0 /* weather */,
+				CBC3093F2FCA7322003A48ED /* fasting */,
+				CBC309492FCA7322003A48ED /* home */,
+				CBC3094C2FCA7322003A48ED /* login */,
+				CBC3094E2FCA7322003A48ED /* main */,
+				CBC309512FCA7322003A48ED /* onboarding */,
+				CBC309592FCA7322003A48ED /* profile */,
+				CBC3095C2FCA7322003A48ED /* register */,
+				CBC3095F2FCA7322003A48ED /* verify */,
+				CBC309622FCA7322003A48ED /* weather */,
 			);
 			path = screens;
 			sourceTree = "<group>";
 		};
-		CBE3C7292FBBC272006B4CC0 /* ui */ = {
+		CBC309662FCA7322003A48ED /* theme */ = {
 			isa = PBXGroup;
 			children = (
-				CBE3C70C2FBBC272006B4CC0 /* core_components */,
-				CBE3C7282FBBC272006B4CC0 /* screens */,
+				CBC309642FCA7322003A48ED /* Theme.swift */,
+				CBC309652FCA7322003A48ED /* Typography.swift */,
+			);
+			path = theme;
+			sourceTree = "<group>";
+		};
+		CBC309692FCA7322003A48ED /* ui */ = {
+			isa = PBXGroup;
+			children = (
+				CBC3093A2FCA7322003A48ED /* auth */,
+				CBC3093C2FCA7322003A48ED /* core_components */,
+				CBC309632FCA7322003A48ED /* screens */,
+				CBC309662FCA7322003A48ED /* theme */,
+				CBC309672FCA7322003A48ED /* NutriSmartIOSApp.swift */,
+				CBC309682FCA7322003A48ED /* RootView.swift */,
 			);
 			path = ui;
 			sourceTree = "<group>";
@@ -309,6 +409,8 @@
 			);
 			name = NutriSmartIOS;
 			packageProductDependencies = (
+				CB0812D92FCA6378005B17D7 /* GoogleSignIn */,
+				CB0812DB2FCA6378005B17D7 /* GoogleSignInSwift */,
 			);
 			productName = NutriSmartIOS;
 			productReference = CBE3C6FD2FBBC1FA006B4CC0 /* NutriSmartIOS.app */;
@@ -338,6 +440,9 @@
 			);
 			mainGroup = CB91B15C2FB9C28D0099A9D0;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				CB0812D82FCA6378005B17D7 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CB91B15C2FB9C28D0099A9D0;
 			projectDirPath = "";
@@ -353,6 +458,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CBC3099F2FCA7322003A48ED /* Media.xcassets in Resources */,
 				CBCE96002FC920C7007DC9BE /* Media.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -364,44 +470,59 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CBCE95E02FC3E7E5007DC9BE /* MainView.swift in Sources */,
-				CBCE95E12FC3E7E5007DC9BE /* OnboardingComponents.swift in Sources */,
-				CBCE95E22FC3E7E5007DC9BE /* FastingRepository.swift in Sources */,
-				CBCE95E32FC3E7E5007DC9BE /* HomeUiState.swift in Sources */,
-				CBCE95E42FC3E7E5007DC9BE /* HomeViewModel.swift in Sources */,
-				CBCE95E52FC3E7E5007DC9BE /* AuthModels.swift in Sources */,
-				CBCE95E62FC3E7E5007DC9BE /* OnboardingView.swift in Sources */,
-				CBCE95E72FC3E7E5007DC9BE /* RegisterViewModel.swift in Sources */,
-				CBCE95E82FC3E7E5007DC9BE /* VerifyView.swift in Sources */,
-				CBCE95E92FC3E7E5007DC9BE /* UserRepository.swift in Sources */,
-				CBCE95EA2FC3E7E5007DC9BE /* WeatherViewModel.swift in Sources */,
-				CBCE95EB2FC3E7E5007DC9BE /* OnboardingViewModel.swift in Sources */,
-				CBCE95EC2FC3E7E5007DC9BE /* UserDto.swift in Sources */,
-				CBCE95ED2FC3E7E5007DC9BE /* VerifyViewModel.swift in Sources */,
-				CBCE95EE2FC3E7E5007DC9BE /* FastingViewModel.swift in Sources */,
-				CBCE95EF2FC3E7E5007DC9BE /* WeatherView.swift in Sources */,
-				CBCE95F02FC3E7E5007DC9BE /* WeatherRepository.swift in Sources */,
-				CBCE95F12FC3E7E5007DC9BE /* ProfileViewModel.swift in Sources */,
-				CBCE95F22FC3E7E5007DC9BE /* ProfileView.swift in Sources */,
-				CBCE95F32FC3E7E5007DC9BE /* RegisterView.swift in Sources */,
-				CBCE95F42FC3E7E5007DC9BE /* UserSession.swift in Sources */,
-				CBCE95F52FC3E7E5007DC9BE /* Enums.swift in Sources */,
-				CBCE95F62FC3E7E5007DC9BE /* MealRepository.swift in Sources */,
-				CBCE95F72FC3E7E5007DC9BE /* HomeView.swift in Sources */,
-				CBCE95F82FC3E7E5007DC9BE /* NetworkManager.swift in Sources */,
-				CBCE95FD2FC903B5007DC9BE /* Theme.swift in Sources */,
-				CBCE95F92FC3E7E5007DC9BE /* WaterRepository.swift in Sources */,
-				CBCE95FA2FC3E7E5007DC9BE /* FastingView.swift in Sources */,
-				CBCE95FF2FC907B0007DC9BE /* Typography.swift in Sources */,
-				CBCE95FB2FC3E7E5007DC9BE /* MealModels.swift in Sources */,
-				CB0B5F272FC3E5A400F59864 /* RootView.swift in Sources */,
-				CBCE95DF2FC3E751007DC9BE /* NutriSmartApiService.swift in Sources */,
-				CB0B5F262FC3E59300F59864 /* NutriSmartIOSApp.swift in Sources */,
-				CBCE95DD2FC3E6A9007DC9BE /* LoginViewModel.swift in Sources */,
-				CBCE95DB2FC3E67F007DC9BE /* SessionManager.swift in Sources */,
-				CBCE95DE2FC3E726007DC9BE /* AuthRepository.swift in Sources */,
-				CBCE95DC2FC3E6A3007DC9BE /* LoginView.swift in Sources */,
-				CB0B5F282FC3E5B000F59864 /* AppRouter.swift in Sources */,
+				CBC3096A2FCA7322003A48ED /* UserSession.swift in Sources */,
+				CBC3096B2FCA7322003A48ED /* HealthKitManager.swift in Sources */,
+				CBC3096C2FCA7322003A48ED /* FastingViewModel.swift in Sources */,
+				CBC3096D2FCA7322003A48ED /* FastingView.swift in Sources */,
+				CBC3096E2FCA7322003A48ED /* VerifyView.swift in Sources */,
+				CBC3096F2FCA7322003A48ED /* RegisterViewModel.swift in Sources */,
+				CBC309702FCA7322003A48ED /* MealDetailView.swift in Sources */,
+				CBC309712FCA7322003A48ED /* AppModule.swift in Sources */,
+				CBC309722FCA7322003A48ED /* BonusSnackSelectorView.swift in Sources */,
+				CBC309732FCA7322003A48ED /* UserDto.swift in Sources */,
+				CBC309742FCA7322003A48ED /* RootView.swift in Sources */,
+				CBC309752FCA7322003A48ED /* EatingReminder.swift in Sources */,
+				CBC309762FCA7322003A48ED /* OnboardingViewModel.swift in Sources */,
+				CBC309772FCA7322003A48ED /* NetworkManager.swift in Sources */,
+				CBC309782FCA7322003A48ED /* ChangePasswordView.swift in Sources */,
+				CBC309792FCA7322003A48ED /* NutriSmartIOSApp.swift in Sources */,
+				CBC3097A2FCA7322003A48ED /* ShoppingListView.swift in Sources */,
+				CBC3097B2FCA7322003A48ED /* FastingRepository.swift in Sources */,
+				CBC3097C2FCA7322003A48ED /* MealSwapView.swift in Sources */,
+				CBC3097D2FCA7322003A48ED /* LoginView.swift in Sources */,
+				CBC3097E2FCA7322003A48ED /* SessionManager.swift in Sources */,
+				CBC3097F2FCA7322003A48ED /* EditProfileView.swift in Sources */,
+				CBC309802FCA7322003A48ED /* WeatherViewModel.swift in Sources */,
+				CBC309812FCA7322003A48ED /* OnboardingView.swift in Sources */,
+				CBC309822FCA7322003A48ED /* AuthModels.swift in Sources */,
+				CBC309832FCA7322003A48ED /* GoogleSignInHandler.swift in Sources */,
+				CBC309842FCA7322003A48ED /* RegisterView.swift in Sources */,
+				CBC309852FCA7322003A48ED /* WeatherView.swift in Sources */,
+				CBC309862FCA7322003A48ED /* AppRouter.swift in Sources */,
+				CBC309872FCA7322003A48ED /* NutriSmartApiService.swift in Sources */,
+				CBC309882FCA7322003A48ED /* ProfileViewModel.swift in Sources */,
+				CBC309892FCA7322003A48ED /* ProfileView.swift in Sources */,
+				CBC3098A2FCA7322003A48ED /* MealModels.swift in Sources */,
+				CBC3098B2FCA7322003A48ED /* HomeViewModel.swift in Sources */,
+				CBC3098C2FCA7322003A48ED /* MainView.swift in Sources */,
+				CBC3098D2FCA7322003A48ED /* FastingNotificationReceiver.swift in Sources */,
+				CBC3098E2FCA7322003A48ED /* HomeView.swift in Sources */,
+				CBC3098F2FCA7322003A48ED /* AuthRepository.swift in Sources */,
+				CBC309902FCA7322003A48ED /* WeatherRepository.swift in Sources */,
+				CBC309912FCA7322003A48ED /* WaterRepository.swift in Sources */,
+				CBC309922FCA7322003A48ED /* Theme.swift in Sources */,
+				CBC309932FCA7322003A48ED /* Enums.swift in Sources */,
+				CBC309942FCA7322003A48ED /* MealRepository.swift in Sources */,
+				CBC309952FCA7322003A48ED /* ProfileComponents.swift in Sources */,
+				CBC309962FCA7322003A48ED /* HomeUiState.swift in Sources */,
+				CBC309972FCA7322003A48ED /* WeatherNotificationReceiver.swift in Sources */,
+				CBC309982FCA7322003A48ED /* HomeComponents.swift in Sources */,
+				CBC309992FCA7322003A48ED /* OnboardingComponents.swift in Sources */,
+				CBC3099A2FCA7322003A48ED /* VerifyViewModel.swift in Sources */,
+				CBC3099B2FCA7322003A48ED /* UserRepository.swift in Sources */,
+				CBC3099C2FCA7322003A48ED /* Typography.swift in Sources */,
+				CBC3099D2FCA7322003A48ED /* SettingsView.swift in Sources */,
+				CBC3099E2FCA7322003A48ED /* LoginViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -613,6 +734,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CB0812D82FCA6378005B17D7 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CB0812D92FCA6378005B17D7 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CB0812D82FCA6378005B17D7 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		CB0812DB2FCA6378005B17D7 /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CB0812D82FCA6378005B17D7 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = CB91B15D2FB9C28D0099A9D0 /* Project object */;
 }

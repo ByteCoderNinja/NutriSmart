@@ -45,6 +45,14 @@ class HomeViewModel {
         let token = SessionManager.shared.fetchAuthToken() ?? ""
         
         Task {
+            // HealthKit
+            if await HealthKitManager.shared.requestAuthorization() {
+                let steps = await HealthKitManager.shared.getTodaySteps()
+                uiState.steps = steps
+                // Assume 0.04 kcal per step for simple demo
+                uiState.burnedCalories = Int(Double(steps) * 0.04)
+            }
+            
             do {
                 let user = try await userRepository.getUser(token: token, userId: userId)
                 uiState.weight = user.weight ?? 0.0
@@ -74,6 +82,69 @@ class HomeViewModel {
         }
     }
     
+    func loadAlternatives(type: String) {
+        uiState.isSwapping = true
+        uiState.alternatives = []
+        
+        let userId = currentUserId
+        let token = SessionManager.shared.fetchAuthToken() ?? ""
+        
+        Task {
+            do {
+                let list = try await mealRepository.getMealAlternatives(token: token, userId: userId, type: type.uppercased())
+                uiState.alternatives = list
+                uiState.isSwapping = false
+            } catch {
+                print("Error loading alternatives: \(error)")
+                uiState.isSwapping = false
+            }
+        }
+    }
+    
+    func swapMeal(type: String, newMealId: Int) {
+        let userId = currentUserId
+        let token = SessionManager.shared.fetchAuthToken() ?? ""
+        let date = {
+            let f = DateFormatter()
+            f.dateFormat = "yyyy-MM-dd"
+            return f.string(from: Date())
+        }()
+        
+        Task {
+            do {
+                _ = try await mealRepository.swapMeal(token: token, userId: userId, type: type.uppercased(), mealId: newMealId, date: date)
+                fetchTodayData()
+            } catch {
+                print("Error swapping meal: \(error)")
+            }
+        }
+    }
+    
+    func loadBonusSnacks() {
+        uiState.isSwapping = true
+        uiState.availableBonusSnacks = []
+        
+        let userId = currentUserId
+        let token = SessionManager.shared.fetchAuthToken() ?? ""
+        
+        Task {
+            do {
+                let allSnacks = try await mealRepository.getMealAlternatives(token: token, userId: userId, type: "SNACK")
+                let maxCalories = uiState.burnedCalories
+                uiState.availableBonusSnacks = allSnacks.filter { $0.calories <= maxCalories }
+                uiState.isSwapping = false
+            } catch {
+                print("Error loading bonus snacks: \(error)")
+                uiState.isSwapping = false
+            }
+        }
+    }
+    
+    func updateWaterGoalBasedOnWeather(temp: Int) {
+        let newGoal = temp >= 30 ? 3000 : 2000
+        uiState.waterGoalMl = newGoal
+    }
+    
     func addWater() {
         uiState.waterConsumedMl += uiState.glassSizeMl
         waterRepository.saveWaterIntake(water: uiState.waterConsumedMl)
@@ -95,6 +166,27 @@ class HomeViewModel {
         let token = SessionManager.shared.fetchAuthToken() ?? ""
         Task {
             try? await mealRepository.toggleMealConsumed(token: token, mealId: mealId, consumed: consumed)
+        }
+    }
+    
+    func toggleShoppingListItem(itemId: Int, checked: Bool) {
+        if var list = uiState.shoppingList {
+            if let index = list.items.firstIndex(where: { $0.id == itemId }) {
+                let updatedItem = ShoppingListItemDto(
+                    id: list.items[index].id,
+                    category: list.items[index].category,
+                    name: list.items[index].name,
+                    checked: checked
+                )
+                var newItems = list.items
+                newItems[index] = updatedItem
+                uiState.shoppingList = ShoppingListDto(id: list.id, userId: list.userId, items: newItems)
+            }
+        }
+        
+        let token = SessionManager.shared.fetchAuthToken() ?? ""
+        Task {
+            try? await mealRepository.toggleShoppingItem(token: token, itemId: itemId, checked: checked)
         }
     }
     

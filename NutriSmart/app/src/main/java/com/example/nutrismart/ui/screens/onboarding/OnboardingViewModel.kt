@@ -1,5 +1,6 @@
 package com.example.nutrismart.ui.screens.onboarding
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -15,18 +16,24 @@ import com.example.nutrismart.data.model.Gender
 import com.example.nutrismart.data.model.MedicalCondition
 import com.example.nutrismart.data.model.OnboardingRequest
 import com.example.nutrismart.data.repository.UserRepository
+import com.example.nutrismart.R
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.io.BufferedReader
+import java.io.InputStreamReader
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
 class OnboardingViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     var birthDate by mutableStateOf(LocalDate.now().minusYears(18))
@@ -56,6 +63,34 @@ class OnboardingViewModel @Inject constructor(
 
     private val token: String get() = UserSession.token ?: ""
     private val userId: Long get() = UserSession.currentUserId
+
+    private var allLocalFoods: List<String> = emptyList()
+
+    init {
+        loadLocalFoods()
+    }
+
+    private fun loadLocalFoods() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val inputStream = context.resources.openRawResource(R.raw.ingredients)
+                val uniqueFoods = mutableSetOf<String>()
+
+                BufferedReader(InputStreamReader(inputStream)).use { reader ->
+                    reader.forEachLine { line ->
+                        val foodName = line.trim()
+                        if (foodName.isNotBlank() && !foodName.startsWith("//") && foodName.length > 1) {
+                            uniqueFoods.add(foodName)
+                        }
+                    }
+                }
+                allLocalFoods = uniqueFoods.toList()
+                Log.d("NutriSmart", "Loaded ${allLocalFoods.size} local foods")
+            } catch (e: Exception) {
+                Log.e("NutriSmart", "Error loading local foods", e)
+            }
+        }
+    }
 
     fun loadUserData() {
         if (userId == -1L) return
@@ -143,33 +178,21 @@ class OnboardingViewModel @Inject constructor(
             return
         }
 
-        searchFoods(newQuery)
+        searchFoodsLocally(newQuery)
     }
 
     private var searchJob: Job? = null
-    private fun searchFoods(query: String) {
-        searchJob?.cancel()
-        searchJob = viewModelScope.launch {
-            delay(400)
-            isSearchingFoods = true
-            try {
-                Log.d("NutriSmart", "Searching for: $query")
-                val response = userRepository.searchFoods(token, query)
-                
-                if (response.isSuccessful) {
-                    val data = response.body()
-                    Log.d("NutriSmart", "Found: ${data?.size} items")
-                    foodSuggestions.clear()
-                    data?.let { foodSuggestions.addAll(it) }
-                } else {
-                    Log.e("NutriSmart", "Search failed: ${response.code()}")
-                }
-            } catch (e: Exception) {
-                Log.e("NutriSmart", "Search error", e)
-            } finally {
-                isSearchingFoods = false
-            }
-        }
+    private fun searchFoodsLocally(query: String) {
+        isSearchingFoods = true
+
+        val filteredList = allLocalFoods
+            .filter { it.contains(query, ignoreCase = true) }
+            .take(50)
+
+        foodSuggestions.clear()
+        foodSuggestions.addAll(filteredList)
+
+        isSearchingFoods = false
     }
 
     fun submitProfile() {

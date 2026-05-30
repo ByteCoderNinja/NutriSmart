@@ -42,6 +42,26 @@ class ProfileViewModel {
         }
     }
     
+    func updateProfile(username: String? = nil, weight: Double? = nil, height: Double? = nil, stepGoal: Int? = nil) async -> Bool {
+        guard userId != -1 else { return false }
+        let token = SessionManager.shared.fetchAuthToken() ?? ""
+        
+        let request = UpdateUserRequest(
+            username: username, weight: weight, height: height, targetWeight: nil,
+            activityLevel: nil, maxDailyBudget: nil, dietaryPreferences: nil,
+            medicalConditions: nil, dislikedFoods: nil, stepGoal: stepGoal, isImperial: nil, currency: nil
+        )
+        
+        do {
+            let updatedUser = try await userRepository.patchUser(token: token, userId: userId, request: request)
+            self.user = updatedUser
+            return true
+        } catch {
+            self.errorMessage = "Update failed: \(error)"
+            return false
+        }
+    }
+    
     func logout() {
         SessionManager.shared.clearSession()
         authRepository.clearSession()

@@ -94,6 +94,9 @@ struct RootView: View {
                             )
                         case .forgotPassword:
                             Text("Forgot Password (Logged In)")
+                        case .shoppingList:
+                            // TODO: Replace with ShoppingListView when ready
+                            Text("Shopping List Screen")
                         }
                     }
                 }

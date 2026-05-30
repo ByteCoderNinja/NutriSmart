@@ -7,6 +7,13 @@ import SwiftUI
 
 struct HomeView: View {
     @State private var viewModel = HomeViewModel()
+    @EnvironmentObject var router: AppRouter
+    
+    @State private var selectedMeal: (meal: MealDto, type: String)? = nil
+    @State private var showMealDetail = false
+    @State private var showMealSwap = false
+    @State private var showBonusSnackSelector = false
+    @State private var showShoppingList = false
     
     var body: some View {
         NavigationStack {
@@ -16,6 +23,7 @@ struct HomeView: View {
                     mainStatsCard
                     macrosRow
                     mealPlanSection
+                    bonusSnackSection
                     groceryListButton
                 }
                 .padding()
@@ -23,6 +31,29 @@ struct HomeView: View {
             .navigationTitle("NutriSmart")
             .refreshable {
                 viewModel.fetchTodayData()
+            }
+            .sheet(isPresented: $showMealDetail) {
+                if let selected = selectedMeal {
+                    MealDetailView(meal: selected.meal, mealType: selected.type, onSwapRequest: {
+                        showMealDetail = false
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            showMealSwap = true
+                        }
+                    })
+                }
+            }
+            .sheet(isPresented: $showMealSwap) {
+                if let selected = selectedMeal {
+                    MealSwapView(viewModel: viewModel, mealType: selected.type, onSwapSuccess: {
+                        viewModel.fetchTodayData()
+                    })
+                }
+            }
+            .sheet(isPresented: $showBonusSnackSelector) {
+                BonusSnackSelectorView(viewModel: viewModel)
+            }
+            .sheet(isPresented: $showShoppingList) {
+                ShoppingListView(viewModel: viewModel)
             }
             .background(Color.backgroundLight.ignoresSafeArea())
         }
@@ -104,21 +135,77 @@ struct HomeView: View {
             Text("Today's Meal Plan").font(.system(size: 20, weight: .bold))
             if let breakfast = viewModel.uiState.breakfast {
                 MealCard(type: "Breakfast", meal: breakfast, onToggle: { viewModel.toggleMeal(mealId: breakfast.id, type: .BREAKFAST, consumed: $0) })
+                    .onTapGesture {
+                        selectedMeal = (breakfast, "Breakfast")
+                        showMealDetail = true
+                    }
             }
             if let lunch = viewModel.uiState.lunch {
                 MealCard(type: "Lunch", meal: lunch, onToggle: { viewModel.toggleMeal(mealId: lunch.id, type: .LUNCH, consumed: $0) })
+                    .onTapGesture {
+                        selectedMeal = (lunch, "Lunch")
+                        showMealDetail = true
+                    }
             }
             if let dinner = viewModel.uiState.dinner {
                 MealCard(type: "Dinner", meal: dinner, onToggle: { viewModel.toggleMeal(mealId: dinner.id, type: .DINNER, consumed: $0) })
+                    .onTapGesture {
+                        selectedMeal = (dinner, "Dinner")
+                        showMealDetail = true
+                    }
             }
             if let snack = viewModel.uiState.snack {
                 MealCard(type: "Snack", meal: snack, onToggle: { viewModel.toggleMeal(mealId: snack.id, type: .SNACK, consumed: $0) })
+                    .onTapGesture {
+                        selectedMeal = (snack, "Snack")
+                        showMealDetail = true
+                    }
+            }
+        }
+    }
+    
+    private var bonusSnackSection: some View {
+        Group {
+            if viewModel.uiState.burnedCalories >= 100 {
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Bonus Meal (Earned!)")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundColor(.nutriGreen)
+                    
+                    if let bonus = viewModel.uiState.bonusSnack {
+                        MealCard(type: "Bonus Snack", meal: bonus, onToggle: { _ in })
+                            .onTapGesture {
+                                selectedMeal = (bonus, "Bonus Snack")
+                                showMealDetail = true
+                            }
+                    } else {
+                        Button(action: {
+                            viewModel.loadBonusSnacks()
+                            showBonusSnackSelector = true
+                        }) {
+                            HStack {
+                                Image(systemName: "plus.circle.fill")
+                                VStack(alignment: .leading) {
+                                    Text("Claim your Bonus Snack!")
+                                        .fontWeight(.bold)
+                                    Text("You burned \(viewModel.uiState.burnedCalories) kcal. Tap to choose a treat.")
+                                        .font(.caption)
+                                }
+                            }
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Color.nutriGreen.opacity(0.1))
+                            .foregroundColor(.nutriGreen)
+                            .cornerRadius(16)
+                        }
+                    }
+                }
             }
         }
     }
     
     private var groceryListButton: some View {
-        Button(action: { /* Show Shopping List */ }) {
+        Button(action: { showShoppingList = true }) {
             HStack {
                 Image(systemName: "cart.fill")
                 Text("View Grocery List").fontWeight(.bold)
@@ -136,55 +223,5 @@ struct HomeView: View {
         let formatter = DateFormatter()
         formatter.dateStyle = .long
         return formatter.string(from: date)
-    }
-}
-
-struct StatItem: View {
-    let icon: String
-    let value: String
-    let label: String
-    let color: Color
-    var body: some View {
-        HStack(spacing: 8) {
-            Image(systemName: icon).foregroundColor(color)
-            VStack(alignment: .leading) {
-                Text(value).font(.system(size: 16, weight: .bold))
-                Text(label).font(.system(size: 12)).foregroundColor(.secondary)
-            }
-        }
-    }
-}
-
-struct MacroItem: View {
-    let label: String
-    let value: String
-    let color: Color
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(label).font(.system(size: 12)).foregroundColor(.secondary)
-            Text(value).font(.system(size: 16, weight: .bold)).foregroundColor(color)
-        }
-        .padding(.horizontal, 16).padding(.vertical, 8)
-        .background(color.opacity(0.1)).cornerRadius(12)
-    }
-}
-
-struct MealCard: View {
-    let type: String
-    let meal: MealDto
-    let onToggle: (Bool) -> Void
-    var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(type).font(.system(size: 12, weight: .bold)).foregroundColor(.nutriGreen)
-                Text(meal.name).font(.system(size: 16, weight: .semibold))
-                Text("\(meal.calories) kcal | P:\(meal.protein) C:\(meal.carbs) F:\(meal.fat)").font(.system(size: 12)).foregroundColor(.secondary)
-            }
-            Spacer()
-            Button(action: { onToggle(!meal.consumed) }) {
-                Image(systemName: meal.consumed ? "checkmark.circle.fill" : "circle").font(.title2).foregroundColor(meal.consumed ? .nutriGreen : .gray)
-            }
-        }
-        .padding().background(Color.white).cornerRadius(16).shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
     }
 }

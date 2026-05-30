@@ -26,6 +26,7 @@ enum MainRoute: Hashable {
     case editPlan
     case verify(email: String, isEdit: Bool)
     case forgotPassword
+    case shoppingList
 }
 
 class AppRouter: ObservableObject {
