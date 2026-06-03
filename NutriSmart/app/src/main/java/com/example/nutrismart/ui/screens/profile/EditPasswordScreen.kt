@@ -102,27 +102,13 @@ fun EditPasswordScreen(
 
             val isFormValid = currentPassword.isNotBlank() && newPassword.isNotBlank() && confirmPassword.isNotBlank()
 
-            fun isPasswordStrong(password: String): Boolean {
-                val hasLetter = password.any { it.isLetter() }
-                val hasDigit = password.any { it.isDigit() }
-                return password.length >= 6 && hasLetter && hasDigit
-            }
-
             Button(
                 onClick = {
-                    if (newPassword != confirmPassword) {
-                        localError = "New passwords do not match!"
-                        return@Button
-                    }
-                    if (!isPasswordStrong(newPassword)) {
-                        localError = "Password must be at least 6 characters long and contain both letters and numbers."
-                        return@Button
-                    }
-
                     isLoading = true
                     viewModel.updatePassword(
                         currentPass = currentPassword,
                         newPass = newPassword,
+                        confirmPass = confirmPassword,
                         onSuccess = {
                             isLoading = false
                             Toast.makeText(context, "Password updated successfully!", Toast.LENGTH_SHORT).show()

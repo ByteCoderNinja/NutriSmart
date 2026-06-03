@@ -44,10 +44,6 @@ fun EditUsernameScreen(
         Column(
             modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp)
         ) {
-            if (uiState.isLoading && uiState.user == null) {
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-            }
-
             OutlinedTextField(
                 value = newUsername,
                 onValueChange = { newUsername = it },
@@ -61,21 +57,19 @@ fun EditUsernameScreen(
 
             Button(
                 onClick = {
-                    if (newUsername.isNotBlank()) {
-                        isLoading = true
-                        viewModel.updateUsername(
-                            newUsername = newUsername,
-                            onSuccess = {
-                                isLoading = false
-                                Toast.makeText(context, "Username updated!", Toast.LENGTH_SHORT).show()
-                                onBackClick()
-                            },
-                            onError = { error ->
-                                isLoading = false
-                                Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-                            }
-                        )
-                    }
+                    isLoading = true
+                    viewModel.updateUsername(
+                        newUsername = newUsername,
+                        onSuccess = {
+                            isLoading = false
+                            Toast.makeText(context, "Username updated!", Toast.LENGTH_SHORT).show()
+                            onBackClick()
+                        },
+                        onError = { error ->
+                            isLoading = false
+                            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                        }
+                    )
                 },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !isLoading && newUsername.isNotBlank() && newUsername != uiState.user?.username

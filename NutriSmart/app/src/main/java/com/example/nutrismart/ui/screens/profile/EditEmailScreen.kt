@@ -1,5 +1,6 @@
 package com.example.nutrismart.ui.screens.profile
 
+import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -54,10 +55,6 @@ fun EditEmailScreen(
         Column(
             modifier = Modifier.fillMaxSize().padding(paddingValues).padding(16.dp)
         ) {
-            if (uiState.isLoading && uiState.user == null) {
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-            }
-
             OutlinedTextField(
                 value = newEmail,
                 onValueChange = { newEmail = it },
@@ -71,20 +68,18 @@ fun EditEmailScreen(
 
             Button(
                 onClick = {
-                    if (newEmail.isNotBlank() && newEmail != uiState.user?.email) {
-                        isLoading = true
-                        viewModel.updateEmail(
-                            newEmail = newEmail,
-                            onSuccess = {
-                                isLoading = false
-                                onNavigateToVerify(newEmail)
-                            },
-                            onError = { error ->
-                                isLoading = false
-                                Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-                            }
-                        )
-                    }
+                    isLoading = true
+                    viewModel.updateEmail(
+                        newEmail = newEmail,
+                        onSuccess = {
+                            isLoading = false
+                            onNavigateToVerify(newEmail)
+                        },
+                        onError = { error ->
+                            isLoading = false
+                            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                        }
+                    )
                 },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !isLoading && newEmail.isNotBlank() && newEmail != uiState.user?.email

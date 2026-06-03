@@ -7,6 +7,7 @@ import org.springframework.http.MediaType
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
+import org.springframework.web.client.postForEntity
 
 @Service
 class EmailService(
@@ -38,7 +39,7 @@ class EmailService(
         val entity = HttpEntity(body, headers)
 
         try {
-            val response = restTemplate.postForEntity(brevoUrl, entity, String::class.java)
+            val response = restTemplate.postForEntity<String>(brevoUrl, entity)
             if (response.statusCode.is2xxSuccessful) {
                 println("INFO: Verification email sent successfully to $toEmail via Brevo API")
             } else {
