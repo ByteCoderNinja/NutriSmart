@@ -13,9 +13,9 @@ class UserCleanupScheduler(
     @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
     fun deleteGhostAccounts() {
-        val threshold = LocalDateTime.now().minusDays(1)
+        val now = LocalDateTime.now()
 
-        val deletedCount = userRepository.deleteByIsVerifiedFalseAndVerificationCodeExpiresAtBefore(threshold)
+        val deletedCount = userRepository.deleteByIsVerifiedFalseAndVerificationCodeExpiresAtBefore(now)
 
         println("Cleanup finished! Deleted $deletedCount ghost accounts.")
     }
