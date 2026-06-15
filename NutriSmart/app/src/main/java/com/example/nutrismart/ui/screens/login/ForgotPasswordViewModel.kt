@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nutrismart.data.remote.RetrofitClient
+import com.example.nutrismart.data.remote.getErrorMessage
 import kotlinx.coroutines.launch
 
 class ForgotPasswordViewModel : ViewModel() {
@@ -44,7 +45,7 @@ class ForgotPasswordViewModel : ViewModel() {
                 if (response.isSuccessful) {
                     emailSentSuccess = true
                 } else {
-                    errorMessage = "Email not found or error sending code."
+                    errorMessage = response.getErrorMessage("Email not found or error sending code.")
                 }
             } catch (e: Exception) {
                 errorMessage = "Network error: ${e.localizedMessage}"
@@ -65,7 +66,7 @@ class ForgotPasswordViewModel : ViewModel() {
                 if (response.isSuccessful) {
                     resendSuccess = true
                 } else {
-                    errorMessage = "Failed to resend code."
+                    errorMessage = response.getErrorMessage("Failed to resend code.")
                 }
             } catch (e: Exception) {
                 errorMessage = "Network error: ${e.localizedMessage}"
@@ -95,7 +96,7 @@ class ForgotPasswordViewModel : ViewModel() {
                 if (response.isSuccessful) {
                     passwordResetSuccess = true
                 } else {
-                    errorMessage = "Invalid code or password match failed."
+                    errorMessage = response.getErrorMessage("Invalid code or password match failed.")
                 }
             } catch (e: Exception) {
                 errorMessage = "Network error: ${e.localizedMessage}"

@@ -37,7 +37,7 @@ class AuthController(
         @RequestBody request: LoginRequest,
         httpRequest: HttpServletRequest
     ): ResponseEntity<AuthResponse> {
-        rateLimitService.tryConsumeLogin(httpRequest.remoteAddr)
+        rateLimitService.tryConsumeLogin(authService.getClientIp(httpRequest))
         return ResponseEntity.ok(authService.login(request))
     }
 

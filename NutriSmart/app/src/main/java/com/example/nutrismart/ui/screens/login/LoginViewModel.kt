@@ -9,6 +9,7 @@ import com.example.nutrismart.data.UserSession
 import com.example.nutrismart.data.model.AuthRequest
 import com.example.nutrismart.data.model.GoogleLoginRequest
 import com.example.nutrismart.data.repository.AuthRepository
+import com.example.nutrismart.data.remote.getErrorMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -60,7 +61,7 @@ class LoginViewModel @Inject constructor(
                         loginSuccess = true
                     }
                 } else {
-                    errorMessage = "Login failed: Check data."
+                    errorMessage = response.getErrorMessage("Login failed: Check data.")
                 }
             } catch (e: Exception) {
                 errorMessage = "Connection error: ${e.message}"

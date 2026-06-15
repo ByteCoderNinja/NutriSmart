@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.util.Random
 import com.timofte.nutrismart.common.exception.*
+import jakarta.servlet.http.HttpServletRequest
+import kotlin.text.isNotEmpty
+import kotlin.text.split
 
 @Service
 class AuthService(
@@ -166,5 +169,13 @@ class AuthService(
         user.verificationCodeExpiresAt = null
 
         userRepository.save(user)
+    }
+
+    fun getClientIp(request: HttpServletRequest): String {
+        val xfHeader = request.getHeader("X-Forwarded-For")
+        if (xfHeader != null && xfHeader.isNotEmpty()) {
+            return xfHeader.split(",").first().trim()
+        }
+        return request.remoteAddr ?: "unknown"
     }
 }

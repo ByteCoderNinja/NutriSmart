@@ -11,6 +11,7 @@ import com.example.nutrismart.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.example.nutrismart.data.remote.getErrorMessage
 
 @HiltViewModel
 class VerifyViewModel @Inject constructor(
@@ -39,7 +40,7 @@ class VerifyViewModel @Inject constructor(
                     authRepository.saveAuthData(authResponse)
                     verificationSuccess = true
                 } else {
-                    errorMessage = "Invalid or expired code"
+                    errorMessage = response.getErrorMessage("Invalid or expired code")
                 }
             } catch (e: Exception) {
                 errorMessage = "Error: ${e.message}"
@@ -59,7 +60,7 @@ class VerifyViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     successMessage = "A new code has been sent to your email"
                 } else {
-                    errorMessage = "Failed to resend code. Try again later."
+                    errorMessage = response.getErrorMessage("Failed to resend code. Try again later.")
                 }
             } catch (e: Exception) {
                 errorMessage = "Error: ${e.message}"

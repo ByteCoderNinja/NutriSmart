@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nutrismart.data.model.RegisterRequest
 import com.example.nutrismart.data.repository.AuthRepository
+import com.example.nutrismart.data.remote.getErrorMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -49,7 +50,7 @@ class RegisterViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     navigateToVerify = true
                 } else {
-                    errorMessage = "Registration failed. Email might be used."
+                    errorMessage = response.getErrorMessage("Registration failed. Email might be used.")
                 }
             } catch (e: Exception) {
                 errorMessage = "Error: ${e.message}"
