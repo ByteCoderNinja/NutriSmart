@@ -23,6 +23,13 @@ class GlobalExceptionHandler {
             .body(ApiResponse.error("Invalid email or password"))
     }
 
+    @ExceptionHandler(RateLimitExceededException::class)
+    fun handleRateLimitException(e: RateLimitExceededException): ResponseEntity<ApiResponse<Nothing>> {
+        return ResponseEntity
+            .status(429)
+            .body(ApiResponse.error(e.message ?: "Too many attempts. Please wait."))
+    }
+
     @ExceptionHandler(Exception::class)
     fun handleGeneralException(e: Exception): ResponseEntity<ApiResponse<Nothing>> {
         return ResponseEntity

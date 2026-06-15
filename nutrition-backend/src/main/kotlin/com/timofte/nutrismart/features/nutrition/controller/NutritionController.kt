@@ -5,6 +5,7 @@ import com.timofte.nutrismart.features.food.model.MealType
 import com.timofte.nutrismart.features.nutrition.model.MealPlan
 import com.timofte.nutrismart.features.nutrition.model.ShoppingList
 import com.timofte.nutrismart.features.nutrition.service.NutritionService
+import com.timofte.nutrismart.common.service.RateLimitService
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -12,10 +13,14 @@ import java.time.LocalDate
 
 @RestController
 @RequestMapping("/api/nutrition")
-class NutritionController(private val nutritionService: NutritionService) {
+class NutritionController(
+    private val nutritionService: NutritionService,
+    private val rateLimitService: RateLimitService
+) {
 
     @PostMapping("/generate/{userId}")
     fun generatePlanAsync(@PathVariable userId: Long): ResponseEntity<Map<String, String>> {
+        rateLimitService.tryConsumePlanGeneration(userId)
         return try {
             nutritionService.generateAndSaveWeeklyPlanAsync(userId)
             ResponseEntity.accepted().body(mapOf("message" to "Generation started"))

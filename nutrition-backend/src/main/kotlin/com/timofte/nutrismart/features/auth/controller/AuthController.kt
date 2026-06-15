@@ -3,13 +3,16 @@ package com.timofte.nutrismart.features.auth.controller
 import com.timofte.nutrismart.common.ApiResponse
 import com.timofte.nutrismart.features.auth.dto.*
 import com.timofte.nutrismart.features.auth.service.AuthService
+import com.timofte.nutrismart.common.service.RateLimitService
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/auth")
 class AuthController(
-    private val authService: AuthService
+    private val authService: AuthService,
+    private val rateLimitService: RateLimitService
 ) {
 
     @PostMapping("/register")
@@ -30,12 +33,20 @@ class AuthController(
     }
 
     @PostMapping("/login")
-    fun login(@RequestBody request: LoginRequest): ResponseEntity<AuthResponse> {
+    fun login(
+        @RequestBody request: LoginRequest,
+        httpRequest: HttpServletRequest
+    ): ResponseEntity<AuthResponse> {
+        rateLimitService.tryConsumeLogin(httpRequest.remoteAddr)
         return ResponseEntity.ok(authService.login(request))
     }
 
     @PostMapping("/resend-code")
-    fun resendCode(@RequestParam email: String): ResponseEntity<ApiResponse<Nothing>> {
+    fun resendCode(
+        @RequestParam email: String,
+        httpRequest: HttpServletRequest
+    ): ResponseEntity<ApiResponse<Nothing>> {
+        rateLimitService.tryConsumeEmail(email)
         authService.resendVerificationCode(email)
         return ResponseEntity.ok(
             ApiResponse(
@@ -52,7 +63,11 @@ class AuthController(
     }
 
     @PostMapping("/forgot-password")
-    fun forgotPassword(@RequestBody request: ForgotPasswordRequest): ResponseEntity<ApiResponse<Nothing>> {
+    fun forgotPassword(
+        @RequestBody request: ForgotPasswordRequest,
+        httpRequest: HttpServletRequest
+    ): ResponseEntity<ApiResponse<Nothing>> {
+        rateLimitService.tryConsumeEmail(request.email)
         authService.processForgotPassword(request.email)
         return ResponseEntity.ok(
             ApiResponse(
