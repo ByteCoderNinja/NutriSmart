@@ -15,6 +15,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
+    // Hilt provides singletons shared across the app (session, API client)
     @Provides
     @Singleton
     fun provideSessionManager(@ApplicationContext context: Context): SessionManager {

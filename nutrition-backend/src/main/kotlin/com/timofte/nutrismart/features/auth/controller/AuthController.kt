@@ -37,6 +37,7 @@ class AuthController(
         @RequestBody request: LoginRequest,
         httpRequest: HttpServletRequest
     ): ResponseEntity<AuthResponse> {
+        // Rate limit by IP to prevent brute-force attacks
         rateLimitService.tryConsumeLogin(authService.getClientIp(httpRequest))
         return ResponseEntity.ok(authService.login(request))
     }
@@ -46,6 +47,7 @@ class AuthController(
         @RequestParam email: String,
         httpRequest: HttpServletRequest
     ): ResponseEntity<ApiResponse<Nothing>> {
+        // Rate limit by email to prevent verification-code spam
         rateLimitService.tryConsumeEmail(email)
         authService.resendVerificationCode(email)
         return ResponseEntity.ok(
@@ -67,6 +69,7 @@ class AuthController(
         @RequestBody request: ForgotPasswordRequest,
         httpRequest: HttpServletRequest
     ): ResponseEntity<ApiResponse<Nothing>> {
+        // Rate limit by email to prevent reset-code spam
         rateLimitService.tryConsumeEmail(request.email)
         authService.processForgotPassword(request.email)
         return ResponseEntity.ok(

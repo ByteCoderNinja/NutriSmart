@@ -10,6 +10,7 @@ import java.time.LocalDateTime
 class UserCleanupScheduler(
     private val userRepository: UserRepository
 ) {
+    // Daily cleanup of unverified accounts whose verification code has expired
     @Scheduled(cron = "0 0 0 * * ?")
     @Transactional
     fun deleteGhostAccounts() {

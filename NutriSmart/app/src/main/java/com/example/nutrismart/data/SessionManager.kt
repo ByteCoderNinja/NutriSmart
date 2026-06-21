@@ -60,6 +60,7 @@ class SessionManager(context: Context) {
     fun getWaterIntake(): Int {
         val savedDate = prefs.getString("WATER_DATE", "")
         val today = java.time.LocalDate.now().toString()
+        // Reset water counter at the start of each day
         return if (savedDate == today) {
             prefs.getInt("WATER_CONSUMED", 0)
         } else {

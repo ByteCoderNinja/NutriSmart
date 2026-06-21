@@ -17,6 +17,7 @@ data class MealPlan(
     @Column(nullable = false)
     val date: LocalDate,
 
+    // Each meal is a separate entity so swap and consumed state are independent per day
     @ManyToOne(cascade = [CascadeType.PERSIST, CascadeType.MERGE])
     @JoinColumn(name = "breakfast_id")
     var breakfast: Meal? = null,

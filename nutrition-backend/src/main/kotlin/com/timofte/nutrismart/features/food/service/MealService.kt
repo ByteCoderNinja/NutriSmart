@@ -29,6 +29,7 @@ class MealService(private val mealRepository: MealRepository) {
         return mealRepository.save(meal)
     }
 
+    // Clone with a new ID so the swap does not alter the original catalog meal
     fun cloneMealForSwap(originalId: Long, newType: MealType): Meal {
         val original = getMealById(originalId)
 

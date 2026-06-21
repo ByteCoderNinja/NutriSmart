@@ -30,11 +30,14 @@ class NutritionService(
     private val geminiService: GeminiService,
     private val mealService: MealService
 ) {
+    // Tracks async plan generation per user (IN_PROGRESS | COMPLETED | FAILED)
     private val generationStatus = ConcurrentHashMap<Long, String>()
 
+    // Runs on a separate thread — client polls /status for progress
     @Async
     @Transactional
     fun generateAndSaveWeeklyPlanAsync(userId: Long) {
+        // Skip if a generation is already running for this user
         if (generationStatus[userId] == "IN_PROGRESS") {
             return
         }
@@ -47,6 +50,7 @@ class NutritionService(
 
             val weeklyPlanDTO: WeeklyPlanDTO = geminiService.generateWeeklyPlan(user)
 
+            // Replace the previous 14-day plan with the newly generated one
             mealPlanRepository.deleteByUserId(userId)
 
             mealPlanRepository.flush()
@@ -100,6 +104,7 @@ class NutritionService(
 
     @Transactional
     fun generateAndSaveShoppingListFromPlans(user: UserEntity, plans: List<MealPlan>) {
+        // Collect raw ingredient strings from all meals in the plan
         val allIngredients = plans.flatMap { plan ->
             listOfNotNull(
                 plan.breakfast?.quantityDetails,
@@ -111,6 +116,7 @@ class NutritionService(
 
         if (allIngredients.isEmpty()) return
 
+        // Gemini aggregates, deduplicates, and categorizes the ingredients
         val shoppingListDTO = geminiService.generateShoppingList(allIngredients, user)
 
         val shoppingList = shoppingListRepository.findByUserId(user.id) ?: ShoppingList(
@@ -166,6 +172,7 @@ class NutritionService(
         val exactPlan = mealPlanRepository.findFirstByUserIdAndDate(userId, date)
         if (exactPlan != null) return exactPlan
 
+        // No stored plan for this date — cycle through the 14-day plan indefinitely
         val allPlans = mealPlanRepository.findByUserId(userId).sortedBy { it.date }
         if (allPlans.isEmpty()) return null
 
@@ -184,6 +191,7 @@ class NutritionService(
         val dinner = if (dinners.isNotEmpty()) dinners[(daysDiff % dinners.size).toInt()] else null
         val snack = if (snacks.isNotEmpty()) snacks[(daysDiff % snacks.size).toInt()] else null
 
+        // Persist the virtual plan so swaps and consumption tracking work for this date
         val compositePlan = MealPlan(
             userId = userId,
             date = date,
@@ -230,6 +238,7 @@ class NutritionService(
         plan.totalCarbs = meals.sumOf { it.carbs }
         plan.totalFat = meals.sumOf { it.fat }
 
+        // Day is complete when every meal is marked as consumed
         plan.isCompleted = meals.all { it.consumed }
     }
 
@@ -240,6 +249,7 @@ class NutritionService(
             listOfNotNull(plan.breakfast, plan.lunch, plan.dinner, plan.snack)
         }
 
+        // One entry per meal name — used as swap alternatives in the app
         return allMeals.distinctBy { it.name }
     }
 
@@ -252,9 +262,11 @@ class NutritionService(
     }
 
     fun getGenerationStatus(userId: Long): String {
+        // In-memory only — resets on server restart
         return generationStatus[userId] ?: "NOT_STARTED"
     }
 
+    // Uncheck all shopping items when a new 14-day meal cycle starts
     @Scheduled(cron = "0 0 0 * * *")
     @Transactional
     fun resetShoppingListsForNewCycles() {
@@ -270,6 +282,7 @@ class NutritionService(
 
                 val daysDiff = ChronoUnit.DAYS.between(firstPlanDate, LocalDate.now())
 
+                // Reset when today aligns with the start of a new plan cycle
                 if (daysDiff > 0 && daysDiff % numberOfPlans == 0L) {
                     shoppingListItemRepository.resetAllItemsForUser(userId)
                 }

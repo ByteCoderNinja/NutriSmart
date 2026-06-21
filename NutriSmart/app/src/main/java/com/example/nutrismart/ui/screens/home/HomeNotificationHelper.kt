@@ -23,6 +23,7 @@ fun scheduleMealNotification(
 
     val requestCode = mealType.hashCode() + (if (isReminder) 1 else 0)
 
+    // Unique request code per meal type so alarms don't overwrite each other
     val pendingIntent = PendingIntent.getBroadcast(
         context,
         requestCode,
@@ -34,6 +35,7 @@ fun scheduleMealNotification(
         if (alarmManager.canScheduleExactAlarms()) {
             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent)
         } else {
+            // Fall back to inexact alarm when exact-alarm permission is denied
             alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent)
         }
     } else {

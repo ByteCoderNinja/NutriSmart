@@ -4,6 +4,7 @@ import org.json.JSONObject
 import retrofit2.Response
 
 fun Response<*>.getErrorMessage(defaultMessage: String = "An unexpected error occurred"): String {
+    // Parse the standard ApiResponse.message field from error bodies
     return try {
         val errorString = this.errorBody()?.string()
         if (!errorString.isNullOrEmpty()) {

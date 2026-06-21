@@ -5,6 +5,7 @@ enum class Gender {
 }
 
 enum class ActivityLevel(val multiplier: Double) {
+    // TDEE multipliers applied on top of BMR
     SEDENTARY(1.2),
     LIGHTLY_ACTIVE(1.375),
     MODERATELY_ACTIVE(1.55),

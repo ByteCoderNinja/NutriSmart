@@ -12,6 +12,7 @@ class CustomUserDetailsService(
     private val userRepository: UserRepository
 ) : UserDetailsService {
 
+    // Loads the user from DB so Spring Security can validate credentials and JWTs
     override fun loadUserByUsername(username: String): UserDetails {
         val userEntity = userRepository.findByEmail(username)
         ?: throw UsernameNotFoundException("User not found with email: $username")

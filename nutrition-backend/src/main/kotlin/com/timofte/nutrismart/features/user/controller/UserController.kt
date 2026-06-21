@@ -54,6 +54,7 @@ class UserController(private val userService: UserService) {
         @RequestBody request: OnboardingRequest,
         authentication: Authentication
     ): ResponseEntity<UserEntity> {
+        // User identity comes from the JWT, not the request body
         val email = authentication.name
             ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
         val updatedUser = userService.completeUserProfile(email, request)

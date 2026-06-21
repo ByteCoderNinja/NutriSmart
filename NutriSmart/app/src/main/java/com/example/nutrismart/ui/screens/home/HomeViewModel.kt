@@ -146,7 +146,8 @@ class HomeViewModel @Inject constructor(
 
     fun toggleMeal(mealId: Long, mealTypeStr: String, isConsumed: Boolean) {
         val mealType = MealType.fromString(mealTypeStr)
-        
+
+        // Optimistic UI update — sync with backend in the background
         _uiState.update { state ->
             when (mealType) {
                 MealType.BREAKFAST -> state.copy(breakfast = state.breakfast?.copy(consumed = isConsumed))
@@ -164,6 +165,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun toggleShoppingListItem(itemId: Long, checked: Boolean) {
+        // Optimistic UI update — sync with backend in the background
         _uiState.update { currentState ->
             val updatedItems = currentState.shoppingList?.items?.map { if (it.id == itemId) it.copy(checked = checked) else it }
             currentState.copy(shoppingList = currentState.shoppingList?.copy(items = updatedItems ?: emptyList()))
@@ -181,6 +183,7 @@ class HomeViewModel @Inject constructor(
 
     fun updateWaterGoalBasedOnWeather(temperature: Int) {
         _uiState.update { state ->
+            // Increase daily water target during heatwaves
             val newGoal = if (temperature >= 30) 3000 else 2000
             state.copy(waterGoalMl = newGoal)
         }
@@ -195,6 +198,7 @@ class HomeViewModel @Inject constructor(
                 if (response.isSuccessful) {
                     val allSnacks = response.body() ?: emptyList()
                     val maxCaloriesAllowed = _uiState.value.burnedCalories
+                    // Only show snacks that fit within calories burned today
                     val filtered = allSnacks.filter { it.calories <= maxCaloriesAllowed }
 
                     _uiState.update { it.copy(availableBonusSnacks = filtered) }
@@ -227,6 +231,7 @@ class HomeViewModel @Inject constructor(
 
         updateWeightJob?.cancel()
 
+        // Debounce backend sync — wait until the user stops adjusting
         updateWeightJob = viewModelScope.launch {
             delay(1500)
             saveWeightToBackend(roundedWeight)

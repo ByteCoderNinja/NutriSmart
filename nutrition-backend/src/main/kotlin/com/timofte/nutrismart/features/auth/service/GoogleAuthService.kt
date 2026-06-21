@@ -17,6 +17,7 @@ class GoogleAuthService(
         .build()
 
     fun verifyToken(idTokenString: String): GoogleIdToken.Payload? {
+        // Audience must match our Web Client ID
         return try {
             val idToken = verifier.verify(idTokenString)
             idToken?.payload

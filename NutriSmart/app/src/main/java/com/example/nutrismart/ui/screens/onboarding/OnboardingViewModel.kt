@@ -70,6 +70,7 @@ class OnboardingViewModel @Inject constructor(
         loadLocalFoods()
     }
 
+    // Load bundled ingredient list for less server calls and for speed
     private fun loadLocalFoods() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -271,6 +272,7 @@ class OnboardingViewModel @Inject constructor(
                         isLoading = false
                         return@launch
                     }
+                    // Profile saved — start async AI plan generation on the backend
                     startPlanGeneration(userId)
                 } else {
                     val errorBody = response.errorBody()?.string()
@@ -309,17 +311,19 @@ class OnboardingViewModel @Inject constructor(
     }
 
     private fun launchMessageRotation(): Job {
+        // Rotate loading messages while the backend generates the plan
         return viewModelScope.launch {
             var index = 0
             while (isActive) {
                 loadingMessage = messages[index]
-                if (index < messages.size - 1) index++
+                if (index < messages.size - 1) { ++index }
                 delay(6000)
             }
         }
     }
 
     private suspend fun pollForStatus(userId: Long, messageJob: Job) {
+        // Poll every 5s until generation completes or fails
         var isDone = false
         while (!isDone && viewModelScope.isActive) {
             delay(5000)

@@ -35,6 +35,7 @@ class VerifyViewModel @Inject constructor(
 
                 if (response.isSuccessful && response.body() != null) {
                     val authResponse = response.body()!!
+                    // Verification returns the JWT — same as a successful login
                     UserSession.token = authResponse.token
                     UserSession.currentUserId = authResponse.userId
                     authRepository.saveAuthData(authResponse)

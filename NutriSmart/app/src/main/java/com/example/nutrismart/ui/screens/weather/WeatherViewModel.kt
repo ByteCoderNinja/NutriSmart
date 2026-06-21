@@ -87,6 +87,7 @@ class WeatherViewModel @Inject constructor(
 
     fun checkHydrationAndNotify(context: Context, waterConsumedMl: Int) {
         val state = _uiState.value
+        // Alert when it's hot and the user has drunk less than 1L today
         if (state.temperature >= 30 && waterConsumedMl < 1000) {
             val intent = Intent(context, WeatherNotificationReceiver::class.java)
             context.sendBroadcast(intent)

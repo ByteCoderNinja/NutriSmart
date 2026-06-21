@@ -48,6 +48,7 @@ fun rememberGoogleSignInLauncher(
 
         val googleSignInClient = GoogleSignIn.getClient(context, gso)
 
+        // Sign out first so the account picker always appears
         googleSignInClient.signOut().addOnCompleteListener {
             launcher.launch(googleSignInClient.signInIntent)
         }

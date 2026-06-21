@@ -17,11 +17,13 @@ class MainViewModel @Inject constructor(
         val isVerified = authRepository.isVerified()
         val isProfileComplete = authRepository.isProfileComplete()
 
+        // Hydrate in-memory session from persisted credentials
         if (!token.isNullOrEmpty()) {
             UserSession.token = token
             UserSession.currentUserId = userId
         }
 
+        // Route to the first screen the user still needs to complete
         return when {
             token.isNullOrEmpty() -> "login"
             !isVerified -> "verify_initial"

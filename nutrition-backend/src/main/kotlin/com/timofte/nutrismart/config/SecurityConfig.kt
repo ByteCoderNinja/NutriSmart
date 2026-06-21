@@ -31,6 +31,7 @@ class SecurityConfig(
                 it.requestMatchers("/api/**").authenticated()
                 it.anyRequest().authenticated()
             }
+            // No server-side sessions — auth is JWT-only
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }

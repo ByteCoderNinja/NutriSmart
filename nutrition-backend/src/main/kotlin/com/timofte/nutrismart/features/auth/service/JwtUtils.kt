@@ -18,6 +18,7 @@ class JwtUtils(
     @Value("\${jwt.expiration}") private val jwtExpiration: Long,
 ) {
 
+    // Token payload: subject = email, signed with HMAC-SHA256
     fun generateToken(userDetails: UserDetails): String {
         return generateToken(HashMap(), userDetails)
     }
@@ -34,6 +35,7 @@ class JwtUtils(
 
     fun isTokenValid(token: String, userDetails: UserDetails): Boolean {
         val username = extractUsername(token)
+        // Reject expired tokens or tokens issued for a different user
         return (username == userDetails.username && !isTokenExpired(token))
     }
 

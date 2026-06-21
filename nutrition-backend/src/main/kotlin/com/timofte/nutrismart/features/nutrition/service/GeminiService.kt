@@ -41,6 +41,7 @@ class GeminiService(
     }
 
     private fun buildPlanPrompt(user: UserEntity): String {
+        // Prompt includes profile, dietary constraints, and unit system — Gemini returns strict JSON
         val age = Period.between(user.dateOfBirth, LocalDate.now()).years
 
         val weightUnit = if (user.isImperial) "lbs" else "kg"
@@ -175,6 +176,7 @@ class GeminiService(
             val rawJson = response?.candidates?.firstOrNull()?.content?.parts?.firstOrNull()?.text
                 ?: throw RuntimeException("Gemini response is null")
 
+            // LLM may wrap JSON in markdown — extract the raw object
             val cleanJson = cleanJsonString(rawJson)
             objectMapper.readValue(cleanJson, responseType)
         } catch (e: Exception) {
@@ -183,6 +185,7 @@ class GeminiService(
         }
     }
 
+    // Strip any text outside the JSON object
     private fun cleanJsonString(rawText: String): String {
         val startIndex = rawText.indexOf('{')
         val endIndex = rawText.lastIndexOf('}')

@@ -22,6 +22,7 @@ class HealthConnectManager(private val context: Context) {
         if (!isAvailable) return 0
 
         return try {
+            // Aggregate step count from midnight to now
             val startOfDay = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS)
 
             val endOfDay = startOfDay.plusDays(1)
@@ -67,6 +68,7 @@ class HealthConnectManager(private val context: Context) {
 
             val walkingCalories = steps * 0.04
 
+            // ~0.04 kcal per step when no workout data is available
             val finalActiveCalories = workoutCalories + walkingCalories
 
             finalActiveCalories.toInt()

@@ -120,6 +120,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
 
     LaunchedEffect(shouldCheckPermissions) {
         if (shouldCheckPermissions && healthConnectManager.isAvailable) {
+            // Read steps and burned calories if Health Connect permissions are already granted
             val healthConnectClient = HealthConnectClient.getOrCreate(context)
             val granted = healthConnectClient.permissionController.getGrantedPermissions()
 
@@ -146,6 +147,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
 
     LaunchedEffect(uiState.breakfast, uiState.lunch, uiState.dinner, uiState.snack) {
         if (uiState.breakfast != null) {
+            // Schedule a reminder at the start and end of each meal window
             val meals = listOf(
                 Triple("Breakfast", uiState.breakfast, breakfastRange),
                 Triple("Lunch", uiState.lunch, lunchRange),
@@ -177,6 +179,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                                 if (startMillis > currentMillis) {
                                     scheduleMealNotification(context, type, startMillis, false)
                                 }
+                                // Follow-up nudge if the meal hasn't been marked as consumed
                                 if (endMillis > currentMillis) {
                                     scheduleMealNotification(context, type, endMillis, true)
                                 }

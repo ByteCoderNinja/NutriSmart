@@ -17,6 +17,7 @@ fun getRecommendedTimeRange(wakeUpTime: LocalTime, mealType: String): String {
         else -> Pair(0L, 0L)
     }
 
+    // Meal windows are offset from the user's wake-up time
     val startTime = wakeUpTime.plusHours(startOffset)
     val endTime = wakeUpTime.plusHours(endOffset)
 

@@ -25,6 +25,7 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(RateLimitExceededException::class)
     fun handleRateLimitException(e: RateLimitExceededException): ResponseEntity<ApiResponse<Nothing>> {
+        // HTTP 429 — client should back off and retry later
         return ResponseEntity
             .status(429)
             .body(ApiResponse.error(e.message ?: "Too many attempts. Please wait."))

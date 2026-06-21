@@ -22,6 +22,7 @@ class NutritionController(
     fun generatePlanAsync(@PathVariable userId: Long): ResponseEntity<Map<String, String>> {
         rateLimitService.tryConsumePlanGeneration(userId)
         return try {
+            // Returns immediately — generation runs in the background
             nutritionService.generateAndSaveWeeklyPlanAsync(userId)
             ResponseEntity.accepted().body(mapOf("message" to "Generation started"))
         } catch (e: Exception) {

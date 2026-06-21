@@ -32,6 +32,7 @@ class AuthService(
             throw ConflictException("Email already exists: ${request.email}")
         }
 
+        // 6-digit code, valid for 15 minutes
         val code = String.format("%06d", Random().nextInt(999999))
 
         val newUser = UserEntity(
@@ -112,6 +113,7 @@ class AuthService(
 
         var user = userRepository.findByEmail(email)
 
+        // First Google sign-in creates the account; email is already verified by Google
         if (user == null) {
             user = UserEntity(
                 email = email,
@@ -141,6 +143,7 @@ class AuthService(
         val user = userRepository.findByEmail(email) 
             ?: throw ResourceNotFoundException("User with this email does not exist.")
 
+        // Reuse verification fields for password-reset codes
         val resetCode = String.format("%06d", Random().nextInt(999999))
 
         user.verificationCode = resetCode
@@ -171,6 +174,7 @@ class AuthService(
         userRepository.save(user)
     }
 
+    // Resolve client IP behind a reverse proxy (e.g. Render, nginx)
     fun getClientIp(request: HttpServletRequest): String {
         val xfHeader = request.getHeader("X-Forwarded-For")
         if (xfHeader != null && xfHeader.isNotEmpty()) {

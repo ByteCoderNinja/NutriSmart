@@ -41,6 +41,7 @@ fun NutriSmartApp(viewModel: MainViewModel = hiltViewModel()) {
         }
 
         composable("verify_initial") {
+            // Stale session guard — token exists but verification flag was lost
             navController.navigate("login") {
                 popUpTo(0) { inclusive = true }
             }
@@ -71,6 +72,7 @@ fun NutriSmartApp(viewModel: MainViewModel = hiltViewModel()) {
                     if (isEdit) {
                         navController.popBackStack()
                     } else {
+                        // First-time verification — clear auth stack before onboarding
                         navController.navigate("onboarding") {
                             popUpTo("login") { inclusive = true }
                         }

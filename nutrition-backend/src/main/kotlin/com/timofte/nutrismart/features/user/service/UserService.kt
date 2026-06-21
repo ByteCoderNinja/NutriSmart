@@ -20,6 +20,7 @@ class UserService(
 ) {
 
     private fun validateOnboardingRequest(request: OnboardingRequest) {
+        // Server-side validation mirrors the client-side onboarding checks
         if (request.dateOfBirth.isAfter(LocalDate.now())) {
             throw IllegalArgumentException("Birth date cannot be in the future")
         }
@@ -34,7 +35,7 @@ class UserService(
             throw IllegalArgumentException("Height must be between $minHeight and $maxHeight")
         }
 
-        val minWeight = if (request.isImperial) 33.0 else 15.0
+        val minWeight = if (request.isImperial) 77.0 else 35.0
         val maxWeight = if (request.isImperial) 661.0 else 300.0
         if (request.weight !in minWeight..maxWeight) {
             throw IllegalArgumentException("Weight must be between $minWeight and $maxWeight")
@@ -75,6 +76,7 @@ class UserService(
 
         val savedUser = calculateAndSaveUserNeeds(user)
 
+        // Kick off async AI plan generation after onboarding
         try {
             nutritionService.generateAndSaveWeeklyPlanAsync(savedUser.id)
         } catch (e: Exception) {
@@ -98,6 +100,7 @@ class UserService(
 
         val age = Period.between(dob, LocalDate.now()).years
 
+        // Mifflin-St Jeor BMR, adjusted by gender
         var bmr = (10 * weight) + (6.25 * height) - (5 * age)
 
         bmr += if (gender == Gender.MALE) 5.0 else -161.0
@@ -107,10 +110,11 @@ class UserService(
         val targetWeight = user.targetWeight ?: weight
         val diff = targetWeight - weight
 
+        // Calorie deficit for weight loss, surplus for gain, maintenance otherwise
         val finalCalories = when {
-            diff < -1.0 -> tdee - 500 // slabire
-            diff > 1.0 -> tdee + 300 // masa musculara
-            else -> tdee // mentinere
+            diff < -1.0 -> tdee - 500
+            diff > 1.0 -> tdee + 300
+            else -> tdee
         }
 
         user.targetCalories = finalCalories.toInt()
@@ -137,6 +141,7 @@ class UserService(
     fun updateUser(id: Long, updatedData: UserEntity): UserEntity {
         val existingUser = getUser(id)
 
+        // Regenerate the meal plan only when nutrition-relevant fields change
         val needsRegeneration = existingUser.weight != updatedData.weight ||
                 existingUser.targetWeight != updatedData.targetWeight ||
                 existingUser.dietaryPreferences != updatedData.dietaryPreferences ||
@@ -188,6 +193,7 @@ class UserService(
             .orElseThrow { RuntimeException("User not found") }
 
         if (existingUser.provider == AuthProvider.GOOGLE) {
+            // Google accounts cannot change email or password through the app
             if (updateDto.email != null && updateDto.email != existingUser.email) {
                 throw IllegalArgumentException("Email cannot be updated for Google accounts")
             }
@@ -203,6 +209,7 @@ class UserService(
         if (updateDto.email != null && updateDto.email != existingUser.email) {
             val newCode = String.format("%06d", java.util.Random().nextInt(999999))
 
+            // Email change requires re-verification before the new address is active
             userToSave = userToSave.copy(
                 email = updateDto.email,
                 isVerified = false,

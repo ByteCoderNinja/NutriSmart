@@ -37,6 +37,7 @@ class JwtAuthenticationFilter(
             null
         }
 
+        // Populate SecurityContext only when no authentication is already set
         if (userEmail != null && SecurityContextHolder.getContext().authentication == null) {
             val userDetails = userDetailsService.loadUserByUsername(userEmail)
 

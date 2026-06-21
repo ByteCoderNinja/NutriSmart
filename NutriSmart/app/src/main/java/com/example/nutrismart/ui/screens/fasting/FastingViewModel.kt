@@ -42,6 +42,7 @@ class FastingViewModel @Inject constructor(
     }
 
     private fun restoreFastingState() {
+        // Resume an in-progress fast after app restart
         val isActive = fastingRepository.isFastingActive()
         if (isActive) {
             val endTime = fastingRepository.getFastingEndTime()
@@ -104,6 +105,7 @@ class FastingViewModel @Inject constructor(
 
     @SuppressLint("DefaultLocale")
     private fun startTimer() {
+        // Tick every second to update progress bar and countdown while fasting
         viewModelScope.launch {
             while (isActive) {
                 val state = _uiState.value
@@ -141,6 +143,7 @@ class FastingViewModel @Inject constructor(
         )
 
         try {
+            // Android 12+ requires explicit permission for exact alarms
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 if (alarmManager.canScheduleExactAlarms()) {
                     alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent)
